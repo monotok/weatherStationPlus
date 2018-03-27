@@ -23,13 +23,14 @@
 #include <thread>
 
 #define lcdAdd 0x3f // I2C device address
+#define i2cbusno 1
 
 //Compile with gcc lcdDriver.c i2cControl.c test.c -o lcdDriverTestMain -lstdc++
 //Or g++ lcdDriver.c i2cControl.c test.c -o lcdDriverTestMain
 
 int main(int argc, char *argv[])
 {
-    I2cControl *i2c = new I2cControl(1);
+    I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
 
     lcd.lcdSendCommand(LCD_BEG_LINE_1);
