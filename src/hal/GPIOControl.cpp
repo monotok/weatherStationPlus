@@ -97,6 +97,20 @@ int GPIOControl::g_setval(enum GPIOControl::Value chosenValue)
 
 int GPIOControl::g_getval(string val)
 {
+    string valuePath = "/sys/class/gpio/gpio" + this->get_gpio_num() + "/value";
+    ifstream valueStream(valuePath, ios_base::in);
+    valueStream >> val;
+    valueStream.close();
+
+    if(!valueStream.good())
+    {
+        cout << "Could not read value of GPIO " << this->gpio_num << endl;
+        return -1;
+    }
+
+    cout << "Value of GPIO " << this->gpio_num << " is " << val << "\n" << endl;
+
+    return 0;
 
 }
 
