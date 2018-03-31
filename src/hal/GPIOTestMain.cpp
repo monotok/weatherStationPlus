@@ -5,6 +5,8 @@ using namespace std;
 
 int main (void)
 {
-    cout << "Testing.......";
-    return 0;
+    cout << "Testing.......\n";
+    
+    GPIOControl gpio = GPIOControl("4");
+    gpio.g_export();
 }

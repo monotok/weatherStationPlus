@@ -15,13 +15,24 @@ int GPIOControl::g_export()
 {
     string exportPath = "/sys/class/gpio/export";
     ofstream exportStream(exportPath, ios_base::out);
-    if(!exportStream)
+    exportStream << this->gpio_num;
+    exportStream.flush();
+    exportStream.close();
+
+    if(!exportStream.good())
     {
-        cout << "Could not export GPIO " << this->gpio_num;
+        cout << "Could not export GPIO " << this->gpio_num << "\n" << endl;
+        cout << "Bad bit " << exportStream.bad() << "\n" << endl;
+        cout << "Good bit " << exportStream.good() << "\n" << endl;
+        cout << "Fail bit " << exportStream.fail() << "\n" << endl;
+        cout << "EOF bit " << exportStream.eof() << "\n" << endl;
+        
+        
         return -1;
     }
-    exportStream << this-> gpio_num;
-    exportStream.close();
+
+    cout << "Exported GPIO " << this->gpio_num << endl;
+
     return 0;
 }
 
