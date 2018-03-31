@@ -22,12 +22,6 @@ int GPIOControl::g_export()
     if(!exportStream.good())
     {
         cout << "Could not export GPIO " << this->gpio_num << "\n" << endl;
-        cout << "Bad bit " << exportStream.bad() << "\n" << endl;
-        cout << "Good bit " << exportStream.good() << "\n" << endl;
-        cout << "Fail bit " << exportStream.fail() << "\n" << endl;
-        cout << "EOF bit " << exportStream.eof() << "\n" << endl;
-        
-        
         return -1;
     }
 
@@ -38,16 +32,66 @@ int GPIOControl::g_export()
 
 int GPIOControl::g_unexport()
 {
+    string unexportPath = "/sys/class/gpio/unexport";
+    ofstream unexportStream(unexportPath, ios_base::out);
+    unexportStream << this->gpio_num;
+    unexportStream.flush();
+    unexportStream.close();
+
+    if(!unexportStream.good())
+    {
+        cout << "Could not unexport GPIO " << this->gpio_num << "\n" << endl;
+        return -1;
+    }
+
+    cout << "Unexported GPIO " << this->gpio_num << endl;
+
+    return 0;
+}
+
+int GPIOControl::g_setdir(string chosenDirection)
+{
+    if(GPIOControl::validateDirection(chosenDirection) == -1)
+    {
+        cout << "Invalid direction. Should be 'out' or 'in' \n" << endl;
+        return -1;
+    }
+    string directionPath = "/sys/class/gpio/gpio" + this->get_gpio_num() + "/direction";
+    ofstream directionStream(directionPath, ios_base::out);
+    directionStream << chosenDirection;
+    directionStream.flush();
+    directionStream.close();
+
+    if(!directionStream.good())
+    {
+        cout << "Could not set direction of GPIO " << this->gpio_num << " to " << chosenDirection << "\n" << endl;
+        return -1;
+    }
+
+    cout << "Set Direction on GPIO " << this->gpio_num << " to " << chosenDirection << "\n" << endl;
+
+    return 0;
 
 }
 
-int GPIOControl::g_setdir(enum Direction)
+int GPIOControl::g_setval(enum GPIOControl::Value chosenValue)
 {
+    string valuePath = "/sys/class/gpio/gpio" + this->get_gpio_num() + "/value";
+    ofstream valueStream(valuePath, ios_base::out);
+    valueStream << static_cast<int>(chosenValue);
+    valueStream.flush();
+    valueStream.close();
 
-}
+    if(!valueStream.good())
+    {
+        cout << "Could not set value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue) << "\n" << endl;
+        return -1;
+    }
 
-int GPIOControl::g_setval(enum Value)
-{
+    cout << "Set value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue) << "\n" << endl;
+
+    return 0;
+    cout << "Set Value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue) << endl;
 
 }
 
@@ -59,4 +103,13 @@ int GPIOControl::g_getval(string val)
 string GPIOControl::get_gpio_num()
 {
     return this->gpio_num;
+}
+
+int GPIOControl::validateDirection(string directionToValidate)
+{
+    if(directionToValidate.compare("out") == 0 || directionToValidate.compare("in") == 0)
+    {
+        return 0;
+    }
+    return -1;
 }
