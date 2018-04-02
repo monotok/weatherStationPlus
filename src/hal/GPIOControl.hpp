@@ -1,7 +1,10 @@
 #ifndef GPIO_Control_H
 #define GPIO_Control_H
 
+#include <fstream>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -14,7 +17,7 @@ class GPIOControl
         int g_unexport();
         int g_setdir(string direction);
         int g_setval(enum GPIOControl::Value);
-        int g_getval(string val);
+        int g_getval(string& val);
 
         string get_gpio_num();
     

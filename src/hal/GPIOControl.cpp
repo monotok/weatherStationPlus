@@ -1,7 +1,3 @@
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <sstream>
 #include "GPIOControl.hpp"
 
 using namespace std;
@@ -95,7 +91,7 @@ int GPIOControl::g_setval(enum GPIOControl::Value chosenValue)
 
 }
 
-int GPIOControl::g_getval(string val)
+int GPIOControl::g_getval(string& val)
 {
     string valuePath = "/sys/class/gpio/gpio" + this->get_gpio_num() + "/value";
     ifstream valueStream(valuePath, ios_base::in);
