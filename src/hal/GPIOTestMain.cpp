@@ -34,8 +34,8 @@ int main (void)
     gpio17.g_export();
 
     //Set the direction
-    gpio4.g_setdir("in");
-    gpio17.g_setdir("out");
+    gpio4.g_setdir("out");
+    gpio17.g_setdir("in");
 
     while(1)
     {
@@ -44,11 +44,11 @@ int main (void)
 
         if(storeValue == "0")
         {
-            cout << "Button is pressed" << endl;
+            // cout << "Button is pressed" << endl;
             gpio4.g_setval(GPIO_ON);
         }
         else{
-            cout << "Button is NOT pressed" << endl;            
+            // cout << "Button is NOT pressed" << endl;            
             gpio4.g_setval(GPIO_OFF);
         }
 
