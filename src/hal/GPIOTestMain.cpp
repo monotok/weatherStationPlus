@@ -4,23 +4,10 @@
 
 using namespace std;
 
-void sig_handler(int sig);
-bool ctrl_c_pressed = false;
-
 int main (void)
 {
     unsigned int microseconds = 3000;
     cout << "Testing.......\n\n";
-
-    struct sigaction sig_struct;
-    sig_struct.sa_handler = sig_handler;
-    sig_struct.sa_flags = 0;
-    sigemptyset(&sig_struct.sa_mask);
-
-    if (sigaction(SIGINT, &sig_struct, NULL) == -1) {
-        cout << "Problem with sigaction" << endl;
-        exit(1);
-    }
 
     string storeValue;
     GPIOControl gpio4 = GPIOControl("4");
@@ -37,38 +24,25 @@ int main (void)
     gpio4.g_setdir("out");
     gpio17.g_setdir("in");
 
-    while(1)
+    usleep(microseconds);        
+
+    gpio17.g_getval(storeValue);
+
+    if(storeValue == "0")
     {
-        usleep(microseconds);
-        gpio17.g_getval(storeValue);
-
-        if(storeValue == "0")
-        {
-            // cout << "Button is pressed" << endl;
-            gpio4.g_setval(GPIO_ON);
-        }
-        else{
-            // cout << "Button is NOT pressed" << endl;            
-            gpio4.g_setval(GPIO_OFF);
-        }
-
-        if(ctrl_c_pressed)
-        {
-            cout << "Ctrl^C Pressed" << endl;
-            cout << "unexporting pins" << endl;
-            gpio4.g_unexport();
-            gpio17.g_unexport();
-            break;
-
-        }
-
+        gpio4.g_setval(GPIO_ON);
     }
+    else
+    {
+        gpio4.g_setval(GPIO_OFF);
+    }    
+
+    usleep(microseconds);    
+
+    gpio4.g_setval(GPIO_OFF);
+    gpio4.g_unexport();
+    gpio17.g_unexport();
 
     return 0;
 }
 
-void sig_handler(int sig)
-{
-    write(0,"nCtrl^C pressed in sig handlern",32);
-    ctrl_c_pressed = true;
-}
