@@ -15,7 +15,7 @@ void sig_handler(int sig)
 
 int main (void)
 {
-    unsigned int microseconds = 500000;
+    unsigned int microseconds = 100000;
     cout << "Testing.......\n\n";
 
     string storeValue;
