@@ -9,12 +9,23 @@ bool ctrl_c_pressed = false;
 
 void sig_handler(int sig)
 {
-    write(0,"nCtrl^C pressed in sig handlern",32);
+    write(0,"\nCtrl^C pressed in sig handler\n",32);
     ctrl_c_pressed = true;
 }
 
 int main (void)
 {
+
+    struct sigaction sig_struct;
+    sig_struct.sa_handler = sig_handler;
+    sig_struct.sa_flags = 0;
+    sigemptyset(&sig_struct.sa_mask);
+
+    if (sigaction(SIGINT, &sig_struct, NULL) == -1) {
+        cout << "Problem with sigaction" << endl;
+        exit(1);
+    }
+
     unsigned int microseconds = 100000;
     cout << "Testing.......\n\n";
 
@@ -53,18 +64,14 @@ int main (void)
                 cout << "Was just noise\n" << endl;             
         }
 
+        if(ctrl_c_pressed)
+        {
+            cout << "Ctrl^C Pressed" << endl;
+            break;
+        }
+
         gpio4.g_setval(GPIO_OFF);        
 
-    }
-
-    struct sigaction sig_struct;
-    sig_struct.sa_handler = sig_handler;
-    sig_struct.sa_flags = 0;
-    sigemptyset(&sig_struct.sa_mask);
-
-    if (sigaction(SIGINT, &sig_struct, NULL) == -1) {
-        cout << "Problem with sigaction" << endl;
-        exit(1);
     }
 
     return 0;

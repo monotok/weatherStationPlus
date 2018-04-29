@@ -12,7 +12,7 @@ GPIOControl::~GPIOControl()
 {
     cout << "Unexporting pins\n" << endl;
     this->g_unexport();
-    cout << "Goodbye\n" << endl;
+    cout << "Pin " << this->gpio_num << " said Goodbye\n" << endl;
 }
 
 int GPIOControl::g_export()
