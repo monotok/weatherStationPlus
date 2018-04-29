@@ -16,10 +16,6 @@ int main (void)
     GPIOControl::Value GPIO_OFF = GPIOControl::Value::GPIO_OFF;
     
 
-    //Export the values
-    gpio4.g_export();
-    gpio17.g_export();
-
     //Set the direction
     gpio4.g_setdir("out");
     gpio17.g_setdir("in");
@@ -40,8 +36,6 @@ int main (void)
     usleep(microseconds);    
 
     gpio4.g_setval(GPIO_OFF);
-    gpio4.g_unexport();
-    gpio17.g_unexport();
 
     return 0;
 }

@@ -13,6 +13,7 @@ class GPIOControl
     public:
         enum class Value {GPIO_ON = 1, GPIO_OFF = 0};
         GPIOControl(string x);
+        ~GPIOControl();
         int g_export();
         int g_unexport();
         int g_setdir(string direction);

@@ -5,6 +5,12 @@ using namespace std;
 GPIOControl::GPIOControl(string selected_gpio_num)
 {
     this->gpio_num = selected_gpio_num;
+    this->g_export();
+}
+
+GPIOControl::~GPIOControl()
+{
+    this->g_unexport();
 }
 
 int GPIOControl::g_export()
