@@ -117,9 +117,9 @@ string GPIOControl::get_gpio_num()
 
 int GPIOControl::validateDirection(string directionToValidate)
 {
-    if(directionToValidate.compare("out") == 0 || directionToValidate.compare("in") == 0)
+    if(directionToValidate.compare("out") != 0 && directionToValidate.compare("in") != 0)
     {
-        return 0;
+        return -1;
     }
-    return -1;
+    return 0;
 }

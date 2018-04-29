@@ -6,7 +6,7 @@ using namespace std;
 
 int main (void)
 {
-    unsigned int microseconds = 3000;
+    unsigned int microseconds = 30000;
     cout << "Testing.......\n\n";
 
     string storeValue;
