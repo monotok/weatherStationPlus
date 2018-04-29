@@ -10,9 +10,7 @@ GPIOControl::GPIOControl(string selected_gpio_num)
 
 GPIOControl::~GPIOControl()
 {
-    cout << "Unexporting pins\n" << endl;
     this->g_unexport();
-    cout << "Pin " << this->gpio_num << " said Goodbye\n" << endl;
 }
 
 int GPIOControl::g_export()

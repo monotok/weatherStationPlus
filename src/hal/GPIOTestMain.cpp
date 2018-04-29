@@ -1,6 +1,7 @@
 #include "GPIOControl.hpp"
 #include <unistd.h>
 #include <signal.h>
+#include <time.h>
 
 using namespace std;
 
@@ -11,6 +12,13 @@ void sig_handler(int sig)
 {
     write(0,"\nCtrl^C pressed in sig handler\n",32);
     ctrl_c_pressed = true;
+}
+
+long getMicrotime()
+{
+  struct timespec now;
+  clock_gettime( CLOCK_MONOTONIC_RAW, &now );
+  return (uint64_t)now.tv_sec * 1000000000U + (uint64_t)now.tv_nsec;
 }
 
 int main (void)
@@ -26,7 +34,6 @@ int main (void)
         exit(1);
     }
 
-    unsigned int microseconds = 100000;
     cout << "Testing.......\n\n";
 
     string storeValue;
@@ -39,30 +46,39 @@ int main (void)
     gpio4.g_setdir("out");
     gpio17.g_setdir("in");
 
+    struct buttonState
+    {
+        int currentButtonState; // the current reading from the input pin
+        int lastButtonState; // the previous reading from the input pin
+        long lastDebounceTime; // the last time the output pin was toggled
+        long debounceDelay; // the debounce time; increase if the output flickers
+        long interruptTime;
+    };
+
+    struct buttonState testButton;
+
+    testButton.lastButtonState = 1;
+    testButton.lastDebounceTime = 0;
+    testButton.debounceDelay = 500;
+    testButton.interruptTime = 0;
+
     while(true)
     {
-        usleep(microseconds);        
-        gpio17.g_getval(storeValue);
+        testButton.currentButtonState = gpio17.g_getval(storeValue);
+        testButton.interruptTime = getMicrotime();
 
-        if(storeValue == "0")
+        if(testButton.currentButtonState == 0 && testButton.lastButtonState == 1 && testButton.interruptTime - testButton.lastDebounceTime > testButton.debounceDelay)
         {
             cout << "Button Pressed\n" << endl;
-            usleep(20000);
-            gpio17.g_getval(storeValue);
-            if(storeValue == "0")
-            {
-                cout << "Certain Button Pressed\n" << endl;
-                gpio4.g_setval(GPIO_ON);
-
-                while(storeValue == "0")
-                {
-                    gpio17.g_getval(storeValue);                    
-                }                
-                cout << "Unpressed the button\n" << endl;
-            }
-            else
-                cout << "Was just noise\n" << endl;             
+            gpio4.g_setval(GPIO_ON);
         }
+        else
+        {
+            gpio4.g_setval(GPIO_OFF);
+        }
+
+        testButton.lastButtonState = testButton.currentButtonState;
+        testButton.lastDebounceTime = testButton.interruptTime;
 
         if(ctrl_c_pressed)
         {
@@ -70,8 +86,7 @@ int main (void)
             break;
         }
 
-        gpio4.g_setval(GPIO_OFF);        
-
+        usleep(50000);
     }
 
     return 0;
