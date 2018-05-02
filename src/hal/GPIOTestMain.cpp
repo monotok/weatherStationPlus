@@ -3,6 +3,9 @@
 #include <signal.h>
 #include <time.h>
 
+INITIALIZE_EASYLOGGINGPP
+#define ELPP_LOGGING_FLAGS_FROM_ARG
+
 using namespace std;
 
 void sig_handler(int sig);
@@ -21,7 +24,7 @@ long getMicrotime()
   return (uint64_t)now.tv_sec * 1000000000U + (uint64_t)now.tv_nsec;
 }
 
-int main (void)
+int main (int argc, char** argv)
 {
 
     struct sigaction sig_struct;
@@ -34,9 +37,13 @@ int main (void)
         exit(1);
     }
 
-    cout << "Testing.......\n\n";
+    START_EASYLOGGINGPP(argc, argv);
+    el::Configurations conf("../logging/logging.conf");
+    el::Loggers::reconfigureAllLoggers(conf);
 
-    string storeValue;
+    LOG(INFO) << "Testing.......";
+
+    int storeValue;
     GPIOControl gpio4 = GPIOControl("4");
     GPIOControl gpio17 = GPIOControl("17");
     GPIOControl::Value GPIO_ON = GPIOControl::Value::GPIO_ON;
@@ -57,19 +64,23 @@ int main (void)
 
     struct buttonState testButton;
 
-    testButton.lastButtonState = 1;
+    testButton.lastButtonState = 0;
     testButton.lastDebounceTime = 0;
     testButton.debounceDelay = 500;
     testButton.interruptTime = 0;
 
     while(true)
     {
-        testButton.currentButtonState = gpio17.g_getval(storeValue);
+        gpio17.g_getval(storeValue);
+        testButton.currentButtonState = storeValue;
         testButton.interruptTime = getMicrotime();
 
-        if(testButton.currentButtonState == 0 && testButton.lastButtonState == 1 && testButton.interruptTime - testButton.lastDebounceTime > testButton.debounceDelay)
+        // cout << getMicrotime() << endl;
+
+        if(testButton.currentButtonState == 1 && testButton.lastButtonState == 0 && testButton.interruptTime - testButton.lastDebounceTime > testButton.debounceDelay)
         {
-            cout << "Button Pressed\n" << endl;
+            // cout << "Button Pressed\n" << endl;
+            LOG(DEBUG) << "Button Pressed";
             gpio4.g_setval(GPIO_ON);
         }
         else

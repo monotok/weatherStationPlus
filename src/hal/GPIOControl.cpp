@@ -23,11 +23,11 @@ int GPIOControl::g_export()
 
     if(!exportStream.good())
     {
-        cout << "Could not export GPIO " << this->gpio_num << "\n" << endl;
+        LOG(ERROR) << "Could not export GPIO " << this->gpio_num;
         return -1;
     }
 
-    cout << "Exported GPIO " << this->gpio_num << endl;
+    VLOG(9) << "Exported GPIO " << this->gpio_num;
 
     return 0;
 }
@@ -42,11 +42,11 @@ int GPIOControl::g_unexport()
 
     if(!unexportStream.good())
     {
-        cout << "Could not unexport GPIO " << this->gpio_num << "\n" << endl;
+        LOG(ERROR) << "Could not unexport GPIO " << this->gpio_num;
         return -1;
     }
 
-    cout << "Unexported GPIO " << this->gpio_num << endl;
+    VLOG(9) << "Unexported GPIO " << this->gpio_num;
 
     return 0;
 }
@@ -55,7 +55,7 @@ int GPIOControl::g_setdir(string chosenDirection)
 {
     if(GPIOControl::validateDirection(chosenDirection) == -1)
     {
-        cout << "Invalid direction. Should be 'out' or 'in' \n" << endl;
+        LOG(ERROR) << "Invalid direction. Should be 'out' or 'in'";
         return -1;
     }
     string directionPath = "/sys/class/gpio/gpio" + this->get_gpio_num() + "/direction";
@@ -66,11 +66,11 @@ int GPIOControl::g_setdir(string chosenDirection)
 
     if(!directionStream.good())
     {
-        cout << "Could not set direction of GPIO " << this->gpio_num << " to " << chosenDirection << "\n" << endl;
+        LOG(ERROR) << "Could not set direction of GPIO " << this->gpio_num << " to " << chosenDirection;
         return -1;
     }
 
-    cout << "Set Direction on GPIO " << this->gpio_num << " to " << chosenDirection << "\n" << endl;
+    VLOG(9) << "Set Direction on GPIO " << this->gpio_num << " to " << chosenDirection;
 
     return 0;
 
@@ -86,18 +86,16 @@ int GPIOControl::g_setval(enum GPIOControl::Value chosenValue)
 
     if(!valueStream.good())
     {
-        cout << "Could not set value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue) << "\n" << endl;
+        LOG(ERROR) << "Could not set value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue);
         return -1;
     }
 
-    cout << "Set value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue) << "\n" << endl;
+    VLOG(9) << "Set value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue);
 
     return 0;
-    cout << "Set Value on GPIO " << this->gpio_num << " to " << static_cast<int>(chosenValue) << endl;
-
 }
 
-int GPIOControl::g_getval(string& val)
+int GPIOControl::g_getval(int& val)
 {
     string valuePath = "/sys/class/gpio/gpio" + this->get_gpio_num() + "/value";
     ifstream valueStream(valuePath, ios_base::in);
@@ -106,11 +104,11 @@ int GPIOControl::g_getval(string& val)
 
     if(!valueStream.good())
     {
-        cout << "Could not read value of GPIO " << this->gpio_num << endl;
+        LOG(ERROR) << "Could not read value of GPIO " << this->gpio_num;
         return -1;
     }
 
-    cout << "Value of GPIO " << this->gpio_num << " is " << val << "\n" << endl;
+    VLOG(9) << "Value of GPIO " << this->gpio_num << " is " << val;
 
     return 0;
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include "../logging/easylogging++.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ class GPIOControl
         int g_unexport();
         int g_setdir(string direction);
         int g_setval(enum GPIOControl::Value);
-        int g_getval(string& val);
+        int g_getval(int& val);
 
         string get_gpio_num();
     
