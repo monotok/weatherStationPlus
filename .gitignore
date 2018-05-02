@@ -1,5 +1,5 @@
 .vscode
-hal/GPIOControl
-hal/*.o
-hal/*.log
-hal/*.py
+src/hal/GPIOControl
+src/hal/*.o
+src/hal/*.log
+src/hal/*.py
