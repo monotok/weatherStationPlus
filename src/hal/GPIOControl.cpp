@@ -27,7 +27,7 @@ int GPIOControl::g_export()
         return -1;
     }
 
-    VLOG(9) << "Exported GPIO " << this->gpio_num;
+    VLOG(8) << "Exported GPIO " << this->gpio_num;
 
     return 0;
 }
@@ -46,7 +46,7 @@ int GPIOControl::g_unexport()
         return -1;
     }
 
-    VLOG(9) << "Unexported GPIO " << this->gpio_num;
+    VLOG(8) << "Unexported GPIO " << this->gpio_num;
 
     return 0;
 }
