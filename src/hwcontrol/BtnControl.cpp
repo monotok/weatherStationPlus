@@ -1,4 +1,4 @@
-#include "BtnControl.hpp"
+#include "../../include/BtnControl.hpp"
 
 using namespace std;
 
@@ -34,5 +34,5 @@ void BtnState::updateLastBtnState()
 
 void BtnState::updateLastDebounceTime()
 {
-    this->updateLastDebounceTime = this->interruptTime;
+    this->lastDebounceTime = this->interruptTime;
 }

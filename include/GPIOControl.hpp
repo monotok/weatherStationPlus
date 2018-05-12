@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include "../logging/easylogging++.h"
+#include "easylogging++.hpp"
 
 using namespace std;
 

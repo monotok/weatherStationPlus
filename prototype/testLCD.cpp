@@ -15,8 +15,8 @@
     along with RaspLCDDriver.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
-#include "src/hal/i2cControl.hpp"
-#include "src/hal/lcdDriver.hpp"
+#include "../include/i2cControl.hpp"
+#include "../include/lcdDriver.hpp"
 
 //Only included to allow a sleep to show clearing display etc
 #include <chrono>

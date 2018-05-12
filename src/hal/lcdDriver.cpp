@@ -19,8 +19,8 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
-#include "i2cControl.hpp"
-#include "lcdDriver.hpp"
+#include "../../include/i2cControl.hpp"
+#include "../../include/lcdDriver.hpp"
 
 // Define some device constants
 #define LCD_CHR 1 // Mode - Sending data

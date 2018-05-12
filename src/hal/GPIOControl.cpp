@@ -1,4 +1,4 @@
-#include "GPIOControl.hpp"
+#include "../../include/GPIOControl.hpp"
 
 using namespace std;
 

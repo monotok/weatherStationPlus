@@ -15,7 +15,7 @@
     along with RaspLCDDriver.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
-#include "i2cControl.hpp"
+#include "../../include/i2cControl.hpp"
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
