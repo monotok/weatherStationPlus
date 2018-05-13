@@ -33,22 +33,18 @@ $(PROTOBUILD)/%.o: $(PROTOTYPESRC)/%.$(SRCEXT)
 
 weather: $(OBJECTS)
 	@echo " Linking..."
+	@mkdir -p bin
 	@echo " $(CC) $^ -o $(WEATHERTARGET)"; $(CC) $^ -o $(WEATHERTARGET)
 #	@echo " $(CC) $^ -o $(WEATHERTARGET) $(LIB)"; $(CC) $^ -o $(WEATHERTARGET) $(LIB)
 
 clean:
-	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(WEATHERTARGET)"; $(RM) -r $(BUILDDIR) $(WEATHERTARGET)
-	@echo " $(RM) -r $(BUILDDIR) $(GPIOTESTTARGET)"; $(RM) -r $(BUILDDIR) $(GPIOTESTTARGET)
-
-# Tests
-# tester:
-#   $(CC) $(CFLAGS) test/tester.cpp $(INC) $(LIB) -o bin/tester
-
+	@echo " Cleaning...Removing all unknown files of git and all ignored files. Excludes .vscode";
+	git clean -f -d -x -e .vscode 
 
 # Prototype
 gpiotestmain: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
 	@echo " Linking..."
+	@mkdir -p bin	
 	@echo " $(CC) $^ -o $(GPIOTESTTARGET)"; $(CC) $^ -o $(GPIOTESTTARGET)	
 
 
