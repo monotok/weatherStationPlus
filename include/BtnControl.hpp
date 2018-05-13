@@ -9,10 +9,9 @@ class BtnState
 {
     public:
         BtnState();
-        void updateLastDebounceTime();
-        void updateLastBtnState();
         bool debounceBtn();
-        void reReadBtnState(GPIOControl *gpioInputPin);
+        void initBtnState(GPIOControl *gpioInputPin);
+        void reInitBtnState();
 
 
     private:
@@ -26,7 +25,8 @@ class BtnState
 
         void setCurrentBtnState(int btnState);
         void setBtnInterruptTime();        
-
+        void updateLastDebounceTime();
+        void updateLastBtnState();
 };
 
 #endif //ifndef BTN_CONTROL_H

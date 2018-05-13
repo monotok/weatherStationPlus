@@ -18,11 +18,17 @@ bool BtnState::debounceBtn()
     return false;
 }
 
-void BtnState::reReadBtnState(GPIOControl *gpioInputPin)
+void BtnState::initBtnState(GPIOControl *gpioInputPin)
 {
     gpioInputPin->g_getval(this->storedPinValue);
     this->setCurrentBtnState(this->storedPinValue);
     this->setBtnInterruptTime();
+}
+
+void BtnState::reInitBtnState()
+{
+    this->updateLastBtnState();
+    this->updateLastDebounceTime();
 }
 
 void BtnState::setCurrentBtnState(int btnState)

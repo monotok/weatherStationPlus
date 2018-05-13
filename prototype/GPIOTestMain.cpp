@@ -49,7 +49,7 @@ int main (int argc, char** argv)
 
     while(true)
     {
-        bs.reReadBtnState(&gpio17);
+        bs.initBtnState(&gpio17);
 
         if(bs.debounceBtn())
         {
@@ -62,8 +62,7 @@ int main (int argc, char** argv)
             gpio4.g_setval(GPIO_OFF);
         }
 
-        bs.updateLastBtnState();
-        bs.updateLastDebounceTime();
+        bs.reInitBtnState();
 
         if(ctrl_c_pressed)
         {
