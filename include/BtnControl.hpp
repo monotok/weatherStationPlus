@@ -8,7 +8,6 @@ class BtnState
 {
     public:
         BtnState();
-        ~BtnState();
         void setCurrentBtnState(int btnState);
         void setBtnInterruptTime();
         void updateLastDebounceTime();
