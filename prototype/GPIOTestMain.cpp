@@ -36,7 +36,6 @@ int main (int argc, char** argv)
 
     LOG(INFO) << "Testing........";
 
-    int storeValue;
     GPIOControl gpio4 = GPIOControl("4");
     GPIOControl gpio17 = GPIOControl("17");
     GPIOControl::Value GPIO_ON = GPIOControl::Value::GPIO_ON;
@@ -50,11 +49,7 @@ int main (int argc, char** argv)
 
     while(true)
     {
-        gpio17.g_getval(storeValue);
-        bs.setCurrentBtnState(storeValue);
-        bs.setBtnInterruptTime();
-
-        // cout << getMicrotime() << endl;
+        bs.reReadBtnState(&gpio17);
 
         if(bs.debounceBtn())
         {
