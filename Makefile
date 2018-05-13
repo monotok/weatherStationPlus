@@ -38,7 +38,8 @@ weather: $(OBJECTS)
 
 clean:
 	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(WEATHERTARGET)"; $(RM) -r $(BUILDDIR) $(WEATHERTARGET); $(RM) -r $(BUILDDIR) $(GPIOTESTTARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(WEATHERTARGET)"; $(RM) -r $(BUILDDIR) $(WEATHERTARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(GPIOTESTTARGET)"; $(RM) -r $(BUILDDIR) $(GPIOTESTTARGET)
 
 # Tests
 # tester:
