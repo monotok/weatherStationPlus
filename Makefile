@@ -5,46 +5,51 @@
 CC := g++ # This is the main compiler
 # CC := clang --analyze # and comment out the linker last line for sanity
 SRCDIR := src
+PROTOTYPESRC := prototype
 BUILDDIR := build
-TARGET := bin/weatherStationPlus
+PROTOBUILD := build/prototype
+WEATHERTARGET := bin/weatherStationPlus
+GPIOTESTTARGET := bin/GPIOTestMain
+
  
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+PROTOSOURCES := $(PROTOTYPESRC)/GPIOTestMain.cpp
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
+PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
 CFLAGS := -g # -Wall
 # LIB := -pthread -lmongoclient -L lib -lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt
 # LIB :=
 INC := -I include
 
-$(TARGET): $(OBJECTS)
-	@echo " Linking..."
-	@echo " $(CC) $^ -o $(TARGET)"; $(CC) $^ -o $(TARGET)
-#	@echo " $(CC) $^ -o $(TARGET) $(LIB)"; $(CC) $^ -o $(TARGET) $(LIB)
-
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)
 	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
+$(PROTOBUILD)/%.o: $(PROTOTYPESRC)/%.$(SRCEXT)
+	@mkdir -p $(@D)
+	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
+
+weather: $(OBJECTS)
+	@echo " Linking..."
+	@echo " $(CC) $^ -o $(WEATHERTARGET)"; $(CC) $^ -o $(WEATHERTARGET)
+#	@echo " $(CC) $^ -o $(WEATHERTARGET) $(LIB)"; $(CC) $^ -o $(WEATHERTARGET) $(LIB)
+
 clean:
 	@echo " Cleaning..."; 
-	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
+	@echo " $(RM) -r $(BUILDDIR) $(WEATHERTARGET)"; $(RM) -r $(BUILDDIR) $(WEATHERTARGET); $(RM) -r $(BUILDDIR) $(GPIOTESTTARGET)
 
 # Tests
 # tester:
 #   $(CC) $(CFLAGS) test/tester.cpp $(INC) $(LIB) -o bin/tester
 
+
 # Prototype
-gpiotestmain: gpiocontrol.o gpiotestmain.o
-	$(CC) $(CFLAGS) build/logging/easylogging++.o build/hal/GPIOControl.o build/GPIOTestMain.o -o bin/GPIOControl
+gpiotestmain: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
+	@echo " Linking..."
+	@echo " $(CC) $^ -o $(GPIOTESTTARGET)"; $(CC) $^ -o $(GPIOTESTTARGET)	
 
-gpiotestmain.o:	prototype/GPIOTestMain.cpp include/GPIOControl.hpp
-	$(CC) $(CFLAGS) -c prototype/GPIOTestMain.cpp -o build/GPIOTestMain.o
-
-gpiocontrol.o: easylogging++.o src/hal/GPIOControl.cpp include/GPIOControl.hpp
-	$(CC) $(CFLAGS) -c src/hal/GPIOControl.cpp -o build/hal/GPIOControl.o
-
-easylogging++.o: src/logging/easylogging++.cpp include/easylogging++.hpp
-	$(CC) $(CFLAGS) -c src/logging/easylogging++.cpp -o build/logging/easylogging++.o
 
 
 .PHONY: clean
