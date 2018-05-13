@@ -4,7 +4,6 @@
 #include <time.h>
 
 INITIALIZE_EASYLOGGINGPP
-#define ELPP_LOGGING_FLAGS_FROM_ARG
 
 using namespace std;
 
@@ -41,7 +40,7 @@ int main (int argc, char** argv)
     el::Configurations conf("../conf/logging.conf");
     el::Loggers::reconfigureAllLoggers(conf);
 
-    LOG(INFO) << "Testing.......";
+    LOG(INFO) << "Testing........";
 
     int storeValue;
     GPIOControl gpio4 = GPIOControl("4");

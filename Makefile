@@ -18,18 +18,18 @@ PROTOSOURCES := $(PROTOTYPESRC)/GPIOTestMain.cpp
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
 PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g # -Wall
+CFLAGS := -g -DELPP_NO_DEFAULT_LOG_FILE -DELPP_LOGGING_FLAGS_FROM_ARG # -Wall
 # LIB := -pthread -lmongoclient -L lib -lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt
 # LIB :=
 INC := -I include
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)
-	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	@echo " $(CC) $(INC) -c -o $@ $< $(CFLAGS)"; $(CC) $(INC) -c -o $@ $< $(CFLAGS)
 
 $(PROTOBUILD)/%.o: $(PROTOTYPESRC)/%.$(SRCEXT)
 	@mkdir -p $(@D)
-	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	@echo " $(CC) $(INC) -c -o $@ $< $(CFLAGS)"; $(CC) $(INC) -c -o $@ $< $(CFLAGS)
 
 weather: $(OBJECTS)
 	@echo " Linking..."
