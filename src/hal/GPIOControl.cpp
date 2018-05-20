@@ -1,5 +1,6 @@
 #include "../../include/GPIOControl.hpp"
 
+// TODO: Move all log statements to use a generic method as in lcddriver class
 using namespace std;
 
 GPIOControl::GPIOControl(string selected_gpio_num)
