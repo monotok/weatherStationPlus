@@ -17,7 +17,7 @@ bool BtnState::debounceBtn()
         return true;
     return false;
 }
-
+// TODO: Handle output GPIO pins being passed, return error
 void BtnState::initBtnState(GPIOControl *gpioInputPin)
 {
     gpioInputPin->g_getval(this->storedPinValue);

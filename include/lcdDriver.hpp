@@ -14,6 +14,9 @@
     You should have received a copy of the GNU General Public License
     along with RaspLCDDriver.  If not, see <http://www.gnu.org/licenses/>. 
 */
+#ifndef LCD_DRIVER_H
+#define LCD_DRIVER_H
+#include "easylogging++.hpp"
 
 // Define some device parameters
 #define LCD_WIDTH 20   // Maximum characters per line
@@ -64,3 +67,4 @@ class LcdDriver
         void scroll1CharLeftAllLines();
         void clearLine(int lineNo);
 };
+#endif //LCD_DRIVER_H
