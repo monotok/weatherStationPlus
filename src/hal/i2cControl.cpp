@@ -78,6 +78,6 @@ void I2cControl::readI2c()
 
 void I2cControl::error(const char *msg)
 {
-	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+	LOG(ERROR) << msg << " " << strerror(errno);	
 	exit(1);
 }

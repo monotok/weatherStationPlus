@@ -1,4 +1,5 @@
 #include "../include/GPIOControl.hpp"
+#include "../include/BtnControl.hpp"
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
@@ -14,13 +15,6 @@ void sig_handler(int sig)
 {
     write(0,"\nCtrl^C pressed in sig handler\n",32);
     ctrl_c_pressed = true;
-}
-
-long getMicrotime()
-{
-  struct timespec now;
-  clock_gettime( CLOCK_MONOTONIC_RAW, &now );
-  return (uint64_t)now.tv_sec * 1000000000U + (uint64_t)now.tv_nsec;
 }
 
 int main (int argc, char** argv)
@@ -42,7 +36,6 @@ int main (int argc, char** argv)
 
     LOG(INFO) << "Testing........";
 
-    int storeValue;
     GPIOControl gpio4 = GPIOControl("4");
     GPIOControl gpio17 = GPIOControl("17");
     GPIOControl::Value GPIO_ON = GPIOControl::Value::GPIO_ON;
@@ -52,31 +45,13 @@ int main (int argc, char** argv)
     gpio4.g_setdir("out");
     gpio17.g_setdir("in");
 
-    struct buttonState
-    {
-        int currentButtonState; // the current reading from the input pin
-        int lastButtonState; // the previous reading from the input pin
-        long lastDebounceTime; // the last time the output pin was toggled
-        long debounceDelay; // the debounce time; increase if the output flickers
-        long interruptTime;
-    };
-
-    struct buttonState testButton;
-
-    testButton.lastButtonState = 0;
-    testButton.lastDebounceTime = 0;
-    testButton.debounceDelay = 500;
-    testButton.interruptTime = 0;
+    BtnState bs;
 
     while(true)
     {
-        gpio17.g_getval(storeValue);
-        testButton.currentButtonState = storeValue;
-        testButton.interruptTime = getMicrotime();
+        bs.initBtnState(&gpio17);
 
-        // cout << getMicrotime() << endl;
-
-        if(testButton.currentButtonState == 1 && testButton.lastButtonState == 0 && testButton.interruptTime - testButton.lastDebounceTime > testButton.debounceDelay)
+        if(bs.debounceBtn())
         {
             // cout << "Button Pressed\n" << endl;
             LOG(DEBUG) << "Button Pressed";
@@ -87,8 +62,7 @@ int main (int argc, char** argv)
             gpio4.g_setval(GPIO_OFF);
         }
 
-        testButton.lastButtonState = testButton.currentButtonState;
-        testButton.lastDebounceTime = testButton.interruptTime;
+        bs.reInitBtnState();
 
         if(ctrl_c_pressed)
         {

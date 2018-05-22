@@ -22,6 +22,7 @@
 #include "../../include/i2cControl.hpp"
 #include "../../include/lcdDriver.hpp"
 
+
 // Define some device constants
 #define LCD_CHR 1 // Mode - Sending data
 #define LCD_CMD 0 // Mode - Sending command
@@ -93,7 +94,7 @@ void LcdDriver::lcdToggleEnable(unsigned char bits)
 
 void LcdDriver::error(const char *msg)
 {
-	fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+  LOG(ERROR) << msg << " " << strerror(errno);
 	exit(1);
 }
 

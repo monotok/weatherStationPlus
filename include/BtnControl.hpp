@@ -1,6 +1,7 @@
 #ifndef BTN_CONTROL_H
 #define BTN_CONTROL_H
 #include "Utilities.hpp"
+#include "GPIOControl.hpp"
 
 using namespace std;
 
@@ -8,12 +9,9 @@ class BtnState
 {
     public:
         BtnState();
-        ~BtnState();
-        void setCurrentBtnState(int btnState);
-        void setBtnInterruptTime();
-        void updateLastDebounceTime();
-        void updateLastBtnState();
         bool debounceBtn();
+        void initBtnState(GPIOControl *gpioInputPin);
+        void reInitBtnState();
 
 
     private:
@@ -22,7 +20,13 @@ class BtnState
         long lastDebounceTime; // the last time the output pin was toggled
         long debounceDelay; // the debounce time; increase if the output flickers
         long interruptTime; // a timer to calc time between button presses
+        int storedPinValue; // Stores the value of GPIO PIN from sys to check current state
+        GPIOControl *gpioInputPin;
 
+        void setCurrentBtnState(int btnState);
+        void setBtnInterruptTime();        
+        void updateLastDebounceTime();
+        void updateLastBtnState();
 };
 
 #endif //ifndef BTN_CONTROL_H
