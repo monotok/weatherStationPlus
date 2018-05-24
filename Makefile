@@ -10,11 +10,14 @@ BUILDDIR := build
 PROTOBUILD := build/prototype
 WEATHERTARGET := bin/weatherStationPlus
 GPIOTESTTARGET := bin/GPIOTestMain
+DYNAMTESTTARGET := bin/DynamTest
 
+DYNAM_PROTO := DynamicSensors.cpp
+GPIO_PROTO := GPIOTestMain.cpp
  
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-PROTOSOURCES := $(PROTOTYPESRC)/GPIOTestMain.cpp
+PROTOSOURCES := $(PROTOTYPESRC)/$(DYNAM_PROTO)
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
 PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
@@ -47,6 +50,10 @@ gpiotestmain: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
 	@mkdir -p bin	
 	@echo " $(CC) $^ -o $(GPIOTESTTARGET)"; $(CC) $^ -o $(GPIOTESTTARGET)	
 
+dynamtest: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
+	@echo " Linking..."
+	@mkdir -p bin	
+	@echo " $(CC) $^ -o $(DYNAMTESTTARGET)"; $(CC) $^ -o $(DYNAMTESTTARGET)	
 
 
 .PHONY: clean

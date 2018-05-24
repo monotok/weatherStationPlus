@@ -10,8 +10,6 @@ class TemperatureSensor: public Sensor
     public:
         string get_sensorType() override {return this->type;}
         void set_sensorType(string type) override {this->type = type;} 
-        // void set_sensorType(string type) override;        
-        
 };
 
 #endif // TEMP_SENSOR_H

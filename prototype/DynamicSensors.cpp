@@ -58,7 +58,7 @@ int main (int argc, char** argv)
         {
             LOG(DEBUG) << "Button Pressed";
             tempVector.push_back(new TemperatureSensor());
-            LOG(INFO) << "Added an object of temp sensor"
+            LOG(INFO) << "Added an object of temp sensor";
         }
 
         bs.reInitBtnState();
