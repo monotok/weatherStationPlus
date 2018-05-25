@@ -49,6 +49,7 @@ int main (int argc, char** argv)
     //Create a vector list of class objects
     vector<TemperatureSensor*> tempVector;
     vector<TemperatureSensor*> :: iterator i;
+    int b = 0;
 
     while(true)
     {
@@ -58,7 +59,10 @@ int main (int argc, char** argv)
         {
             LOG(DEBUG) << "Button Pressed";
             tempVector.push_back(new TemperatureSensor());
+            string sensorID = "SensorID " + to_string(b);
+            tempVector[b]->set_sensorID(sensorID);
             LOG(INFO) << "Added an object of temp sensor";
+            b++;            
         }
 
         bs.reInitBtnState();
@@ -68,7 +72,8 @@ int main (int argc, char** argv)
             cout << "Ctrl^C Pressed" << endl;
             for (i = tempVector.begin(); i != tempVector.end(); ++i)
             {
-                cout << *i;
+                string sensorID = (*i)->get_sensorID();
+                cout << sensorID << endl;
             }
             break;
         }
