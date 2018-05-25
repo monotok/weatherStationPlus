@@ -51,7 +51,7 @@ int main (int argc, char** argv)
     vector<TemperatureSensor*> :: iterator i;
     int b = 0;
 
-    while(true)
+    while(b<10)
     {
         bs.initBtnState(&gpio17);
 
