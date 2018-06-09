@@ -47,15 +47,15 @@ int main (int argc, char** argv)
     BtnState bs;
 
     //Create a vector list of class objects
-    vector<TemperatureSensor*> tempVector;
-    vector<TemperatureSensor*> :: iterator i;
+    vector<Sensor*> tempVector;
+    vector<Sensor*> :: iterator i;
     int b = 0;
 
     while(b<10)
     {
         bs.initBtnState(&gpio17);
 
-        if(bs.debounceBtn())
+        if(true)
         {
             LOG(DEBUG) << "Button Pressed";
             tempVector.push_back(new TemperatureSensor());
@@ -79,6 +79,32 @@ int main (int argc, char** argv)
         }
 
         usleep(50000);
+    }
+    
+    for (i = tempVector.begin(); i != tempVector.end(); ++i)
+    {
+        delete *i;
+    }
+
+    map <Sensor*, int> tempMap;
+    map <Sensor*, int> :: iterator it;
+
+    TemperatureSensor* testSen = new TemperatureSensor();
+    TemperatureSensor* testSen2 = new TemperatureSensor();
+
+    tempMap[testSen] = 6;
+    tempMap[testSen2] = 6;
+
+
+    it = tempMap.find(testSen2);
+    it->first->set_sensorID("SensorID testSen2");
+    it = tempMap.find(testSen);
+    it->first->set_sensorID("SensorID testSen1");
+
+    for(it = tempMap.begin(); it != tempMap.end(); it++)
+    {
+        cout << "Found the object " << it->first->get_sensorID() << endl;        
+        delete(it->first);
     }
 
     return 0;
