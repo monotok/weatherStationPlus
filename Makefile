@@ -10,15 +10,21 @@ BUILDDIR := build
 PROTOBUILD := build/prototype
 WEATHERTARGET := bin/weatherStationPlus
 GPIOTESTTARGET := bin/GPIOTestMain
+DYNAMTESTTARGET := bin/DynamTest
 
+DYNAM_PROTO := DynamicSensors.cpp
+GPIO_PROTO := GPIOTestMain.cpp
  
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-PROTOSOURCES := $(PROTOTYPESRC)/GPIOTestMain.cpp
+PROTOSOURCES := $(PROTOTYPESRC)/$(DYNAM_PROTO)
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
 PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
-CFLAGS := -g -DELPP_NO_DEFAULT_LOG_FILE -DELPP_LOGGING_FLAGS_FROM_ARG # -Wall
+CFLAGS := -Wall -g -DELPP_NO_DEFAULT_LOG_FILE -DELPP_LOGGING_FLAGS_FROM_ARG # -std=c++11 -fsanitize=address 
+LDFLAGS := #-fsanitize=address
+
+# Put this in front of binary: LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3
 # LIB := -pthread -lmongoclient -L lib -lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt
 # LIB :=
 INC := -I include
@@ -45,8 +51,12 @@ clean:
 gpiotestmain: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
 	@echo " Linking..."
 	@mkdir -p bin	
-	@echo " $(CC) $^ -o $(GPIOTESTTARGET)"; $(CC) $^ -o $(GPIOTESTTARGET)	
+	@echo " $(CC) $^ -o $(GPIOTESTTARGET)"; $(CC) $^ -o $(GPIOTESTTARGET) $(LDFLAGS)
 
+dynamtest: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
+	@echo " Linking..."
+	@mkdir -p bin	
+	@echo " $(CC) $^ -o $(DYNAMTESTTARGET)"; $(CC) $^ -o $(DYNAMTESTTARGET) $(LDFLAGS)
 
 
 .PHONY: clean
