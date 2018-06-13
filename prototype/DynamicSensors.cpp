@@ -14,11 +14,11 @@ bool ctrl_c_pressed = false;
 
 void sig_handler(int sig)
 {
-    write(0,"\nCtrl^C pressed in sig handler\n",32);
+    write(0, "\nCtrl^C pressed in sig handler\n", 32);
     ctrl_c_pressed = true;
 }
 
-int main (int argc, char** argv)
+int main(int argc, char **argv)
 {
 
     struct sigaction sig_struct;
@@ -26,7 +26,8 @@ int main (int argc, char** argv)
     sig_struct.sa_flags = 0;
     sigemptyset(&sig_struct.sa_mask);
 
-    if (sigaction(SIGINT, &sig_struct, NULL) == -1) {
+    if (sigaction(SIGINT, &sig_struct, NULL) == -1)
+    {
         cout << "Problem with sigaction" << endl;
         exit(1);
     }
@@ -47,27 +48,27 @@ int main (int argc, char** argv)
     BtnState bs;
 
     //Create a vector list of class objects
-    vector<Sensor*> tempVector;
-    vector<Sensor*> :: iterator i;
+    vector<Sensor *> tempVector;
+    vector<Sensor *>::iterator i;
     int b = 0;
 
-    while(b<10)
+    while (b < 10)
     {
         bs.initBtnState(&gpio17);
 
-        if(true)
+        if (true)
         {
             LOG(DEBUG) << "Button Pressed";
             tempVector.push_back(new TemperatureSensor());
             string sensorID = "SensorID " + to_string(b);
             tempVector[b]->set_sensorID(sensorID);
             LOG(INFO) << "Added an object of temp sensor";
-            b++;            
+            b++;
         }
 
         bs.reInitBtnState();
 
-        if(ctrl_c_pressed)
+        if (ctrl_c_pressed)
         {
             cout << "Ctrl^C Pressed" << endl;
             for (i = tempVector.begin(); i != tempVector.end(); ++i)
@@ -80,33 +81,31 @@ int main (int argc, char** argv)
 
         usleep(50000);
     }
-    
+
     for (i = tempVector.begin(); i != tempVector.end(); ++i)
     {
         delete *i;
     }
 
-    map <Sensor*, int> tempMap;
-    map <Sensor*, int> :: iterator it;
+    map<Sensor *, int> tempMap;
+    map<Sensor *, int>::iterator it;
 
-    TemperatureSensor* testSen = new TemperatureSensor();
-    TemperatureSensor* testSen2 = new TemperatureSensor();
+    TemperatureSensor *testSen = new TemperatureSensor();
+    TemperatureSensor *testSen2 = new TemperatureSensor();
 
-    tempMap[testSen] = 6;
+    tempMap[testSen] = 4;
     tempMap[testSen2] = 6;
-
 
     it = tempMap.find(testSen2);
     it->first->set_sensorID("SensorID testSen2");
     it = tempMap.find(testSen);
     it->first->set_sensorID("SensorID testSen1");
 
-    for(it = tempMap.begin(); it != tempMap.end(); it++)
+    for (it = tempMap.begin(); it != tempMap.end(); it++)
     {
-        cout << "Found the object " << it->first->get_sensorID() << endl;        
-        delete(it->first);
+        cout << "Found the object " << it->first->get_sensorID() << endl;
+        delete (it->first);
     }
 
     return 0;
 }
-

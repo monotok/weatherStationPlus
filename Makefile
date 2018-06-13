@@ -29,6 +29,17 @@ LDFLAGS := #-fsanitize=address
 # LIB :=
 INC := -I include
 
+# Builder will run this
+all: dynamtest
+
+# Builder will call this to install the application before running.
+install:
+	echo "Installing is not supported"
+
+# Builder uses this target to run your application.
+run:
+	./$(DYNAMTESTTARGET)
+
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)
 	@echo " $(CC) $(INC) -c -o $@ $< $(CFLAGS)"; $(CC) $(INC) -c -o $@ $< $(CFLAGS)
