@@ -38,7 +38,7 @@ install:
 
 # Builder uses this target to run your application.
 run:
-	./$(DYNAMTESTTARGET)
+	cd bin; ./DynamTest
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)
