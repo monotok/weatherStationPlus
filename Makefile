@@ -5,6 +5,7 @@
 CC := g++ # This is the main compiler
 # CC := clang --analyze # and comment out the linker last line for sanity
 SRCDIR := src
+TESTDIR := test
 PROTOTYPESRC := prototype
 BUILDDIR := build
 PROTOBUILD := build/prototype
@@ -39,6 +40,12 @@ install:
 # Builder uses this target to run your application.
 run:
 	cd bin; ./DynamTest
+
+unit:
+	cd $(TESTDIR); make -f MakeFile all
+
+unitclean:
+	cd $(TESTDIR); make -f MakeFile clean
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)
