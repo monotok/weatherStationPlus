@@ -25,7 +25,7 @@ TESTS = sample1_unittest
 all : $(TESTS)
 
 clean :
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(TESTBUILDDIR)
 
 
 $(TESTBUILDDIR)/sample1_unittest.o: $(UNIT_DIR)/src/sample1_unittest.cc \

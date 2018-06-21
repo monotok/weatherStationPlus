@@ -39,3 +39,13 @@ root@raspdev:/home/pi# cat /sys/class/gpio/gpio17/value
 root@raspdev:/home/pi# echo "4" > /sys/class/gpio/unexport
 root@raspdev:/home/pi# echo "17" > /sys/class/gpio/unexport
 ```
+
+## Google Test 
+
+To compile the object file
+
+```
+set GTEST_DIR /home/hammer/SoftwareDevelopment/Libaries/googletest/googletest/
+g++ -isystem $GTEST_DIR/include -I$GTEST_DIR -pthread -c $GTEST_DIR/src/gtest-all.cc
+ar -rv libgtest.a gtest-all.o
+```
