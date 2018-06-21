@@ -1,0 +1,82 @@
+#SETUP
+TEST_DIR := .
+PROJECT_DIR := ..
+#Build dir for all test code
+TESTBUILDDIR := $(TEST_DIR)/build
+# Where to find user code.
+SRCDIR := $(PROJECT_DIR)/src
+INC := -I $(PROJECT_DIR)/include
+INCLUDE_DIR := $(PROJECT_DIR)/include
+
+GTEST_BUILD_DIR := gtest
+UNIT_DIR := unit
+
+#All src objects
+SRCEXT := cc
+SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
+OBJECTS := $(patsubst $(SRCDIR)/%,$(PROJECT_DIR)/build/%,$(SOURCES:.$(SRCEXT)=.o))
+
+# All tests produced by this Makefile.  Remember to add new tests you
+# created to the list.
+TESTS = sample1_unittest
+
+# House-keeping build targets.
+
+all : $(TESTS)
+
+clean :
+	rm -f $(TESTS) gtest.a gtest_main.a *.o
+
+
+$(TESTBUILDDIR)/sample1_unittest.o: $(UNIT_DIR)/src/sample1_unittest.cc \
+                     $(INCLUDE_DIR)/sample1.h $(GTEST_HEADERS)
+	@mkdir -p $(TESTBUILDDIR)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(UNIT_DIR)/src/sample1_unittest.cc -o $@
+
+sample1_unittest: $(TESTBUILDDIR)/sample1_unittest.o $(OBJECTS) $(GTEST_BUILD_DIR)/gtest_main.a
+	@mkdir -p $(UNIT_DIR)/bin
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(UNIT_DIR)/bin/$@
+
+
+# Points to the root of Google Test, relative to where this file is.
+# Remember to tweak this if you move this file.
+GTEST_DIR = /home/hammer/SoftwareDevelopment/Libaries/googletest/googletest
+
+# Flags passed to the preprocessor.
+# Set Google Test's header directory as a system directory, such that
+# the compiler doesn't generate warnings in Google Test headers.
+CPPFLAGS += -isystem $(GTEST_DIR)/include
+
+# Flags passed to the C++ compiler.
+CXXFLAGS += -g -Wall -Wextra -pthread
+
+# All Google Test headers.  Usually you shouldn't change this
+# definition.
+GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
+                $(GTEST_DIR)/include/gtest/internal/*.h
+
+
+# Builds gtest.a and gtest_main.a.
+
+# Usually you shouldn't tweak such internal variables, indicated by a
+# trailing _.
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+
+# For simplicity and to avoid depending on Google Test's
+# implementation details, the dependencies specified below are
+# conservative and not optimized.  This is fine as Google Test
+# compiles fast and for ordinary users its source rarely changes.
+gtest-all.o : $(GTEST_SRCS_)
+	@mkdir -p $(GTEST_BUILD_DIR)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+            $(GTEST_DIR)/src/gtest-all.cc -o $(GTEST_BUILD_DIR)/$@
+
+gtest_main.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+            $(GTEST_DIR)/src/gtest_main.cc -o $(GTEST_BUILD_DIR)/$@
+
+$(GTEST_BUILD_DIR)/gtest.a : gtest-all.o
+	cd $(GTEST_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
+
+$(GTEST_BUILD_DIR)/gtest_main.a : gtest-all.o gtest_main.o
+	cd $(GTEST_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
