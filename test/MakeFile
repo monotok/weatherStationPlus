@@ -16,25 +16,34 @@ SRCEXT := cc
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 OBJECTS := $(patsubst $(SRCDIR)/%,$(PROJECT_DIR)/build/%,$(SOURCES:.$(SRCEXT)=.o))
 
-# All tests produced by this Makefile.  Remember to add new tests you
-# created to the list.
-TESTS = sample1_unittest
+#All test src objects
+TEST_UNIT_SRCEXT := cc
+TEST_UNIT_SOURCES := $(shell find $(UNIT_DIR)/src -type f -name *.$(TEST_UNIT_SRCEXT))
+TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_SOURCES:.$(TEST_UNIT_SRCEXT)=.o))
 
 # House-keeping build targets.
 
-all : $(TESTS)
+all : all_unit_tests
 
 clean :
 	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(TESTBUILDDIR)
 
+$(TESTBUILDDIR)/%.o: $(UNIT_DIR)/src/%.$(TEST_UNIT_SRCEXT)
+	@mkdir -p $(@D)
+	@mkdir -p $(UNIT_DIR)/bin
+	@echo "Building unit test objects into build folder"
+	@echo "$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<"; $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-$(TESTBUILDDIR)/sample1_unittest.o: $(UNIT_DIR)/src/sample1_unittest.cc \
-                     $(INCLUDE_DIR)/sample1.h $(GTEST_HEADERS)
-	@mkdir -p $(TESTBUILDDIR)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(UNIT_DIR)/src/sample1_unittest.cc -o $@
+all_unit_tests: $(TEST_UNIT_OBJECTS) $(OBJECTS) $(GTEST_BUILD_DIR)/gtest_main.a
+	@echo "Building unit tests $@"
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(UNIT_DIR)/bin/$@
 
 sample1_unittest: $(TESTBUILDDIR)/sample1_unittest.o $(OBJECTS) $(GTEST_BUILD_DIR)/gtest_main.a
-	@mkdir -p $(UNIT_DIR)/bin
+	@echo "Building unit tests $@"
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(UNIT_DIR)/bin/$@
+
+sample2_unittest: $(TESTBUILDDIR)/sample2_unittest.o $(OBJECTS) $(GTEST_BUILD_DIR)/gtest_main.a
+	@echo "Building unit tests $@"
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(UNIT_DIR)/bin/$@
 
 
