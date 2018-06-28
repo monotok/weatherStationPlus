@@ -24,7 +24,9 @@ TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_
 
 # House-keeping build targets.
 
-all : all_unit_tests
+all : all_unit_tests gtestmain
+
+gtestmain: $(GTEST_BUILD_DIR)/gtest_main.a
 
 clean :
 	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(TESTBUILDDIR)
@@ -35,13 +37,13 @@ $(TESTBUILDDIR)/%.o: $(UNIT_DIR)/src/%.$(TEST_UNIT_SRCEXT)
 	@echo "Building unit test objects into build folder"
 	@echo "$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<"; $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
-all_unit_tests: $(TEST_UNIT_OBJECTS) $(OBJECTSEXCMAIN) $(GTEST_BUILD_DIR)/gtest_main.a
+all_unit_tests: $(TEST_UNIT_OBJECTS) $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
 
-test_gpiocontrol: $(TESTBUILDDIR)/test_gpiocontrol.o $(OBJECTSEXCMAIN) $(GTEST_BUILD_DIR)/gtest_main.a
+test_gpiocontrol: $(TESTBUILDDIR)/test_gpiocontrol.o $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
 
 
 # Points to the root of Google Test, relative to where this file is.

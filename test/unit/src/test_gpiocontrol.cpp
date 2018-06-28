@@ -8,17 +8,16 @@ INITIALIZE_EASYLOGGINGPP
 
 TEST(GPIOControl, DefaultContructor)
 {
-    GPIOControl gpio = GPIOControl("8");
-    EXPECT_STREQ("8", gpio.get_gpio_num().c_str());
+    GPIOControl gpio = GPIOControl("17");
+    EXPECT_STREQ("17", gpio.get_gpio_num().c_str());
 }
 
 TEST(GPIOControl, GExport)
 {
-    GPIOControl gpio = GPIOControl("8");
-    gpio.g_export();
+    GPIOControl gpio = GPIOControl("17");
 
     struct stat myStat;
-    const char *path_system = "/sys/class/gpio/gpio8";
+    const char *path_system = "/sys/class/gpio/gpio17/";
     int result = stat(path_system, &myStat);
     bool isdir = S_ISDIR(myStat.st_mode);
     EXPECT_TRUE(isdir);
