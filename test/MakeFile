@@ -24,7 +24,7 @@ TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_
 
 # House-keeping build targets.
 
-all : all_unit_tests gtestmain
+all : gtestmain all_unit_tests
 
 gtestmain: $(GTEST_BUILD_DIR)/gtest_main.a
 
@@ -48,7 +48,7 @@ test_gpiocontrol: $(TESTBUILDDIR)/test_gpiocontrol.o $(OBJECTSEXCMAIN)
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GTEST_DIR = /home/hammer/SoftwareDevelopment/Libaries/googletest/googletest
+GTEST_DIR = /home/$(USER)/SoftwareDevelopment/Libaries/googletest/googletest
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
