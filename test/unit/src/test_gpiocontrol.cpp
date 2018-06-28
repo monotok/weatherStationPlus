@@ -16,7 +16,7 @@ TEST(GPIOControl, DefaultDestructor)
 {
     GPIOControl gpio = GPIOControl("17");
     EXPECT_STREQ("17", gpio.get_gpio_num().c_str());
-    delete gpio;
+    gpio.~GPIOControl();
 
     struct stat myStat;
     const char *path_system = "/sys/class/gpio/gpio17/";
