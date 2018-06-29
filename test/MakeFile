@@ -10,6 +10,7 @@ INCLUDE_DIR := $(PROJECT_DIR)/include
 
 GTEST_BUILD_DIR := gtest
 UNIT_DIR := unit
+COVERAGEFLAGS := --coverage
 
 #All src objects
 SRCEXT := cpp
@@ -35,15 +36,15 @@ $(TESTBUILDDIR)/%.o: $(UNIT_DIR)/src/%.$(TEST_UNIT_SRCEXT)
 	@mkdir -p $(@D)
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "Building unit test objects into build folder"
-	@echo "$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<"; $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	@echo "$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<"; $(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 all_unit_tests: $(TEST_UNIT_OBJECTS) $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
 
 test_gpiocontrol: $(TESTBUILDDIR)/test_gpiocontrol.o $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
 
 
 # Points to the root of Google Test, relative to where this file is.
