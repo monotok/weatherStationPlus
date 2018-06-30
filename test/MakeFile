@@ -29,6 +29,8 @@ TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_
 
 all: gtestmain all_unit_tests
 
+gtestsuite: gtestmain gmockmain
+
 gtestmain: $(GTEST_BUILD_DIR)/gtest_main.a
 
 gmockmain: $(GMOCK_BUILD_DIR)/gmock_main.a
@@ -124,7 +126,7 @@ gmock_main.o : $(GMOCK_SRCS_)
             -c $(GMOCK_DIR)/src/gmock_main.cc -o $(GMOCK_BUILD_DIR)/$@
 
 $(GMOCK_BUILD_DIR)/gmock.a : gmock-all.o gtest-all.o
-	cd $(GMOCK_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
+	cd $(GMOCK_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ gmock-all.o ../$(GTEST_BUILD_DIR)/gtest-all.o
 
 $(GMOCK_BUILD_DIR)/gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
-	cd $(GMOCK_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
+	cd $(GMOCK_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ gmock-all.o ../$(GTEST_BUILD_DIR)/gtest-all.o gmock_main.o
