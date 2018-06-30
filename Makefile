@@ -22,8 +22,9 @@ PROTOSOURCES := $(PROTOTYPESRC)/$(DYNAM_PROTO)
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
 PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
-CFLAGS := -Wall -g -DELPP_NO_DEFAULT_LOG_FILE -DELPP_LOGGING_FLAGS_FROM_ARG --coverage # -std=c++11 -fsanitize=address 
-LDFLAGS := --coverage #-fsanitize=address
+ARGS := 
+CFLAGS := -Wall -g -DELPP_NO_DEFAULT_LOG_FILE -DELPP_LOGGING_FLAGS_FROM_ARG $(ARGS) # -std=c++11 -fsanitize=address 
+LDFLAGS := $(ARGS) #-fsanitize=address
 
 # Put this in front of binary: LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3
 # LIB := -pthread -lmongoclient -L lib -lboost_thread-mt -lboost_filesystem-mt -lboost_system-mt

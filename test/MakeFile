@@ -10,6 +10,7 @@ INCLUDE_DIR := $(PROJECT_DIR)/include
 
 GTEST_BUILD_DIR := gtest
 UNIT_DIR := unit
+COVERAGE_DIR := coverage
 COVERAGEFLAGS := --coverage
 
 #All src objects
@@ -25,12 +26,20 @@ TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_
 
 # House-keeping build targets.
 
-all : gtestmain all_unit_tests
+all: gtestmain all_unit_tests
 
 gtestmain: $(GTEST_BUILD_DIR)/gtest_main.a
 
-clean :
-	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(TESTBUILDDIR)
+clean:
+	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(TESTBUILDDIR) $(COVERAGE_DIR)
+
+cleancoverage:
+	rm -fr $(COVERAGE_DIR)
+
+coverage:
+	@mkdir -p $(COVERAGE_DIR)
+	lcov --capture --directory $(PROJECT_DIR)/build/ --output-file $(COVERAGE_DIR)/coverage.info
+	genhtml $(COVERAGE_DIR)/coverage.info --output-directory $(COVERAGE_DIR)
 
 $(TESTBUILDDIR)/%.o: $(UNIT_DIR)/src/%.$(TEST_UNIT_SRCEXT)
 	@mkdir -p $(@D)

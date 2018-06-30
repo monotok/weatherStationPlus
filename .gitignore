@@ -4,3 +4,4 @@ bin/*
 test/build
 test/gtest
 test/unit/bin/*
+test/coverage/*
