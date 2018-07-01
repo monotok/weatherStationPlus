@@ -9,7 +9,10 @@ INC := -I $(PROJECT_DIR)/include
 INCLUDE_DIR := $(PROJECT_DIR)/include
 
 GTEST_BUILD_DIR := gtest
+GMOCK_BUILD_DIR := gmock
 UNIT_DIR := unit
+COVERAGE_DIR := coverage
+COVERAGEFLAGS := --coverage
 
 #All src objects
 SRCEXT := cpp
@@ -24,36 +27,54 @@ TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_
 
 # House-keeping build targets.
 
-all : gtestmain all_unit_tests
+all: gtestsuite all_unit_tests
+
+gtestsuite: gtestmain gmockmain
 
 gtestmain: $(GTEST_BUILD_DIR)/gtest_main.a
 
-clean :
-	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(TESTBUILDDIR)
+gmockmain: $(GMOCK_BUILD_DIR)/gmock_main.a
+
+clean:
+	rm -fr $(UNIT_DIR)/bin $(GTEST_BUILD_DIR) $(GMOCK_BUILD_DIR) $(TESTBUILDDIR) $(COVERAGE_DIR)
+
+cleancoverage:
+	rm -fr $(COVERAGE_DIR)
+
+coverage:
+	@mkdir -p $(COVERAGE_DIR)
+	lcov --capture --directory $(PROJECT_DIR)/build/ --output-file $(COVERAGE_DIR)/coverage.info
+	genhtml $(COVERAGE_DIR)/coverage.info --output-directory $(COVERAGE_DIR)
 
 $(TESTBUILDDIR)/%.o: $(UNIT_DIR)/src/%.$(TEST_UNIT_SRCEXT)
 	@mkdir -p $(@D)
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "Building unit test objects into build folder"
-	@echo "$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<"; $(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 all_unit_tests: $(TEST_UNIT_OBJECTS) $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
 
 test_gpiocontrol: $(TESTBUILDDIR)/test_gpiocontrol.o $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
+
+test_btncontrol: $(TESTBUILDDIR)/test_btncontrol.o $(OBJECTSEXCMAIN)
+	@echo "Building unit tests $@"
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
 
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
 GTEST_DIR = /home/$(USER)/SoftwareDevelopment/Libaries/googletest/googletest
+GMOCK_DIR := $(GTEST_DIR)/../googlemock
+
 
 # Flags passed to the preprocessor.
 # Set Google Test's header directory as a system directory, such that
 # the compiler doesn't generate warnings in Google Test headers.
-CPPFLAGS += -isystem $(GTEST_DIR)/include
+CPPFLAGS += -isystem $(GTEST_DIR)/include -isystem $(GMOCK_DIR)/include
 
 # Flags passed to the C++ compiler.
 CXXFLAGS += -g -Wall -Wextra -pthread
@@ -63,12 +84,19 @@ CXXFLAGS += -g -Wall -Wextra -pthread
 GTEST_HEADERS = $(GTEST_DIR)/include/gtest/*.h \
                 $(GTEST_DIR)/include/gtest/internal/*.h
 
+# All Google Mock headers. Note that all Google Test headers are
+# included here too, as they are #included by Google Mock headers.
+# Usually you shouldn't change this definition.	
+GMOCK_HEADERS = $(GMOCK_DIR)/include/gmock/*.h \
+                $(GMOCK_DIR)/include/gmock/internal/*.h \
+				$(GTEST_HEADERS)
 
 # Builds gtest.a and gtest_main.a.
 
 # Usually you shouldn't tweak such internal variables, indicated by a
 # trailing _.
 GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+GMOCK_SRCS_ = $(GMOCK_DIR)/src/*.cc $(GMOCK_HEADERS)
 
 # For simplicity and to avoid depending on Google Test's
 # implementation details, the dependencies specified below are
@@ -88,3 +116,21 @@ $(GTEST_BUILD_DIR)/gtest.a : gtest-all.o
 
 $(GTEST_BUILD_DIR)/gtest_main.a : gtest-all.o gtest_main.o
 	cd $(GTEST_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
+
+
+# GMOCK Creation
+
+gmock-all.o : $(GMOCK_SRCS_)
+	@mkdir -p $(GMOCK_BUILD_DIR)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
+            -c $(GMOCK_DIR)/src/gmock-all.cc -o $(GMOCK_BUILD_DIR)/$@
+
+gmock_main.o : $(GMOCK_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) -I$(GMOCK_DIR) $(CXXFLAGS) \
+            -c $(GMOCK_DIR)/src/gmock_main.cc -o $(GMOCK_BUILD_DIR)/$@
+
+$(GMOCK_BUILD_DIR)/gmock.a : gmock-all.o gtest-all.o
+	cd $(GMOCK_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ gmock-all.o ../$(GTEST_BUILD_DIR)/gtest-all.o
+
+$(GMOCK_BUILD_DIR)/gmock_main.a : gmock-all.o gtest-all.o gmock_main.o
+	cd $(GMOCK_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ gmock-all.o ../$(GTEST_BUILD_DIR)/gtest-all.o gmock_main.o
