@@ -13,8 +13,12 @@ BtnState::BtnState()
 
 bool BtnState::debounceBtn()
 {
-    if(this->currentButtonState == 1 && this->lastButtonState == 0 && this->interruptTime - this->lastDebounceTime > this->debounceDelay)
+    if (this->currentButtonState == 1 && this->lastButtonState == 0 && this->interruptTime - this->lastDebounceTime > this->debounceDelay)
+    {
+        VLOG(8) << "Debouncing button. Current Btn State: " << this->currentButtonState << "Last Btn State: " << this->lastButtonState << "Interrupt Time: " << this->interruptTime
+                << "Last Deb Time: " << this->lastDebounceTime << "Debounce Delay: " << this->debounceDelay;
         return true;
+    }
     return false;
 }
 // TODO: Handle output GPIO pins being passed, return error
