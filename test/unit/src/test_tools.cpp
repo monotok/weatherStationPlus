@@ -3,6 +3,6 @@
 
 TEST(Utilities, return_positive_unix_time)
 {
-    long time_val = Utilities::getMicrotime();
+    uint64_t time_val = Utilities::getMicrotime();
     EXPECT_GT(time_val, 0);
 }
