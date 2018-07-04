@@ -15,7 +15,8 @@ DYNAMTESTTARGET := bin/DynamTest
 
 DYNAM_PROTO := DynamicSensors.cpp
 GPIO_PROTO := GPIOTestMain.cpp
- 
+
+GCDA_FILES := $(shell find $(BUILDDIR) -type f -name *.gcda)
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 PROTOSOURCES := $(PROTOTYPESRC)/$(DYNAM_PROTO)
@@ -47,6 +48,9 @@ unit:
 
 unitclean:
 	cd $(TESTDIR); make -f MakeFile clean
+
+cleancoverage: $(GCDA_FILES)
+	rm -rf $(GCDA_FILES)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(@D)

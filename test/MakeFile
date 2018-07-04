@@ -21,6 +21,7 @@ OBJECTS := $(patsubst $(SRCDIR)/%,$(PROJECT_DIR)/build/%,$(SOURCES:.$(SRCEXT)=.o
 OBJECTSEXCMAIN := $(filter-out $(PROJECT_DIR)/build/main.o, $(OBJECTS))
 
 #All test src objects
+TEST_GCDA_FILES := $(shell find $(TESTBUILDDIR) -type f -name *.gcda)
 TEST_UNIT_SRCEXT := cpp
 TEST_UNIT_SOURCES := $(shell find $(UNIT_DIR)/src -type f -name *.$(TEST_UNIT_SRCEXT))
 TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_SOURCES:.$(TEST_UNIT_SRCEXT)=.o))
@@ -40,6 +41,9 @@ clean:
 
 cleancoverage:
 	rm -fr $(COVERAGE_DIR)
+
+cleangcda: $(TEST_GCDA_FILES)
+	rm -rf $(TEST_GCDA_FILES)
 
 coverage:
 	@mkdir -p $(COVERAGE_DIR)
