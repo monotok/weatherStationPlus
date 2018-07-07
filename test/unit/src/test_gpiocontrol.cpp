@@ -4,8 +4,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-INITIALIZE_EASYLOGGINGPP
-
 TEST(GPIOControl, DefaultContructor)
 {
     GPIOControl gpio = GPIOControl("17");

@@ -23,16 +23,20 @@ OBJECTSEXCMAIN := $(filter-out $(PROJECT_DIR)/build/main.o, $(OBJECTS))
 #All test src objects
 TEST_GCDA_FILES := $(shell find $(TESTBUILDDIR) -type f -name *.gcda)
 TEST_UNIT_SRCEXT := cpp
-TEST_UNIT_SOURCES := $(shell find $(UNIT_DIR)/src -type f -name *.$(TEST_UNIT_SRCEXT))
+TEST_UNIT_SOURCES_INC_MAIN := $(shell find $(UNIT_DIR)/src -type f -name *.$(TEST_UNIT_SRCEXT))
+TEST_UNIT_SOURCES := $(filter-out $(UNIT_DIR)/src/myGtestMain.cpp, $(TEST_UNIT_SOURCES_INC_MAIN))
 TEST_UNIT_OBJECTS := $(patsubst $(UNIT_DIR)/src/%,$(TESTBUILDDIR)/%,$(TEST_UNIT_SOURCES:.$(TEST_UNIT_SRCEXT)=.o))
+nameOnly = $(basename $(notdir $(TEST_UNIT_OBJECTS)))
 
 # House-keeping build targets.
 
-all: gtestsuite all_unit_tests
+all: gtestsuite all_unit_tests individual_tests
 
-gtestsuite: gtestmain gmockmain
+gtestsuite: gtestmain mygtestmain gmockmain
 
 gtestmain: $(GTEST_BUILD_DIR)/gtest_main.a
+
+mygtestmain: $(GTEST_BUILD_DIR)/my_gtest_main.a
 
 gmockmain: $(GMOCK_BUILD_DIR)/gmock_main.a
 
@@ -58,15 +62,17 @@ $(TESTBUILDDIR)/%.o: $(UNIT_DIR)/src/%.$(TEST_UNIT_SRCEXT)
 
 all_unit_tests: $(TEST_UNIT_OBJECTS) $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/my_gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
 
-test_gpiocontrol: $(TESTBUILDDIR)/test_gpiocontrol.o $(OBJECTSEXCMAIN)
-	@echo "Building unit tests $@"
-	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
+individual_tests: $(TEST_UNIT_OBJECTS) $(OBJECTSEXCMAIN)
+	@echo "Building unit tests $<"
+	for testObject in $(nameOnly); do \
+		$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $(TESTBUILDDIR)/$$testObject.o $(OBJECTSEXCMAIN) $(GTEST_BUILD_DIR)/my_gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$$testObject; \
+	done	
 
 test_btncontrol: $(TESTBUILDDIR)/test_btncontrol.o $(OBJECTSEXCMAIN)
 	@echo "Building unit tests $@"
-	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/gmock_main.a -o $(UNIT_DIR)/bin/$@
+	$(CXX) $(COVERAGEFLAGS) $(CPPFLAGS) $(CXXFLAGS) -lpthread $^ $(GTEST_BUILD_DIR)/gtest_main.a $(GMOCK_BUILD_DIR)/my_gmock_main.a -o $(UNIT_DIR)/bin/$@
 
 
 # Points to the root of Google Test, relative to where this file is.
@@ -115,10 +121,17 @@ gtest_main.o : $(GTEST_SRCS_)
 	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
             $(GTEST_DIR)/src/gtest_main.cc -o $(GTEST_BUILD_DIR)/$@
 
+my_gtest_main.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+            $(UNIT_DIR)/src/myGtestMain.cpp -o $(GTEST_BUILD_DIR)/$@
+
 $(GTEST_BUILD_DIR)/gtest.a : gtest-all.o
 	cd $(GTEST_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
 
 $(GTEST_BUILD_DIR)/gtest_main.a : gtest-all.o gtest_main.o
+	cd $(GTEST_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
+
+$(GTEST_BUILD_DIR)/my_gtest_main.a : gtest-all.o my_gtest_main.o
 	cd $(GTEST_BUILD_DIR); $(AR) $(ARFLAGS) ../$@ $^
 
 
