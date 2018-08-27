@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     {
         bs.initBtnState(&gpio17);
 
-        if (true)
+        if (bs.debounceBtn())
         {
             LOG(DEBUG) << "Button Pressed";
             tempVector.push_back(new TemperatureSensor());
