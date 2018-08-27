@@ -1,15 +1,19 @@
 #ifndef RETRIEVE_SEN_DATA_H
 #define RETRIEVE_SEN_DATA_H
 #include "data/Abc_Sensor.hpp"
+#include "i2cControl.hpp"
 
 class RetrieveSenData
 {
-  public:
-    Sensor *getRemoteSenData();
-    Sensor *getLocalSenData();
+public:
+  RetrieveSenData(I2cControl *, unsigned char);
+  void getRemoteSenData(Sensor *);
+  void getLocalSenData(Sensor *);
 
-  private:
-    union convertSensorClassChar;
+private:
+  union convertSensorClassChar;
+  I2cControl *i2c_controller;
+  unsigned char I2C_ADDR;
 };
 
 #endif //ifndef RETRIEVE_SEN_DATA_H

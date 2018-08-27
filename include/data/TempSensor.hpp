@@ -3,14 +3,16 @@
 
 #include "Abc_Sensor.hpp"
 
-class TemperatureSensor: public Sensor
+class TemperatureSensor : public Sensor
 {
-    private:
-        float temperature;
-    public:
-        ~TemperatureSensor() {};
-        string get_sensorType() override {return this->type;}
-        void set_sensorType(string type) override {this->type = type;} 
+  private:
+    float temperature;
+
+  public:
+    ~TemperatureSensor(){};
+    float get_temperature() { return this->temperature; }
+    string get_sensorType() override { return this->type; }
+    void set_sensorType(string type) override { this->type = type; }
 };
 
 #endif // TEMP_SENSOR_H
