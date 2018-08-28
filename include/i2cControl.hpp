@@ -32,7 +32,7 @@ class I2cControl
 
   public:
     I2cControl(int i2cNumber);
-    void readI2c(char *buffer);
+    void readI2c(char *buffer, int length);
     void writeByte(unsigned char address, unsigned char byte);
 };
 #endif // i2c control

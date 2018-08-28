@@ -27,7 +27,7 @@ void RetrieveSenData::getLocalSenData(Sensor *sensor_data)
     unsigned char buffer[60] = {0};
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c_controller->readI2c(sts.packet);
+    i2c_controller->readI2c(sts.packet, 14);
 
     sensor_data->set_sensorID(sts.temporaryStruct.sensorID);
 }

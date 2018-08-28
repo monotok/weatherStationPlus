@@ -60,10 +60,10 @@ void I2cControl::writeByte(unsigned char address, unsigned char byte)
 	}
 }
 
-void I2cControl::readI2c(char *buffer)
+void I2cControl::readI2c(char *buffer, int length)
 {
 	//----- READ BYTES -----
-	int length = 4;										//<<< Number of bytes to read
+	// int length = 4;										//<<< Number of bytes to read
 	if (read(this->file_i2c, buffer, length) != length) //read() returns the number of bytes actually read
 	{
 		error("readI2c Failed to read from the i2c bus.\n");
