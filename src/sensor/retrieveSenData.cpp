@@ -11,9 +11,10 @@ RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, unsigned char I2C_A
 
 void RetrieveSenData::getLocalSenData(Sensor *sensor_data)
 {
+    unsigned char buffer[60] = {0};
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c_controller->readI2c();
+    i2c_controller->readI2c(buffer);
     sensor_data->set_sensorID("Here");
 }
 
