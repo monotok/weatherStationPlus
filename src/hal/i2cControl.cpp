@@ -60,7 +60,7 @@ void I2cControl::writeByte(unsigned char address, unsigned char byte)
 	}
 }
 
-void I2cControl::readI2c(unsigned char *buffer)
+void I2cControl::readI2c(char *buffer)
 {
 	//----- READ BYTES -----
 	int length = 4;										//<<< Number of bytes to read

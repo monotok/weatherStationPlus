@@ -11,7 +11,6 @@ public:
   void getLocalSenData(Sensor *);
 
 private:
-  union convertSensorClassChar;
   I2cControl *i2c_controller;
   unsigned char I2C_ADDR;
 };

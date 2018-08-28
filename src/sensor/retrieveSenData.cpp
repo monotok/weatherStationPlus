@@ -11,11 +11,25 @@ RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, unsigned char I2C_A
 
 void RetrieveSenData::getLocalSenData(Sensor *sensor_data)
 {
+    struct sensor_Data
+    {
+        uint16_t temperature;
+        char sensorID[10];
+        uint16_t perBatt;
+    } temporaryStruct;
+
+    union convertSensorClassChar {
+        struct sensor_Data temporaryStruct;
+        char packet[14];
+    };
+    union convertSensorClassChar sts;
+
     unsigned char buffer[60] = {0};
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c_controller->readI2c(buffer);
-    sensor_data->set_sensorID("Here");
+    i2c_controller->readI2c(sts.packet);
+
+    sensor_data->set_sensorID(sts.temporaryStruct.sensorID);
 }
 
 void RetrieveSenData::getRemoteSenData(Sensor *sensor_data)
