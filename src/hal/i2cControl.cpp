@@ -68,10 +68,6 @@ void I2cControl::readI2c(char *buffer, int length)
 	{
 		error("readI2c Failed to read from the i2c bus.\n");
 	}
-	else
-	{
-		printf("Data read: %s\n", buffer);
-	}
 }
 
 void I2cControl::error(const char *msg)

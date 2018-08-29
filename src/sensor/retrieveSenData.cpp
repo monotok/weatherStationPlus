@@ -29,6 +29,10 @@ void RetrieveSenData::getLocalSenData(Sensor *sensor_data)
     usleep(50000);
     i2c_controller->readI2c(sts.packet, 14);
 
+    printf("Sensor ID: %s\n", sts.temporaryStruct.sensorID);
+    printf("Temp: %s\n", sts.temporaryStruct.temperature);
+    printf("Hum: %s\n", sts.temporaryStruct.perBatt);
+
     sensor_data->set_sensorID(sts.temporaryStruct.sensorID);
 }
 
