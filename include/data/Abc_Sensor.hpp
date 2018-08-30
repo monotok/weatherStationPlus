@@ -9,23 +9,17 @@ using namespace std;
 
 class Sensor
 {
-    protected:
-        string sensorID;
-        string type;        
-    public:
-        virtual ~Sensor() {};
-        string get_sensorID() {return this->sensorID;}
-        void set_sensorID(string sensorID) {this->sensorID = sensorID;}       
-        virtual string get_sensorType() =0;
-        virtual void set_sensorType(string type) =0;
+  protected:
+    string sensorName;
+    string sensorType;
 
-        bool operator< (Sensor& sensorObj)
-        {
-            if(sensorObj.sensorID < this->sensorID)
-            {
-                return true;
-            }
-        }        
+  public:
+    virtual ~Sensor(){};
+    virtual string get_sensorID() = 0;
+    virtual void set_sensorID(string sensorName) = 0;
+    virtual string get_sensorType() = 0;
+    virtual void set_sensorType(string sensorType) = 0;
+    virtual char *get_tempSensorUnion() = 0;
 };
 
 #endif //SENSOR_H
