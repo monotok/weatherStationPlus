@@ -27,16 +27,13 @@ public:
     uint16_t temperature;
     char sensorID[10];
     uint16_t perBatt;
-  } temporaryStruct;
+  };
 
   union convertSensorClassChar {
     struct sensor_Data temporaryStruct;
     char packet[14];
   };
   union convertSensorClassChar weatherSensorUnion;
-  // char *packet_ptr = &(weatherSensorUnion.packet[0]);
-
-  // char *get_tempSensorUnion() { return this->packet_ptr; }
 };
 
 #endif // TEMP_SENSOR_H
