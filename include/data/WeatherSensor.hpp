@@ -27,7 +27,7 @@ public:
     uint16_t temperature;
     char sensorID[10];
     uint16_t perBatt;
-  } temporaryStruct;
+  };
 
   union convertSensorClassChar {
     struct sensor_Data temporaryStruct;

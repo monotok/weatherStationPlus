@@ -25,5 +25,5 @@ TEST(RetrieveSensorData, Get_local_sensor_data_from_arduino_module)
     printf("Temp: %i\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.temperature);
     printf("Hum: %i\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.perBatt);
 
-    EXPECT_EQ("Here", "SenName");
+    EXPECT_EQ("Here", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.sensorID);
 }
