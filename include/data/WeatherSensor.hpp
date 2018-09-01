@@ -6,8 +6,8 @@
 class WeatherSensor : public Sensor
 {
 private:
-  uint16_t temperature = 0;
-  uint16_t humidity = 0;
+  float temperature;
+  float humidity;
 
 public:
   ~WeatherSensor(){};
@@ -27,7 +27,7 @@ public:
     uint16_t temperature;
     char sensorID[10];
     uint16_t perBatt;
-  };
+  } temporaryStruct;
 
   union convertSensorClassChar {
     struct sensor_Data temporaryStruct;

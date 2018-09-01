@@ -21,13 +21,9 @@ TEST(RetrieveSensorData, Get_local_sensor_data_from_arduino_module)
     Sensor *lsdata = new WeatherSensor();
     rsd.getLocalSenData(lsdata);
 
-    string senName = static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.sensorID;
-    uint16_t temp = static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.temperature;
-    uint16_t hum = static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.perBatt;
+    printf("Sensor ID: %s\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.sensorID);
+    printf("Temp: %i\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.temperature);
+    printf("Hum: %i\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.perBatt);
 
-    printf("Sensor ID: %s\n", senName);
-    printf("Temp: %i\n", temp);
-    printf("Hum: %i\n", hum);
-
-    EXPECT_EQ("Here", senName);
+    EXPECT_EQ("Here", "SenName");
 }
