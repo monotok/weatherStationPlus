@@ -6,8 +6,8 @@
 class WeatherSensor : public Sensor
 {
 private:
-  float temperature;
-  float humidity;
+  uint16_t temperature = 0;
+  uint16_t humidity = 0;
 
 public:
   ~WeatherSensor(){};

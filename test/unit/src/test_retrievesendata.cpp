@@ -20,8 +20,14 @@ TEST(RetrieveSensorData, Get_local_sensor_data_from_arduino_module)
     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
     Sensor *lsdata = new WeatherSensor();
     rsd.getLocalSenData(lsdata);
-    printf("Sensor ID: %s\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.sensorID);
-    printf("Temp: %i\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.temperature);
-    printf("Hum: %i\n", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.perBatt);
-    EXPECT_EQ("Here", static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.sensorID);
+
+    string senName = static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.sensorID;
+    uint16_t temp = static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.temperature;
+    uint16_t hum = static_cast<WeatherSensor *>(lsdata)->weatherSensorUnion.temporaryStruct.perBatt;
+
+    printf("Sensor ID: %s\n", senName);
+    printf("Temp: %i\n", temp);
+    printf("Hum: %i\n", hum);
+
+    EXPECT_EQ("Here", senName);
 }
