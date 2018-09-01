@@ -26,7 +26,7 @@ void RetrieveSenData::getLocalSenData(Sensor *sensor_data)
 
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c_controller->readI2c(sensor_data->get_tempSensorUnion(), 14);
+    i2c_controller->readI2c(static_cast<WeatherSensor *>(sensor_data)->weatherSensorUnion.packet, 14);
 
     // printf("Sensor ID: %s\n", sts.temporaryStruct.sensorID);
     // printf("Temp: %i\n", sts.temporaryStruct.temperature);

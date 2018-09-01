@@ -18,7 +18,7 @@ TEST(RetrieveSensorData, Get_local_sensor_data_from_arduino_module)
 {
     I2cControl *i2c = new I2cControl(1);
     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *lsdata = new WeatherSensor();
+    Sensor *lsdata = new WeatherSensor();
     rsd.getLocalSenData(lsdata);
     printf("Sensor ID: %s\n", lsdata->temporaryStruct.sensorID);
     printf("Temp: %i\n", lsdata->temporaryStruct.temperature);

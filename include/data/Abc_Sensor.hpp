@@ -19,7 +19,7 @@ class Sensor
     virtual void set_sensorID(string sensorName) = 0;
     virtual string get_sensorType() = 0;
     virtual void set_sensorType(string sensorType) = 0;
-    virtual char *get_tempSensorUnion() = 0;
+    // virtual char *get_tempSensorUnion() = 0;
 };
 
 #endif //SENSOR_H

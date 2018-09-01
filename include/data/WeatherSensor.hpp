@@ -36,7 +36,7 @@ public:
   union convertSensorClassChar weatherSensorUnion;
   char *packet_ptr = &(weatherSensorUnion.packet[0]);
 
-  char *get_tempSensorUnion() override { return this->packet_ptr; }
+  // char *get_tempSensorUnion() { return this->packet_ptr; }
 };
 
 #endif // TEMP_SENSOR_H
