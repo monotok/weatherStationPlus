@@ -34,7 +34,7 @@ public:
     char packet[14];
   };
   union convertSensorClassChar weatherSensorUnion;
-  char *packet_ptr = &(weatherSensorUnion.packet[0]);
+  // char *packet_ptr = &(weatherSensorUnion.packet[0]);
 
   // char *get_tempSensorUnion() { return this->packet_ptr; }
 };

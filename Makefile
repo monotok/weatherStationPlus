@@ -46,6 +46,12 @@ run:
 unit:
 	cd $(TESTDIR); make -f MakeFile all
 
+all_unit_tests:
+	cd $(TESTDIR); make -f MakeFile all_unit_tests
+
+individual_tests:
+	cd $(TESTDIR); make -f MakeFile individual_tests
+
 unitclean:
 	cd $(TESTDIR); make -f MakeFile clean
 
