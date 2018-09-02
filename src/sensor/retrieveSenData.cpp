@@ -9,14 +9,14 @@ RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, unsigned char I2C_A
     this->I2C_ADDR = I2C_ADDR;
 }
 
-void RetrieveSenData::getLocalSenData(WeatherSensor *sensor_data)
+void RetrieveSenData::get_LocalWeatherData(WeatherSensor *ptr_weatherSensorData)
 {
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c_controller->readI2c(sensor_data->weatherSensorUnion.packet, 14);
+    i2c_controller->readI2c(ptr_weatherSensorData->weatherSensorUnion.packet, ptr_weatherSensorData->get_temporaryStructSize());
 }
 
-void RetrieveSenData::getRemoteSenData(Sensor *sensor_data)
+void RetrieveSenData::get_RemoteSenData(Sensor *sensor_data)
 {
     sensor_data->set_sensorID("Remote");
 }
