@@ -9,30 +9,11 @@ RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, unsigned char I2C_A
     this->I2C_ADDR = I2C_ADDR;
 }
 
-void RetrieveSenData::getLocalSenData(Sensor *sensor_data)
+void RetrieveSenData::getLocalSenData(WeatherSensor *sensor_data)
 {
-    // struct sensor_Data
-    // {
-    //     uint16_t temperature;
-    //     char sensorID[10];
-    //     uint16_t perBatt;
-    // } temporaryStruct;
-
-    // union convertSensorClassChar {
-    //     struct sensor_Data temporaryStruct;
-    //     char packet[14];
-    // };
-    // union convertSensorClassChar sts;
-
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c_controller->readI2c(static_cast<WeatherSensor *>(sensor_data)->weatherSensorUnion.packet, 14);
-
-    // printf("Sensor ID: %s\n", sts.temporaryStruct.sensorID);
-    // printf("Temp: %i\n", sts.temporaryStruct.temperature);
-    // printf("Hum: %i\n", sts.temporaryStruct.perBatt);
-
-    // sensor_data->set_sensorID(sts.temporaryStruct.sensorID);
+    i2c_controller->readI2c(sensor_data->weatherSensorUnion.packet, 14);
 }
 
 void RetrieveSenData::getRemoteSenData(Sensor *sensor_data)

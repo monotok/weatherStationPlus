@@ -9,7 +9,7 @@ class RetrieveSenData
 public:
   RetrieveSenData(I2cControl *, unsigned char);
   void getRemoteSenData(Sensor *);
-  void getLocalSenData(Sensor *);
+  void getLocalSenData(WeatherSensor *);
 
 private:
   I2cControl *i2c_controller;
