@@ -17,6 +17,9 @@ TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
     printf("Remote Battery: %i\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.perBatt);
 
     EXPECT_STREQ("BackBed", ptr_remoteWeatherData->weatherSensorUnion.tsd.sensorID);
+
+    delete (ptr_remoteWeatherData);
+    delete (i2c);
 }
 
 TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
@@ -31,4 +34,36 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
     printf("Hum: %i\n", ptr_localWeatherData->weatherSensorUnion.tsd.perBatt);
 
     EXPECT_STREQ("Here", ptr_localWeatherData->weatherSensorUnion.tsd.sensorID);
+
+    delete (ptr_localWeatherData);
+    delete (i2c);
+}
+
+TEST(RetrieveSenData, Get_specified_data_from_atmega_over_i2c)
+{
+    typedef struct tempSensorData
+    {
+        uint16_t temperature;
+        char sensorID[10];
+        uint16_t perBatt;
+    };
+
+    union convertSensorClassChar {
+        tempSensorData tsd;
+        char packet[sizeof(tsd)];
+    };
+    union convertSensorClassChar weatherSensorUnionLocal;
+    union convertSensorClassChar weatherSensorUnionRemote;
+
+    I2cControl *i2c = new I2cControl(1);
+    i2c->writeInt(I2C_ADDR, 1);
+    usleep(50000);
+    i2c->readI2c(weatherSensorUnionRemote.packet, 14);
+
+    i2c->writeInt(I2C_ADDR, 0);
+    usleep(50000);
+    i2c->readI2c(weatherSensorUnionLocal.packet, 14);
+
+    EXPECT_STREQ("Here", weatherSensorUnionLocal.tsd.sensorID);
+    EXPECT_STREQ("BackBed", weatherSensorUnionRemote.tsd.sensorID);
 }
