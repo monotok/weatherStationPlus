@@ -39,17 +39,15 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
     delete (i2c);
 }
 
-TEST(RetrieveSenData, Get_specified_data_from_atmega_over_i2c)
+TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
 {
-    typedef struct tempSensorData
-    {
-        uint16_t temperature;
-        char sensorID[10];
-        uint16_t perBatt;
-    };
-
     union convertSensorClassChar {
-        tempSensorData tsd;
+        struct tempSensorData
+        {
+            uint16_t temperature;
+            char sensorID[10];
+            uint16_t perBatt;
+        } tsd;
         char packet[sizeof(tsd)];
     };
     union convertSensorClassChar weatherSensorUnionLocal;
