@@ -34,5 +34,6 @@ class I2cControl
     I2cControl(int i2cNumber);
     void readI2c(char *buffer, int length);
     void writeByte(unsigned char address, unsigned char byte);
+    void writeInt(unsigned char address, uint8_t whichSensor);
 };
 #endif // i2c control
