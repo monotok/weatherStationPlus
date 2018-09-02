@@ -5,16 +5,21 @@
 
 #define I2C_ADDR 0x04
 
-// TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
-// {
-//     I2cControl *i2c = new I2cControl(1);
-//     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-//     Sensor *rsdata = new WeatherSensor();
-//     rsd.getRemoteSenData(rsdata);
-//     EXPECT_EQ("Remote", rsdata->get_sensorID());
-// }
+TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
+{
+    I2cControl *i2c = new I2cControl(1);
+    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
+    WeatherSensor *ptr_remoteWeatherData = new WeatherSensor();
+    rsd.get_RemoteWeatherSenData(ptr_remoteWeatherData);
 
-TEST(RetrieveSensorData, Get_local_sensor_data_from_arduino_module)
+    printf("Remote Sensor ID: %s\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.sensorID);
+    printf("Remote Temp: %i\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.temperature);
+    printf("Remote Battery: %i\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.perBatt);
+
+    EXPECT_STREQ("BackBed", ptr_remoteWeatherData->weatherSensorUnion.tsd.sensorID);
+}
+
+TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
 {
     I2cControl *i2c = new I2cControl(1);
     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
