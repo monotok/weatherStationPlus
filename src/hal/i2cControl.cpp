@@ -47,38 +47,13 @@ void I2cControl::writeByte(unsigned char address, unsigned char byte)
 			exit(1);
 		}
 	}
-	else
+	//----- WRITE BYTES -----
+	unsigned char buffer[60] = {0};
+	buffer[0] = byte;
+	int length = 1;										 //<<< Number of bytes to write
+	if (write(this->file_i2c, buffer, length) != length) //write() returns the number of bytes actually written
 	{
-		//----- WRITE BYTES -----
-		unsigned char buffer[60] = {0};
-		buffer[0] = byte;
-		int length = 1;										 //<<< Number of bytes to write
-		if (write(this->file_i2c, buffer, length) != length) //write() returns the number of bytes actually written
-		{
-			error("write_i2c Failed to write to the i2c bus.\n");
-		}
-	}
-}
-
-void I2cControl::writeInt(unsigned char address, uint8_t whichSensor)
-{
-	if (address != this->I2C_ADDR)
-	{
-		this->I2C_ADDR = address;
-		if (ioctl(this->file_i2c, I2C_SLAVE, this->I2C_ADDR) < 0)
-		{
-			error("Failed to acquire bus access and/or talk to slave.\n");
-			exit(1);
-		}
-	}
-	else
-	{
-		char val[1] = {whichSensor};
-		int length = 1;									  //<<< Number of bytes to write
-		if (write(this->file_i2c, val, length) != length) //write() returns the number of bytes actually written
-		{
-			error("write_i2c Failed to write to the i2c bus.\n");
-		}
+		error("write_i2c Failed to write to the i2c bus.\n");
 	}
 }
 

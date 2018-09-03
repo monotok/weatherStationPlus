@@ -25,15 +25,14 @@
 
 class I2cControl
 {
-  private:
-    int file_i2c;
-    unsigned char I2C_ADDR;
-    void error(const char *msg);
+private:
+  int file_i2c;
+  unsigned char I2C_ADDR;
+  void error(const char *msg);
 
-  public:
-    I2cControl(int i2cNumber);
-    void readI2c(char *buffer, int length);
-    void writeByte(unsigned char address, unsigned char byte);
-    void writeInt(unsigned char address, uint8_t whichSensor);
+public:
+  I2cControl(int i2cNumber);
+  void readI2c(char *buffer, int length);
+  void writeByte(unsigned char address, unsigned char byte);
 };
 #endif // i2c control

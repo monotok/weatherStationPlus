@@ -22,6 +22,8 @@
 #include <chrono>
 #include <thread>
 
+INITIALIZE_EASYLOGGINGPP
+
 #define lcdAdd 0x3f // I2C device address
 #define i2cbusno 1
 
@@ -35,25 +37,25 @@ int main(int argc, char *argv[])
 
     lcd.lcdSendCommand(LCD_BEG_LINE_1);
     lcd.lcdString("SensorID:");
-    lcd.setCursorPositionRowCol(1,11);
+    lcd.setCursorPositionRowCol(1, 11);
     lcd.lcdString("Here");
 
-    lcd.setCursorPositionRowCol(2,0);
+    lcd.setCursorPositionRowCol(2, 0);
     lcd.lcdString("Temp: ");
-    lcd.setCursorPositionRowCol(2,8);
+    lcd.setCursorPositionRowCol(2, 8);
     lcd.lcdString("22.4 C");
 
-    lcd.setCursorPositionRowCol(3,0);
+    lcd.setCursorPositionRowCol(3, 0);
     lcd.lcdString("Battery: ");
-    lcd.setCursorPositionRowCol(3,11);
+    lcd.setCursorPositionRowCol(3, 11);
     lcd.lcdString("45%");
 
     //Sleep for 4 seconds so we can observe the display
     std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
     //Change battery to the word humidity
-    lcd.clearColumnsRowCol(3,8,0);
-    lcd.setCursorPositionRowCol(3,0);
+    lcd.clearColumnsRowCol(3, 8, 0);
+    lcd.setCursorPositionRowCol(3, 0);
     lcd.lcdString("Humidity:");
 
     delete i2c;

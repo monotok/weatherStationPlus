@@ -54,11 +54,11 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     union convertSensorClassChar weatherSensorUnionRemote;
 
     I2cControl *i2c = new I2cControl(1);
-    i2c->writeInt(I2C_ADDR, 1);
+    i2c->writeByte(I2C_ADDR, 1);
     usleep(50000);
     i2c->readI2c(weatherSensorUnionRemote.packet, 14);
 
-    i2c->writeInt(I2C_ADDR, 0);
+    i2c->writeByte(I2C_ADDR, 0);
     usleep(50000);
     i2c->readI2c(weatherSensorUnionLocal.packet, 14);
 
