@@ -12,14 +12,17 @@ PROTOBUILD := build/prototype
 WEATHERTARGET := bin/weatherStationPlus
 GPIOTESTTARGET := bin/GPIOTestMain
 DYNAMTESTTARGET := bin/DynamTest
+LCDTESTTARGET := bin/LCDTest
+
 
 DYNAM_PROTO := DynamicSensors.cpp
 GPIO_PROTO := GPIOTestMain.cpp
+LCD_PROTO := testLCD.cpp
 
 GCDA_FILES := $(shell find $(BUILDDIR) -type f -name *.gcda)
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-PROTOSOURCES := $(PROTOTYPESRC)/$(DYNAM_PROTO)
+PROTOSOURCES := $(PROTOTYPESRC)/$(LCD_PROTO)
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
 PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
@@ -86,6 +89,11 @@ dynamtest: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
 	@echo " Linking..."
 	@mkdir -p bin	
 	@echo " $(CC) $^ -o $(DYNAMTESTTARGET)"; $(CC) $^ -o $(DYNAMTESTTARGET) $(LDFLAGS)
+
+lcdtest: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
+	@echo " Linking..."
+	@mkdir -p bin	
+	@echo " $(CC) $^ -o $(LCDTESTTARGET)"; $(CC) $^ -o $(LCDTESTTARGET) $(LDFLAGS)
 
 
 .PHONY: clean
