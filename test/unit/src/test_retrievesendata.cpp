@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include <iostream>
 #include "../../../include/RetrieveSenData.hpp"
 #include "../../../include/i2cControl.hpp"
 #include "../../../include/data/WeatherSensor.hpp"
@@ -46,9 +47,12 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_and_check_data_persistenc
     WeatherSensor *ptr_localWeatherData = new WeatherSensor();
     rsd.get_LocalWeatherData(ptr_localWeatherData);
 
-    printf("Sensor ID: %s\n", ptr_localWeatherData->get_sensorID());
-    printf("Temp: %f\n", ptr_localWeatherData->get_temperature());
-    printf("Hum: %f\n", ptr_localWeatherData->get_humidity());
+    cout << "Sensor ID: " << ptr_localWeatherData->get_sensorID() << "\n"
+         << endl;
+    cout << "Temp: " << ptr_localWeatherData->get_temperature() << "\n"
+         << endl;
+    cout << "Hum: " << ptr_localWeatherData->get_humidity() << "\n"
+         << endl;
 
     EXPECT_EQ("Here", ptr_localWeatherData->get_sensorID());
 
