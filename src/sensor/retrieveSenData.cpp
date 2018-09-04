@@ -14,6 +14,7 @@ void RetrieveSenData::get_LocalWeatherData(WeatherSensor *ptr_weatherSensorData)
     i2c_controller->writeByte(I2C_ADDR, 0);
     usleep(50000);
     i2c_controller->readI2c(ptr_weatherSensorData->weatherSensorUnion.packet, ptr_weatherSensorData->get_temporaryStructSize());
+    ptr_weatherSensorData->persistData();
 }
 
 void RetrieveSenData::get_RemoteWeatherSenData(WeatherSensor *ptr_weatherSensorData)
@@ -21,4 +22,5 @@ void RetrieveSenData::get_RemoteWeatherSenData(WeatherSensor *ptr_weatherSensorD
     i2c_controller->writeByte(I2C_ADDR, 1);
     usleep(50000);
     i2c_controller->readI2c(ptr_weatherSensorData->weatherSensorUnion.packet, ptr_weatherSensorData->get_temporaryStructSize());
+    ptr_weatherSensorData->persistData();
 }

@@ -39,6 +39,23 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
     delete (i2c);
 }
 
+TEST(RetrieveSensorData, Get_local_weather_sensor_data_and_check_data_persistence)
+{
+    I2cControl *i2c = new I2cControl(1);
+    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
+    WeatherSensor *ptr_localWeatherData = new WeatherSensor();
+    rsd.get_LocalWeatherData(ptr_localWeatherData);
+
+    printf("Sensor ID: %s\n", ptr_localWeatherData->get_sensorID());
+    printf("Temp: %f\n", ptr_localWeatherData->get_temperature());
+    printf("Hum: %f\n", ptr_localWeatherData->get_humidity());
+
+    EXPECT_EQ("Here", ptr_localWeatherData->get_sensorID());
+
+    delete (ptr_localWeatherData);
+    delete (i2c);
+}
+
 TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
 {
     union convertSensorClassChar {

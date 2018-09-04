@@ -11,19 +11,24 @@ private:
   string sensorType = "weather";
   int temporaryStructSize = sizeof(weatherSensorUnion.tsd);
 
+  //Sensor Values
+  void set_humidity(float humidity) { this->humidity = humidity; }
+  void set_temperature(float temperature) { this->temperature = temperature; }
+  void set_sensorID(string sensorName) { this->sensorName = sensorName; }
+
 public:
   ~WeatherSensor(){};
+  //Sensor Type Information
   string get_sensorID() override { return this->sensorName; }
-  void set_sensorID(string sensorName) { this->sensorName = sensorName; }
   string get_sensorType() override { return this->sensorType; }
 
+  //Sensor Values
   float get_temperature() { return this->temperature; }
-  void set_temperature(float temperature) { this->temperature = temperature; }
-
   float get_humidity() { return this->humidity; }
-  void set_humidity(float humidity) { this->humidity = humidity; }
 
+  //Other Methods
   int get_temporaryStructSize() { return this->temporaryStructSize; }
+  void persistData();
 
   typedef struct tempSensorData
   {
