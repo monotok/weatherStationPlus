@@ -4,6 +4,9 @@
 #include "data/WeatherSensor.hpp"
 #include "i2cControl.hpp"
 
+static const int GET_LOCAL_DATA = 0;
+static const int GET_REMOTE_DATA = 1;
+
 class RetrieveSenData
 {
 public:
