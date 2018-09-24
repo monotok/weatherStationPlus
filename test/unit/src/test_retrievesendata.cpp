@@ -47,12 +47,9 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_and_check_data_persistenc
     WeatherSensor *ptr_localWeatherData = new WeatherSensor();
     rsd.get_LocalWeatherData(ptr_localWeatherData);
 
-    cout << "Sensor ID: " << ptr_localWeatherData->get_sensorID() << "\n"
-         << endl;
-    cout << "Temp: " << ptr_localWeatherData->get_temperature() << "\n"
-         << endl;
-    cout << "Hum: " << ptr_localWeatherData->get_humidity() << "\n"
-         << endl;
+    cout << "Sensor ID: " << ptr_localWeatherData->get_sensorID() << endl;
+    cout << "Temp: " << ptr_localWeatherData->get_temperature() << endl;
+    cout << "Hum: " << ptr_localWeatherData->get_humidity() << endl;
 
     EXPECT_EQ("Here", ptr_localWeatherData->get_sensorID());
 
