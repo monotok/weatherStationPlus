@@ -8,9 +8,9 @@
 TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector)
 {
     WeatherSensor *tempSensor = new WeatherSensor();
-    tempSensor->weatherSensorUnion.tsd.sensorID[0] = 'T';
-    tempSensor->weatherSensorUnion.tsd.temperature = 23;
-    tempSensor->weatherSensorUnion.tsd.perBatt = 60;
+    tempSensor->set_sensorID("Here");
+    tempSensor->set_temperature(23);
+    tempSensor->set_humidity(60);
 
     DynamicSensorFactory dsf = DynamicSensorFactory();
     dsf.CreateNewWeatherSensor_obj(tempSensor);
