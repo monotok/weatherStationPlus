@@ -77,7 +77,7 @@ weather: $(OBJECTS)
 
 clean:
 	@echo " Cleaning...Removing all unknown files of git and all ignored files. Excludes .vscode";
-	git clean -f -d -x -e .vscode 
+	git clean -f -d -x -e .vscode .idea 
 
 # Prototype
 gpiotestmain: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
