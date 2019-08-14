@@ -47,16 +47,16 @@ run:
 	cd bin; ./DynamTest
 
 unit:
-	cd $(TESTDIR); make -f MakeFile all
+	cd $(TESTDIR); make -f Makefile all
 
 all_unit_tests:
-	cd $(TESTDIR); make -f MakeFile all_unit_tests
+	cd $(TESTDIR); make -f Makefile all_unit_tests
 
 individual_tests:
-	cd $(TESTDIR); make -f MakeFile individual_tests
+	cd $(TESTDIR); make -f Makefile individual_tests
 
 unitclean:
-	cd $(TESTDIR); make -f MakeFile clean
+	cd $(TESTDIR); make -f Makefile clean
 
 cleancoverage: $(GCDA_FILES)
 	rm -rf $(GCDA_FILES)
