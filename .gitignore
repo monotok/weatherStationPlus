@@ -6,4 +6,3 @@ test/gtest
 test/gmock
 test/unit/bin/*
 test/coverage/*
-.idea

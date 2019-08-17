@@ -38,8 +38,7 @@ if (lfc)
 endif()
 
 add_custom_target(fullclean
-        COMMAND ${CMAKE_MAKE_PROGRAM} clean
-        COMMAND git clean -f -d -x -e .vscode .idea
+        COMMAND git clean -f -d -x -e .vscode -e .idea
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         )
 

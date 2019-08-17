@@ -27,13 +27,9 @@ add_executable(test_btncontrol
 
 target_link_libraries(test_btncontrol gtest)
 
-add_test(
-        NAME run_btncontrol_tests
-        COMMAND test_btncontrol
-)
-
 add_custom_target(cov
         COMMAND mkdir -p ${COVERAGE_DIR}
+        COMMAND test_btncontrol
         COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/test_* --output-file ${COVERAGE_DIR}/coverage.info
         COMMAND genhtml ${COVERAGE_DIR}/coverage.info --output-directory ${COVERAGE_DIR}
         )
