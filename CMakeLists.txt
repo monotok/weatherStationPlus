@@ -37,4 +37,10 @@ if (lfc)
     target_compile_definitions(DynamSensors PUBLIC -DLOGCONFIGLOCATION=${lfc})
 endif()
 
+add_custom_target(fullclean
+        COMMAND ${CMAKE_MAKE_PROGRAM} clean
+        COMMAND git clean -f -d -x -e .vscode .idea
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        )
+
 install(FILES conf/logging.conf DESTINATION ../conf/logging.conf COMPONENT config)
