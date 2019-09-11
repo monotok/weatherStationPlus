@@ -2,44 +2,17 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="weatherStationPlus" targetName="fullclean" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalMemCheck" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalCoverage" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalUpdate" />
-      <config projectName="weatherStationPlus" targetName="NightlyUpdate" />
-      <config projectName="weatherStationPlus" targetName="NightlyBuild" />
-      <config projectName="weatherStationPlus" targetName="gmock_main" />
       <config projectName="weatherStationPlus" targetName="TestLCD" />
       <config projectName="weatherStationPlus" targetName="gtest_main" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalStart" />
-      <config projectName="weatherStationPlus" targetName="Nightly" />
-      <config projectName="weatherStationPlus" targetName="NightlySubmit" />
-      <config projectName="weatherStationPlus" targetName="ContinuousBuild" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalSubmit" />
-      <config projectName="weatherStationPlus" targetName="NightlyTest" />
-      <config projectName="weatherStationPlus" targetName="GPIOTest" />
-      <config projectName="weatherStationPlus" targetName="ContinuousCoverage" />
-      <config projectName="weatherStationPlus" targetName="Experimental" />
-      <config projectName="weatherStationPlus" targetName="NightlyConfigure" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalConfigure" />
-      <config projectName="weatherStationPlus" targetName="NightlyMemCheck" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalBuild" />
-      <config projectName="weatherStationPlus" targetName="ContinuousMemCheck" />
-      <config projectName="weatherStationPlus" targetName="ExperimentalTest" />
-      <config projectName="weatherStationPlus" targetName="ContinuousUpdate" />
-      <config projectName="weatherStationPlus" targetName="ContinuousStart" />
+      <config projectName="weatherStationPlus" targetName="fullclean" />
       <config projectName="weatherStationPlus" targetName="DynamSensors" />
       <config projectName="weatherStationPlus" targetName="cov" />
       <config projectName="weatherStationPlus" targetName="test_btncontrol" />
-      <config projectName="weatherStationPlus" targetName="NightlyMemoryCheck" />
       <config projectName="weatherStationPlus" targetName="gmock" />
-      <config projectName="weatherStationPlus" targetName="NightlyStart" />
-      <config projectName="weatherStationPlus" targetName="Continuous" />
-      <config projectName="weatherStationPlus" targetName="ContinuousConfigure" />
+      <config projectName="weatherStationPlus" targetName="test_all_unit" />
+      <config projectName="weatherStationPlus" targetName="gmock_main" />
       <config projectName="weatherStationPlus" targetName="gtest" />
-      <config projectName="weatherStationPlus" targetName="ContinuousTest" />
-      <config projectName="weatherStationPlus" targetName="NightlyCoverage" />
-      <config projectName="weatherStationPlus" targetName="ContinuousSubmit" />
+      <config projectName="weatherStationPlus" targetName="GPIOTest" />
     </generated>
   </component>
   <component name="CMakeSettings">
@@ -50,15 +23,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2f2b7c73-5252-4e7e-a3ba-36d2a26f75a1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/deployment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/other.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/weatherStationPlus.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test/CMakeLists.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -81,7 +47,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="web.server" />
+    <property name="settings.editor.selected.configurable" value="CPPToolchains" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -95,8 +61,20 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="CMake Application.DynamSensors">
+  <component name="RunManager" selected="Google Test.All Unit Tests">
+    <configuration name="All Unit Tests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_all_unit" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_all_unit" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="All in BTNControl" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" nameIsGenerated="true" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_btncontrol" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_btncontrol" TEST_CLASS="BTNControl" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GPIOControl.DefaultContructor" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" temporary="true" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_all_unit" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_all_unit" TEST_CLASS="GPIOControl" TEST_METHOD="DefaultContructor" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
         <option name="BeforeTestRunTask" enabled="true" />
@@ -147,6 +125,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration name="test_all_unit" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_all_unit" CONFIG_NAME="RemoteDebug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_all_unit">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="test_btncontrol" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_btncontrol" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_btncontrol">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -158,13 +141,21 @@
       <item itemvalue="CMake Application.GPIOTest" />
       <item itemvalue="CMake Application.TestLCD" />
       <item itemvalue="CMake Application.cov" />
+      <item itemvalue="CMake Application.test_all_unit" />
       <item itemvalue="CMake Application.test_btncontrol" />
       <item itemvalue="CMake Application.gmock" />
       <item itemvalue="CMake Application.gmock_main" />
       <item itemvalue="CMake Application.gtest" />
       <item itemvalue="CMake Application.gtest_main" />
+      <item itemvalue="Google Test.All Unit Tests" />
       <item itemvalue="Google Test.All in BTNControl" />
+      <item itemvalue="Google Test.GPIOControl.DefaultContructor" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Google Test.GPIOControl.DefaultContructor" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -173,7 +164,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1566059720014</updated>
-      <workItem from="1566059721150" duration="3695000" />
+      <workItem from="1566059721150" duration="17967000" />
+      <workItem from="1568241471795" duration="1037000" />
     </task>
     <servers />
   </component>
@@ -185,7 +177,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
