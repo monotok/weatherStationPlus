@@ -16,16 +16,38 @@ enable_testing()
 set(GTEST $ENV{HOME}/SoftwareDevelopment/Libaries/googletest)
 add_subdirectory(${GTEST} build)
 
+get_filename_component(MAIN_PROJECT_DIR ../ ABSOLUTE)
+
+file(GLOB_RECURSE ALL_SOURCE_FILES
+        ${MAIN_PROJECT_DIR}/src/data/*.cpp
+        ${MAIN_PROJECT_DIR}/src/hal/*.cpp
+        ${MAIN_PROJECT_DIR}/src/hwcontrol/*.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/*.cpp
+        ${MAIN_PROJECT_DIR}/src/sensor/*.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/*.cpp
+        )
+
+file(GLOB TEST_SOURCE_FILES
+        unit/src/test_*.cpp)
+
+add_executable(test_all_unit
+        ${TEST_SOURCE_FILES}
+        ${ALL_SOURCE_FILES}
+        unit/src/myGtestMain.cpp
+        )
+
+
 add_executable(test_btncontrol
         unit/src/test_btncontrol.cpp
-        ../src/hwcontrol/BtnControl.cpp
-        ../src/logging/easylogging++.cpp
-        ../src/hal/GPIOControl.cpp
-        ../src/tools/Utilities.cpp
+        ${MAIN_PROJECT_DIR}/src/hwcontrol/BtnControl.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        ${MAIN_PROJECT_DIR}/src/hal/GPIOControl.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/Utilities.cpp
         unit/src/myGtestMain.cpp
 )
 
 target_link_libraries(test_btncontrol gtest)
+target_link_libraries(test_all_unit gtest)
 
 add_custom_target(cov
         COMMAND mkdir -p ${COVERAGE_DIR}
