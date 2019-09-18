@@ -8,3 +8,4 @@ test/unit/bin/*
 test/coverage/*
 /cmake-build-remotedebug/
 /cmake-build-debug/
+.idea/workspace.xml
