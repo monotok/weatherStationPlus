@@ -12,14 +12,17 @@ PROTOBUILD := build/prototype
 WEATHERTARGET := bin/weatherStationPlus
 GPIOTESTTARGET := bin/GPIOTestMain
 DYNAMTESTTARGET := bin/DynamTest
+LCDTESTTARGET := bin/LCDTest
+
 
 DYNAM_PROTO := DynamicSensors.cpp
 GPIO_PROTO := GPIOTestMain.cpp
+LCD_PROTO := testLCD.cpp
 
 GCDA_FILES := $(shell find $(BUILDDIR) -type f -name *.gcda)
 SRCEXT := cpp
 SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
-PROTOSOURCES := $(PROTOTYPESRC)/$(DYNAM_PROTO)
+PROTOSOURCES := $(PROTOTYPESRC)/$(LCD_PROTO)
 OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 OBJECTSEXCMAIN := $(filter-out build/main.o, $(OBJECTS))
 PROTOOBJECTS := $(patsubst $(PROTOTYPESRC)/%,$(PROTOBUILD)/%,$(PROTOSOURCES:.$(SRCEXT)=.o))
@@ -44,10 +47,16 @@ run:
 	cd bin; ./DynamTest
 
 unit:
-	cd $(TESTDIR); make -f MakeFile all
+	cd $(TESTDIR); make -f Makefile all
+
+all_unit_tests:
+	cd $(TESTDIR); make -f Makefile all_unit_tests
+
+individual_tests:
+	cd $(TESTDIR); make -f Makefile individual_tests
 
 unitclean:
-	cd $(TESTDIR); make -f MakeFile clean
+	cd $(TESTDIR); make -f Makefile clean
 
 cleancoverage: $(GCDA_FILES)
 	rm -rf $(GCDA_FILES)
@@ -68,7 +77,7 @@ weather: $(OBJECTS)
 
 clean:
 	@echo " Cleaning...Removing all unknown files of git and all ignored files. Excludes .vscode";
-	git clean -f -d -x -e .vscode 
+	git clean -f -d -x -e .vscode
 
 # Prototype
 gpiotestmain: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
@@ -80,6 +89,11 @@ dynamtest: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
 	@echo " Linking..."
 	@mkdir -p bin	
 	@echo " $(CC) $^ -o $(DYNAMTESTTARGET)"; $(CC) $^ -o $(DYNAMTESTTARGET) $(LDFLAGS)
+
+lcdtest: $(OBJECTSEXCMAIN) $(PROTOOBJECTS)
+	@echo " Linking..."
+	@mkdir -p bin	
+	@echo " $(CC) $^ -o $(LCDTESTTARGET)"; $(CC) $^ -o $(LCDTESTTARGET) $(LDFLAGS)
 
 
 .PHONY: clean

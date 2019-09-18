@@ -1,6 +1,6 @@
 #include "../include/GPIOControl.hpp"
 #include "../include/BtnControl.hpp"
-#include "../include/data/TempSensor.hpp"
+#include "../include/data/WeatherSensor.hpp"
 #include <unistd.h>
 #include <signal.h>
 #include <time.h>
@@ -56,10 +56,10 @@ int main(int argc, char **argv)
     {
         bs.initBtnState(&gpio17);
 
-        if (true)
+        if (bs.debounceBtn())
         {
             LOG(DEBUG) << "Button Pressed";
-            tempVector.push_back(new TemperatureSensor());
+            tempVector.push_back(new WeatherSensor());
             string sensorID = "SensorID " + to_string(b);
             tempVector[b]->set_sensorID(sensorID);
             LOG(INFO) << "Added an object of temp sensor";
@@ -85,26 +85,6 @@ int main(int argc, char **argv)
     for (i = tempVector.begin(); i != tempVector.end(); ++i)
     {
         delete *i;
-    }
-
-    map<Sensor *, int> tempMap;
-    map<Sensor *, int>::iterator it;
-
-    TemperatureSensor *testSen = new TemperatureSensor();
-    TemperatureSensor *testSen2 = new TemperatureSensor();
-
-    tempMap[testSen] = 4;
-    tempMap[testSen2] = 6;
-
-    it = tempMap.find(testSen2);
-    it->first->set_sensorID("SensorID testSen2");
-    it = tempMap.find(testSen);
-    it->first->set_sensorID("SensorID testSen1");
-
-    for (it = tempMap.begin(); it != tempMap.end(); it++)
-    {
-        cout << "Found the object " << it->first->get_sensorID() << endl;
-        delete (it->first);
     }
 
     return 0;
