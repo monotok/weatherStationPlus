@@ -8,19 +8,15 @@ class WeatherSensor : public Sensor
 private:
   float temperature;
   float humidity;
-  string sensorType = "weather";
   int temporaryStructSize = sizeof(weatherSensorUnion.tsd);
 
   //Sensor Values
   void set_humidity(float humidity) { this->humidity = humidity; }
   void set_temperature(float temperature) { this->temperature = temperature; }
-  void set_sensorID(string sensorName) { this->sensorName = sensorName; }
 
 public:
+    WeatherSensor(string SensorName, string SensorType) : Sensor(SensorName, SensorType) {};
   ~WeatherSensor(){};
-  //Sensor Type Information
-  string get_sensorID() override { return this->sensorName; }
-  string get_sensorType() override { return this->sensorType; }
 
   //Sensor Values
   float get_temperature() { return this->temperature; }

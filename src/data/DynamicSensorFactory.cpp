@@ -2,7 +2,26 @@
 
 using namespace std;
 
-void DynamicSensorFactory::CreateNewWeatherSensor_obj(WeatherSensor *ptr_newWeatherSensor)
+Sensor* DynamicSensorFactory::CreateNewSensor_obj(string SensorName, string SensorType)
 {
-    weatherSensors_vector.push_back(ptr_newWeatherSensor);
+    WeatherSensor *newWeather_ptr = new WeatherSensor(SensorName, SensorType);
+    weatherSensors_vector.push_back(newWeather_ptr);
+    return newWeather_ptr;
+}
+
+WeatherSensor* DynamicSensorFactory::getWeatherSensor_ptr(string SensorName)
+{
+    for(weatherSensorIterator = weatherSensors_vector.begin(); weatherSensorIterator != weatherSensors_vector.end(); ++weatherSensorIterator)
+    {
+        if ((*weatherSensorIterator)->get_sensorID() == SensorName)
+        {
+            return (*weatherSensorIterator);
+        }
+    }
+    return dynamic_cast<WeatherSensor*>(CreateNewSensor_obj(SensorName, "weather"));
+}
+
+WeatherSensor* DynamicSensorFactory::getTempWeatherSensor_ptr()
+{
+    return getWeatherSensor_ptr("tempWeatherSensor");
 }
