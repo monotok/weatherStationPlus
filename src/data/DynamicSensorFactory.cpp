@@ -2,6 +2,14 @@
 
 using namespace std;
 
+DynamicSensorFactory::~DynamicSensorFactory()
+{
+    for(weatherSensorIterator = weatherSensors_vector.begin(); weatherSensorIterator != weatherSensors_vector.end(); ++weatherSensorIterator)
+    {
+        delete((*weatherSensorIterator));
+    }
+}
+
 Sensor* DynamicSensorFactory::CreateNewSensor_obj(string SensorName, string SensorType)
 {
     WeatherSensor *newWeather_ptr = new WeatherSensor(SensorName, SensorType);

@@ -13,6 +13,7 @@ class DynamicSensorFactory
 
   private:
     Sensor* CreateNewSensor_obj(string SensorName, string SensorType);
+    ~DynamicSensorFactory();
     vector<WeatherSensor *> weatherSensors_vector;
     vector<WeatherSensor *>::iterator weatherSensorIterator;
 };
