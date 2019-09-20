@@ -9,7 +9,7 @@ class DynamicSensorFactory
   public:
     WeatherSensor* getWeatherSensor_ptr(string SensorName);
     WeatherSensor* getTempWeatherSensor_ptr();
-
+    vector<WeatherSensor *> getAllWeatherSensors_ptr();
 
   private:
     Sensor* CreateNewSensor_obj(string SensorName, string SensorType);

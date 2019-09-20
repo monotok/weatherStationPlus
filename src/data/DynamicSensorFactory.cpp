@@ -10,6 +10,11 @@ DynamicSensorFactory::~DynamicSensorFactory()
     }
 }
 
+vector<WeatherSensor *> DynamicSensorFactory::getAllWeatherSensors_ptr()
+{
+    return weatherSensors_vector;
+}
+
 Sensor* DynamicSensorFactory::CreateNewSensor_obj(string SensorName, string SensorType)
 {
     WeatherSensor *newWeather_ptr = new WeatherSensor(SensorName, SensorType);

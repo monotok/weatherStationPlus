@@ -47,3 +47,14 @@ TEST(DynamicSensorFactory, Get_temp_weathersensor) {
 
     EXPECT_EQ("tempWeatherSensor", returnVal->get_sensorID());
 }
+
+TEST(DynamicSensorFactory, get_all_weathersensors) {
+    DynamicSensorFactory dsf = DynamicSensorFactory();
+    dsf.CreateNewSensor_obj("bob", "weather");
+    dsf.CreateNewSensor_obj("ant", "weather");
+    dsf.CreateNewSensor_obj("gar", "weather");
+
+    vector<WeatherSensor *> returnVals = dsf.getAllWeatherSensors_ptr();
+
+    EXPECT_EQ(returnVals.size(), 3);
+}
