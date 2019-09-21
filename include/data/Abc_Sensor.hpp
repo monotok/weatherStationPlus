@@ -14,11 +14,14 @@ class Sensor
     string sensorType;
 
   public:
+    Sensor(string sensorName, string sensorType){ set_sensorID(sensorName); set_sensorType(sensorType); };
     virtual ~Sensor(){};
-    virtual string get_sensorID() = 0;
-    virtual void set_sensorID(string sensorName) = 0;
-    virtual string get_sensorType() = 0;
     virtual void persistData() = 0;
+
+    void set_sensorID(string sensorName) { this->sensorName = sensorName; }
+    void set_sensorType(string sensorType) { this->sensorType = sensorType; }
+    string get_sensorID() { return this->sensorName; }
+    string get_sensorType() { return this->sensorType; }
 };
 
 #endif //SENSOR_H

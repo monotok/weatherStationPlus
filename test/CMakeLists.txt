@@ -46,7 +46,16 @@ add_executable(test_btncontrol
         unit/src/myGtestMain.cpp
 )
 
+add_executable(test_dynamsensorfact
+        unit/src/test_dynamicsensorfactory.cpp
+        ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
+        ${MAIN_PROJECT_DIR}/src/data/DynamicSensorFactory.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        unit/src/myGtestMain.cpp
+        )
+
 target_link_libraries(test_btncontrol gtest)
+target_link_libraries(test_dynamsensorfact gtest)
 target_link_libraries(test_all_unit gtest)
 
 add_custom_target(cov

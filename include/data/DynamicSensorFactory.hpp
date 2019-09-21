@@ -7,13 +7,15 @@
 class DynamicSensorFactory
 {
   public:
-    void getWeatherSensor_ptr(WeatherSensor *);
+    WeatherSensor* getWeatherSensor_ptr(string SensorName);
+    WeatherSensor* getTempWeatherSensor_ptr();
+    vector<WeatherSensor *> getAllWeatherSensors_ptr();
 
   private:
-    void CreateNewWeatherSensor_obj(WeatherSensor *);
-    void SearchExistingWeatherSensor_obj(WeatherSensor *);
+    Sensor* CreateNewSensor_obj(string SensorName, string SensorType);
+    ~DynamicSensorFactory();
     vector<WeatherSensor *> weatherSensors_vector;
-    vector<WeatherSensor *>::iterator weatherSensors_iterator;
+    vector<WeatherSensor *>::iterator weatherSensorIterator;
 };
 
 #endif //ifndef DYNAMIC_SEN_FACTORY_H

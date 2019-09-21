@@ -59,7 +59,7 @@ int main(int argc, char **argv)
         if (bs.debounceBtn())
         {
             LOG(DEBUG) << "Button Pressed";
-            tempVector.push_back(new WeatherSensor());
+            tempVector.push_back(new WeatherSensor("Bob", "weather"));
             string sensorID = "SensorID " + to_string(b);
             tempVector[b]->set_sensorID(sensorID);
             LOG(INFO) << "Added an object of temp sensor";
