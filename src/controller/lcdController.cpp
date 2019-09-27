@@ -6,19 +6,14 @@
 
 void LcdController::createWeatherPage(WeatherSensor* ws)
 {
-    vector<Pageitem> items;
     Pageitem sensorID = {1, 0, "fixed", "SensorID:"};
     Pageitem sensorID_val = {1, 10, "var", ws->get_sensorID()};
     Pageitem temp = {2,0,"fixed", "Temp"};
     Pageitem temp_val = {2,5,"var", Utilities::to_string_with_precision<float>(ws->get_temperature())};
     Pageitem hum = {2,11,"fixed", "Hum"};
     Pageitem hum_val = {2,15,"var", Utilities::to_string_with_precision<float>(ws->get_humidity())};
-    items.push_back(sensorID);
-    items.push_back(sensorID_val);
-    items.push_back(temp);
-    items.push_back(temp_val);
-    items.push_back(hum);
-    items.push_back(hum_val);
+
+    vector<Pageitem> items{sensorID, sensorID_val, temp, temp_val, hum, hum_val};
 
     pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
 }
