@@ -9,8 +9,8 @@ project(weatherStationPlus)
 set(CMAKE_CXX_STANDARD 11)
 
 # Complier Flags
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -DELPP_NO_DEFAULT_LOG_FILE -fsanitize=address")
-set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE -fsanitize=address")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -DELPP_NO_DEFAULT_LOG_FILE")
+set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE")
 
 #Output folders
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
