@@ -90,6 +90,7 @@ add_executable(test_lcdcontroller
         ${MAIN_PROJECT_DIR}/src/controller/lcdController.cpp
         ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
         ${MAIN_PROJECT_DIR}/src/hal/lcdDriver.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/Utilities.cpp
         ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
         unit/src/myGtestMain.cpp
         )

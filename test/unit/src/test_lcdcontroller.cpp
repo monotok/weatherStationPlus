@@ -28,8 +28,8 @@ TEST(LcdController, create_new_weather_page_struct_independant)
     EXPECT_NE(found1, lcdc.pages_map.end());
     EXPECT_NE(found2, lcdc.pages_map.end());
 
-    EXPECT_EQ(found1->second[3].value, to_string(36));
-    EXPECT_EQ(found2->second[3].value, to_string(25));
+    EXPECT_EQ(found1->second[3].value, "36.00");
+    EXPECT_EQ(found2->second[3].value, "25.00");
 
 }
 

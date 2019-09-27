@@ -12,6 +12,7 @@
 #include "data/WeatherSensor.hpp""
 #include "../include/i2cControl.hpp"
 #include "../include/lcdDriver.hpp"
+#include "../include/Utilities.hpp"
 
 //#define lcdAdd 0x3f // I2C device address
 //#define i2cbusno 1
