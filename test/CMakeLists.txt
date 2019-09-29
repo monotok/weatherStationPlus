@@ -11,10 +11,39 @@ set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/test/unit/bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(COVERAGE_DIR coverage)
 
-enable_testing()
+# Download and unpack googletest at configure time
+configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+if(result)
+    message(FATAL_ERROR "CMake step for googletest failed: ${result}")
+endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+        RESULT_VARIABLE result
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+if(result)
+    message(FATAL_ERROR "Build step for googletest failed: ${result}")
+endif()
 
-set(GTEST $ENV{HOME}/SoftwareDevelopment/Libaries/googletest)
-add_subdirectory(${GTEST} build)
+# Prevent overriding the parent project's compiler/linker
+# settings on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+# Add googletest directly to our build. This defines
+# the gtest and gtest_main targets.
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
+        ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+        EXCLUDE_FROM_ALL)
+
+# The gtest/gtest_main targets carry header search path
+# dependencies automatically when using CMake 2.8.11 or
+# later. Otherwise we have to add them here ourselves.
+if (CMAKE_VERSION VERSION_LESS 2.8.11)
+    include_directories("${gtest_SOURCE_DIR}/include")
+endif()
+
+enable_testing()
 
 get_filename_component(MAIN_PROJECT_DIR ../ ABSOLUTE)
 
@@ -25,6 +54,7 @@ file(GLOB_RECURSE ALL_SOURCE_FILES
         ${MAIN_PROJECT_DIR}/src/logging/*.cpp
         ${MAIN_PROJECT_DIR}/src/sensor/*.cpp
         ${MAIN_PROJECT_DIR}/src/tools/*.cpp
+        ${MAIN_PROJECT_DIR}/src/controller/*.cpp
         )
 
 file(GLOB TEST_SOURCE_FILES
@@ -54,9 +84,21 @@ add_executable(test_dynamsensorfact
         unit/src/myGtestMain.cpp
         )
 
+add_executable(test_lcdcontroller
+        unit/src/test_lcdcontroller.cpp
+        ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
+        ${MAIN_PROJECT_DIR}/src/controller/lcdController.cpp
+        ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
+        ${MAIN_PROJECT_DIR}/src/hal/lcdDriver.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/Utilities.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        unit/src/myGtestMain.cpp
+        )
+
 target_link_libraries(test_btncontrol gtest)
 target_link_libraries(test_dynamsensorfact gtest)
 target_link_libraries(test_all_unit gtest)
+target_link_libraries(test_lcdcontroller gtest)
 
 add_custom_target(cov
         COMMAND mkdir -p ${COVERAGE_DIR}
