@@ -11,6 +11,10 @@
 #include "../../../include/data/WeatherSensor.hpp"
 #include "../../../include/lcdController.h"
 
+//Only included to allow a sleep to show clearing display etc
+#include <chrono>
+#include <thread>
+
 TEST(LcdController, create_new_weather_page_struct_independant)
 {
     WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
@@ -45,4 +49,36 @@ TEST(LcdController, draw_basic_page_to_lcd)
     lcdc.createWeatherPage(ws1);
 
     lcdc.drawPage("mysensor", lcd);
+}
+
+TEST(LcdController, update_values_only_on_existing_page)
+{
+    I2cControl *i2c = new I2cControl(i2cbusno);
+    LcdDriver lcd(lcdAdd, i2c);
+
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+    ws1->set_temperature(36);
+    ws1->set_humidity(79);
+
+    LcdController lcdc;
+    lcdc.createWeatherPage(ws1);
+
+    lcdc.drawPage("weather1", lcd);
+
+    auto found1 = lcdc.pages_map.find("weather1");
+    EXPECT_EQ(found1->second[3].value, "36.00");
+    EXPECT_EQ(found1->second[5].value, "79.00");
+
+    ws1->set_temperature(24);
+    ws1->set_humidity(56);
+
+    lcdc.updatePageValues(ws1);
+    EXPECT_EQ(found1->second[3].value, "24.00");
+    EXPECT_EQ(found1->second[5].value, "56.00");
+
+    //Sleep for 4 seconds so we can observe the display
+    std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+
+    lcdc.drawPage("weather1", lcd);
+
 }

@@ -14,8 +14,8 @@
 #include "../include/lcdDriver.hpp"
 #include "../include/Utilities.hpp"
 
-//#define lcdAdd 0x3f // I2C device address
-//#define i2cbusno 1
+#define FIXED 0
+#define VAR 1
 
 using namespace std;
 
@@ -24,14 +24,15 @@ class LcdController
 public:
     void createWeatherPage(WeatherSensor* ws);
     void drawPage(string SensorName, LcdDriver lcd);
-    void updatePageValues();
+    void updatePageValues(WeatherSensor* ws);
     void removePage();
 
 private:
     struct Pageitem {
+        string id;
         int row_start;
         int col_start;
-        string type;
+        int type;
         string value;
     };
 
