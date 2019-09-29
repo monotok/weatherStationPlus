@@ -20,6 +20,7 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
     pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
 }
 
+// TODO: Need to prevent left over chars on display when writting a new smaller value
 void LcdController::drawPage(string SensorName, LcdDriver lcd)
 {
     pm_iter = pages_map.find(SensorName);
