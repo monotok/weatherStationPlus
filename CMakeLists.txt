@@ -26,11 +26,12 @@ include_directories(include)
 set(DYNAM_SOURCE_FILES prototype/DynamicSensors.cpp src/logging/easylogging++.cpp src/hal/GPIOControl.cpp src/hwcontrol/BtnControl.cpp src/data/WeatherSensor.cpp src/tools/Utilities.cpp)
 set(LCD_SOURCE_FILES prototype/testLCD.cpp src/logging/easylogging++.cpp src/hal/i2cControl.cpp src/hal/lcdDriver.cpp)
 set(GPIO_SOURCE_FILES prototype/GPIOTestMain.cpp src/logging/easylogging++.cpp src/hal/GPIOControl.cpp src/hwcontrol/BtnControl.cpp src/tools/Utilities.cpp)
-
+set(MAIN_SOURCE_FILES src/main.cpp src/logging/easylogging++.cpp)
 
 add_executable(DynamSensors ${DYNAM_SOURCE_FILES})
 add_executable(TestLCD ${LCD_SOURCE_FILES})
 add_executable(GPIOTest ${GPIO_SOURCE_FILES})
+add_executable(weatherStationPlus ${MAIN_SOURCE_FILES})
 
 set(lfc "\"~/.config/wsp/logging.conf\"")
 if (lfc)
