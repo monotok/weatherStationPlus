@@ -34,6 +34,7 @@ WeatherSensor* DynamicSensorFactory::getWeatherSensor_ptr(string SensorName)
     return dynamic_cast<WeatherSensor*>(CreateNewSensor_obj(SensorName, "weather"));
 }
 
+//TODO: Can be removed
 WeatherSensor* DynamicSensorFactory::getTempWeatherSensor_ptr()
 {
     return getWeatherSensor_ptr("tempWeatherSensor");

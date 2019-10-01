@@ -3,6 +3,8 @@
 
 using namespace std;
 
+//TODO: No longer pass weathersensor obj to the methods. Have the temp union and struct on this class and call dynamicsensorfactory from method
+
 RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, unsigned char I2C_ADDR)
 {
     this->i2c_controller = i2c_controller;

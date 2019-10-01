@@ -1,4 +1,5 @@
 #include "../include/easylogging++.hpp"
+#include "../include/main.hpp"
 INITIALIZE_EASYLOGGINGPP
 
 //TODO: Setup threading to run all the background stuff

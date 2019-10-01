@@ -4,6 +4,8 @@
 
 #include "../../include/lcdController.h"
 
+//TODO: Add check to only create page when there is no page with sensor id or type
+//TODO: Set the values to blank string or zero
 void LcdController::createWeatherPage(WeatherSensor* ws)
 {
     Pageitem sensorID = {"sensorID", 1, 0, FIXED, "SensorID:"};
@@ -20,7 +22,7 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
     pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
 }
 
-// TODO: Need to prevent left over chars on display when writting a new smaller value
+// TODO: Need to prevent left over chars on display when writing a new smaller value
 void LcdController::drawPage(string SensorName, LcdDriver lcd)
 {
     pm_iter = pages_map.find(SensorName);
