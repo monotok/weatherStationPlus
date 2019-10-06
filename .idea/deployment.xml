@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData">
+  <component name="PublishConfigData" serverName="Remote (d1f5612f-44bb-4468-96b4-b09977424de0)" preserveFilePermissions="true">
     <serverData>
       <paths name="Remote (d1f5612f-44bb-4468-96b4-b09977424de0)">
         <serverdata>
@@ -9,6 +9,7 @@
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-remotedebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rasppi-build-local" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
           </excludedPaths>
         </serverdata>
