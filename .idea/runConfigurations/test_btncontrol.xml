@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test_btncontrol" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_btncontrol" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_btncontrol">
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="All in BTNControl" run_configuration_type="CMakeGoogleTestRunConfigurationType" run_configuration_target="CMakeBuildProfile:RemoteDebug" />
+    </method>
+  </configuration>
+</component>
