@@ -10,7 +10,7 @@ TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
 {
     I2cControl *i2c = new I2cControl(1);
     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *ptr_remoteWeatherData = new WeatherSensor();
+    WeatherSensor *ptr_remoteWeatherData = new WeatherSensor("TestName", "weather");
     rsd.get_RemoteWeatherSenData(ptr_remoteWeatherData);
 
     printf("Remote Sensor ID: %s\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.sensorID);
@@ -27,7 +27,7 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
 {
     I2cControl *i2c = new I2cControl(1);
     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *ptr_localWeatherData = new WeatherSensor();
+    WeatherSensor *ptr_localWeatherData = new WeatherSensor("TestName", "weather");
     rsd.get_LocalWeatherData(ptr_localWeatherData);
 
     printf("Sensor ID: %s\n", ptr_localWeatherData->weatherSensorUnion.tsd.sensorID);
@@ -44,7 +44,7 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_and_check_data_persistenc
 {
     I2cControl *i2c = new I2cControl(1);
     RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *ptr_localWeatherData = new WeatherSensor();
+    WeatherSensor *ptr_localWeatherData = new WeatherSensor("TestName", "weather");
     rsd.get_LocalWeatherData(ptr_localWeatherData);
 
     cout << "Sensor ID: " << ptr_localWeatherData->get_sensorID() << endl;

@@ -5,6 +5,8 @@
 #ifndef WEATHERSTATIONPLUS_MAIN_H
 #define WEATHERSTATIONPLUS_MAIN_H
 
-void getNewSensorData();
+#include "data/DynamicSensorFactory.hpp"
+#include "RetrieveSenData.hpp"
+#include "i2cControl.hpp"
 
 #endif //WEATHERSTATIONPLUS_MAIN_H
