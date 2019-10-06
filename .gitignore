@@ -9,3 +9,4 @@ test/coverage/*
 /cmake-build-remotedebug/
 /cmake-build-debug/
 .idea/workspace.xml
+/cmake-build-rasppi-build-local/
