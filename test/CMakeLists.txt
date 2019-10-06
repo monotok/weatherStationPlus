@@ -84,6 +84,15 @@ add_executable(test_dynamsensorfact
         unit/src/myGtestMain.cpp
         )
 
+add_executable(test_retrievesendata
+        unit/src/test_retrievesendata.cpp
+        ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
+        ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
+        ${MAIN_PROJECT_DIR}/src/sensor/retrieveSenData.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        unit/src/myGtestMain.cpp
+        )
+
 add_executable(test_lcdcontroller
         unit/src/test_lcdcontroller.cpp
         ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
@@ -99,6 +108,7 @@ target_link_libraries(test_btncontrol gtest)
 target_link_libraries(test_dynamsensorfact gtest)
 target_link_libraries(test_all_unit gtest)
 target_link_libraries(test_lcdcontroller gtest)
+target_link_libraries(test_retrievesendata gtest)
 
 add_custom_target(cov
         COMMAND mkdir -p ${COVERAGE_DIR}
