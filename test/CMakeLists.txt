@@ -1,7 +1,7 @@
 project(Google_Test_Suit)
 
 #Set the flags for testing
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -Wall -DELPP_NO_DEFAULT_LOG_FILE -fprofile-arcs -ftest-coverage")
+set(CMAKE_CXX_FLAGS_DEBUG "-DELPP_NO_DEFAULT_LOG_FILE -ftest-coverage ${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 #Stop gcno being prepended with file type as GOV can't find them
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
@@ -86,6 +86,7 @@ add_executable(test_dynamsensorfact
 
 add_executable(test_retrievesendata
         unit/src/test_retrievesendata.cpp
+        ${MAIN_PROJECT_DIR}/src/data/DynamicSensorFactory.cpp
         ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
         ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
         ${MAIN_PROJECT_DIR}/src/sensor/retrieveSenData.cpp
@@ -106,7 +107,7 @@ add_executable(test_lcdcontroller
 
 target_link_libraries(test_btncontrol gtest)
 target_link_libraries(test_dynamsensorfact gtest)
-target_link_libraries(test_all_unit gtest)
+target_link_libraries(test_all_unit gtest rt) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest)
 target_link_libraries(test_retrievesendata gtest)
 

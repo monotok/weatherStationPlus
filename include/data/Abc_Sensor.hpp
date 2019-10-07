@@ -16,7 +16,6 @@ class Sensor
   public:
     Sensor(string sensorName, string sensorType){ set_sensorID(sensorName); set_sensorType(sensorType); };
     virtual ~Sensor(){};
-    virtual void persistData() = 0;
 
     void set_sensorID(string sensorName) { this->sensorName = sensorName; }
     void set_sensorType(string sensorType) { this->sensorType = sensorType; }
