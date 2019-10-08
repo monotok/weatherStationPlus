@@ -9,4 +9,8 @@
 #include "RetrieveSenData.hpp"
 #include "i2cControl.hpp"
 
+#include <thread>
+
+void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr);
+
 #endif //WEATHERSTATIONPLUS_MAIN_H
