@@ -14,8 +14,8 @@ public:
   ~WeatherSensor(){};
 
   //Sensor Values
-  float get_temperature() { return this->temperature; }
-  float get_humidity() { return this->humidity; }
+  float get_temperature() { return this->temperature/100; }
+  float get_humidity() { return this->humidity/100; }
 
     //Sensor Values
     void set_humidity(float humidity) { this->humidity = humidity; }
