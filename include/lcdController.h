@@ -24,7 +24,7 @@ class LcdController
 public:
     void createWeatherPage(WeatherSensor* ws);
     void drawPage(string SensorName, LcdDriver lcd);
-    void updatePageValues(WeatherSensor* ws);
+    void updatePageValues(WeatherSensor* ws, LcdDriver lcd);
 
 private:
     struct Pageitem {

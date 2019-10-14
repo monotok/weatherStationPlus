@@ -36,7 +36,7 @@ void LcdController::drawPage(string SensorName, LcdDriver lcd)
     }
 }
 
-void LcdController::updatePageValues(WeatherSensor* ws)
+void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver lcd)
 {
     pm_iter = pages_map.find(ws->get_sensorID());
     if(pm_iter != pages_map.end())
@@ -47,11 +47,21 @@ void LcdController::updatePageValues(WeatherSensor* ws)
             {
                 if(pi_iter->id == "temp")
                 {
-                    pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_temperature());
+                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_temperature()))
+                    {
+                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_temperature());
+                        lcd.setCursorPositionRowCol(pi_iter->row_start, pi_iter->col_start);
+                        lcd.lcdString(pi_iter->value.c_str());
+                    }
                 }
                 if(pi_iter->id == "hum")
                 {
-                    pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_humidity());
+                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_humidity()))
+                    {
+                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_humidity());
+                        lcd.setCursorPositionRowCol(pi_iter->row_start, pi_iter->col_start);
+                        lcd.lcdString(pi_iter->value.c_str());
+                    }
                 }
             }
         }
