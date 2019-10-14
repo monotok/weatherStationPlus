@@ -5,6 +5,7 @@
 #include "../../../include/data/WeatherSensor.hpp"
 
 #define I2C_ADDR 0x04
+#define private public
 
 TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
 {
@@ -57,11 +58,11 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     I2cControl *i2c = new I2cControl(1);
     i2c->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c->readI2c(weatherSensorUnionRemote.packet, 14);
+    i2c->readI2c(I2C_ADDR, weatherSensorUnionRemote.packet, 14);
 
     i2c->writeByte(I2C_ADDR, 0);
     usleep(50000);
-    i2c->readI2c(weatherSensorUnionLocal.packet, 14);
+    i2c->readI2c(I2C_ADDR, weatherSensorUnionLocal.packet, 14);
 
     EXPECT_STREQ("Here", weatherSensorUnionLocal.tsd.sensorID);
     EXPECT_STREQ("BackBed", weatherSensorUnionRemote.tsd.sensorID);

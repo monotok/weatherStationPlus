@@ -22,17 +22,21 @@
 #include <fcntl.h>         //Needed for I2C port
 #include <sys/ioctl.h>     //Needed for I2C port
 #include <linux/i2c-dev.h> //Needed for I2C port
+#include <mutex>
+#include <thread>
+#include <string>
 
 class I2cControl
 {
 private:
   int file_i2c;
   unsigned char I2C_ADDR;
-  void error(const char *msg);
+  void error(std::string msg);
+  std::mutex mu;
 
 public:
   I2cControl(int i2cNumber);
-  void readI2c(char *buffer, int length);
+  void readI2c(unsigned char address, char *buffer, int length);
   void writeByte(unsigned char address, unsigned char byte);
 };
 #endif // i2c control
