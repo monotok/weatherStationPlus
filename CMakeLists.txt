@@ -9,7 +9,7 @@ project(weatherStationPlus)
 set(CMAKE_CXX_STANDARD 11)
 
 # Complier Flags
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -DELPP_NO_DEFAULT_LOG_FILE")
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -DELPP_NO_DEFAULT_LOG_FILE ${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE")
 
 #Output folders
@@ -30,7 +30,9 @@ set(MAIN_SOURCE_FILES src/main.cpp
         src/logging/easylogging++.cpp
         src/sensor/retrieveSenData.cpp
         src/data/DynamicSensorFactory.cpp
-        src/hal/i2cControl.cpp)
+        src/hal/i2cControl.cpp
+        src/hal/lcdDriver.cpp
+        src/controller/lcdController.cpp)
 
 add_executable(DynamSensors ${DYNAM_SOURCE_FILES})
 add_executable(TestLCD ${LCD_SOURCE_FILES})
