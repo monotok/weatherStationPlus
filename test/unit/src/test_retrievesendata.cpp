@@ -67,3 +67,27 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     EXPECT_STREQ("Here", weatherSensorUnionLocal.tsd.sensorID);
     EXPECT_STREQ("BackBed", weatherSensorUnionRemote.tsd.sensorID);
 }
+
+TEST(RetrieveSenData, check_incoming_data_valid)
+{
+    I2cControl *i2c = new I2cControl(1);
+    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
+    string str = "Valid";
+    strcpy(rsd.weatherSensorUnion.tsd.sensorID, str.c_str());
+    rsd.weatherSensorUnion.tsd.temperature = 3444;
+    rsd.weatherSensorUnion.tsd.perBatt = 8845;
+
+    EXPECT_TRUE(rsd.check_imcoming_data());
+}
+
+TEST(RetrieveSenData, check_incoming_data_invalid)
+{
+    I2cControl *i2c = new I2cControl(1);
+    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
+    string str = "Valid";
+    strcpy(rsd.weatherSensorUnion.tsd.sensorID, str.c_str());
+    rsd.weatherSensorUnion.tsd.temperature = 27521;
+    rsd.weatherSensorUnion.tsd.perBatt = -8845;
+
+    EXPECT_FALSE(rsd.check_imcoming_data());
+}

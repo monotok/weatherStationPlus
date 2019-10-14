@@ -21,6 +21,7 @@ private:
   int temporaryStructSize = sizeof(weatherSensorUnion.tsd);
   int get_temporaryStructSize()  { return this->temporaryStructSize; }
   string get_retrievedSensorName() { string s(weatherSensorUnion.tsd.sensorID); return s; }
+  bool check_imcoming_data();
 
     typedef struct tempSensorData
     {
