@@ -9,7 +9,9 @@
           </mappings>
           <excludedPaths>
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-remotedebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-asan" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rasppi-build-local" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-asan-pi" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
           </excludedPaths>
         </serverdata>

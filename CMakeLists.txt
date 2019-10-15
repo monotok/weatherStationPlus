@@ -9,8 +9,10 @@ project(weatherStationPlus)
 set(CMAKE_CXX_STANDARD 11)
 
 # Complier Flags
-set(CMAKE_CXX_FLAGS_DEBUG "-Wall -g -DELPP_NO_DEFAULT_LOG_FILE ${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wextra -DELPP_NO_DEFAULT_LOG_FILE -D_DEBUG")
 set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE")
+
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-fsanitize=address -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 
 #Output folders
 set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
@@ -39,7 +41,10 @@ add_executable(TestLCD ${LCD_SOURCE_FILES})
 add_executable(GPIOTest ${GPIO_SOURCE_FILES})
 add_executable(weatherStationPlus ${MAIN_SOURCE_FILES})
 
-target_link_libraries(weatherStationPlus pthread)
+target_link_libraries(weatherStationPlus
+        pthread
+        -fno-omit-frame-pointer
+        -fsanitize=address)
 
 set(lfc "\"~/.config/wsp/logging.conf\"")
 if (lfc)

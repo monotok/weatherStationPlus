@@ -10,3 +10,5 @@ test/coverage/*
 /cmake-build-debug/
 .idea/workspace.xml
 /cmake-build-rasppi-build-local/
+/cmake-build-asan/
+/cmake-build-asan-pi/

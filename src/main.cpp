@@ -31,7 +31,7 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
         rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
         WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
-        LOG(INFO) << "Remote ID: " << remote->get_sensorID() << "\n"
+        LOG(INFO) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
                    << "Remote Temp: " << Utilities::to_string_with_precision<float>(remote->get_temperature()) << "\n"
                    << "Remote Humidity: " << Utilities::to_string_with_precision<float>(remote->get_humidity()) << endl;
 
