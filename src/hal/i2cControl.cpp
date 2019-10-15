@@ -25,7 +25,7 @@ using namespace std;
 
 I2cControl::I2cControl(int i2cBusNumber)
 {
-	char i2cBus[10];
+	char i2cBus[12];
 	sprintf(i2cBus, "/dev/i2c-%i", i2cBusNumber);
 	//----- OPEN THE I2C BUS -----
 	char *filename = (char *)i2cBus;
