@@ -31,7 +31,7 @@ int main (int argc, char** argv)
     }
 
     START_EASYLOGGINGPP(argc, argv);
-    el::Configurations conf("../conf/logging.conf");
+    el::Configurations conf("conf/logging.conf");
     el::Loggers::reconfigureAllLoggers(conf);
 
     LOG(INFO) << "Testing........";
