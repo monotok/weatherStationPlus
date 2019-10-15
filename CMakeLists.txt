@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 # Complier Flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -Wall -Wextra -DELPP_NO_DEFAULT_LOG_FILE -D_DEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE")
+set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE" -O2)
 
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-fsanitize=address -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 
@@ -42,9 +42,14 @@ add_executable(GPIOTest ${GPIO_SOURCE_FILES})
 add_executable(weatherStationPlus ${MAIN_SOURCE_FILES})
 
 target_link_libraries(weatherStationPlus
-        pthread
-        -fno-omit-frame-pointer
-        -fsanitize=address)
+        pthread)
+
+if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
+    target_link_libraries(weatherStationPlus
+            pthread
+            -fno-omit-frame-pointer
+            -fsanitize=address)
+endif()
 
 set(lfc "\"~/.config/wsp/logging.conf\"")
 if (lfc)
