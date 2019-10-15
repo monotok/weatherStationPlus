@@ -42,11 +42,16 @@ add_executable(GPIOTest ${GPIO_SOURCE_FILES})
 add_executable(weatherStationPlus ${MAIN_SOURCE_FILES})
 
 target_link_libraries(weatherStationPlus
-        pthread)
+        pthread
+        rt)
+
+target_link_libraries(GPIOTest
+        rt)
 
 if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     target_link_libraries(weatherStationPlus
             pthread
+            rt
             -fno-omit-frame-pointer
             -fsanitize=address)
 endif()

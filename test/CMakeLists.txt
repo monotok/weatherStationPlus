@@ -108,7 +108,7 @@ add_executable(test_lcdcontroller
 target_link_libraries(test_btncontrol gtest)
 target_link_libraries(test_dynamsensorfact gtest)
 target_link_libraries(test_all_unit gtest rt) #Need rt for Utilites get time
-target_link_libraries(test_lcdcontroller gtest)
+target_link_libraries(test_lcdcontroller gtest rt)
 target_link_libraries(test_retrievesendata gtest)
 
 add_custom_target(cov
