@@ -43,11 +43,11 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void updateLcdWeatherPage(WeatherSensor* ws, LcdController* lcdc_ptr, LcdDriver* lcd_ptr)
+void updateLcdWeatherPage(WeatherSensor* ws, LcdController* lcdc_ptr, LcdDriver lcd)
 {
     while(true)
     {
-        lcdc_ptr->updatePageValues(ws, *lcd_ptr);
+        lcdc_ptr->updatePageValues(ws, lcd);
         usleep(5000000);
     }
 
@@ -60,8 +60,8 @@ int main(int argc, char** argv)
     el::Configurations conf("conf/logging.conf");
     el::Loggers::reconfigureAllLoggers(conf);
 
-    DynamicSensorFactory dsf = DynamicSensorFactory();
-    I2cControl* i2c = new I2cControl(i2cbusno);
+    DynamicSensorFactory dsf;
+    auto* i2c = new I2cControl(i2cbusno);
     LcdController lcdc;
     LcdDriver lcd(LCD_ADDRESS, i2c);
 
@@ -74,10 +74,11 @@ int main(int argc, char** argv)
     lcdc.drawPage("Here", lcd);
 
     // Create another thread to draw to the LCD display
-    std::thread updatingLcd (updateLcdWeatherPage, dsf.getWeatherSensor_ptr("Here"), &lcdc, &lcd);
+    std::thread updatingLcd (updateLcdWeatherPage, dsf.getWeatherSensor_ptr("Here"), &lcdc, lcd);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
     //Join the threads
     gettingSensorData.join();
+    updatingLcd.join();
 
 }
