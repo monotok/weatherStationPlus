@@ -16,24 +16,24 @@ using namespace std;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr)
+void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
 {
-    RetrieveSenData rsd = RetrieveSenData(i2c_ptr, ATMEGA_ADDRESS);
+    RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, ATMEGA_ADDRESS);
     while(true)
     {
         rsd.get_LocalWeatherData(dynamsensors_ptr);
         WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
         LOG(INFO) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
-                   << "Local Temp: " << Utilities::to_string_with_precision<float>(here->get_temperature()) << "\n"
-                   << "Local Humidity: " << Utilities::to_string_with_precision<float>(here->get_humidity()) << endl;
+                   << "Local Temp: " << Utilities::to_string_with_precision<float>(here->get_temperature(), 2) << "\n"
+                   << "Local Humidity: " << Utilities::to_string_with_precision<float>(here->get_humidity(), 2) << endl;
 
         usleep(3000000);
 
         rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
         WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
         LOG(INFO) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
-                   << "Remote Temp: " << Utilities::to_string_with_precision<float>(remote->get_temperature()) << "\n"
-                   << "Remote Humidity: " << Utilities::to_string_with_precision<float>(remote->get_humidity()) << endl;
+                   << "Remote Temp: " << Utilities::to_string_with_precision<float>(remote->get_temperature(), 2) << "\n"
+                   << "Remote Humidity: " << Utilities::to_string_with_precision<float>(remote->get_humidity(), 2) << endl;
 
         usleep(3000000);
     }
@@ -54,6 +54,8 @@ void updateLcdWeatherPage(WeatherSensor* ws, LcdController* lcdc_ptr, LcdDriver 
 }
 #pragma clang diagnostic pop
 
+//void detect
+
 int main(int argc, char** argv)
 {
     START_EASYLOGGINGPP(argc, argv);
@@ -66,15 +68,14 @@ int main(int argc, char** argv)
     LcdDriver lcd(LCD_ADDRESS, i2c);
 
     //Start a new thread getting new sensors
-    std::thread gettingSensorData (getNewSensorData, &dsf, i2c);
+    std::thread gettingSensorData (getNewSensorData, &dsf, i2c, &lcdc);
     LOG(INFO) << "Starting the getting sensor data thread. ID: "
          << gettingSensorData.get_id() << endl;
     usleep(5000000);
-    lcdc.createWeatherPage(dsf.getWeatherSensor_ptr("Here"));
-    lcdc.drawPage("Here", lcd);
+    lcdc.drawPage("BackBed", lcd);
 
     // Create another thread to draw to the LCD display
-    std::thread updatingLcd (updateLcdWeatherPage, dsf.getWeatherSensor_ptr("Here"), &lcdc, lcd);
+    std::thread updatingLcd (updateLcdWeatherPage, dsf.getWeatherSensor_ptr("BackBed"), &lcdc, lcd);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
     //Join the threads

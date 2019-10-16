@@ -12,7 +12,7 @@ class Utilities
     static uint64_t getMicrotime();
 
     template <typename T>
-    static string to_string_with_precision(const T a_value, const int n = 2)
+    static string to_string_with_precision(const T a_value, int n)
     {
         ostringstream out;
         out.precision(n);

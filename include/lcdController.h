@@ -35,6 +35,11 @@ private:
         string value;
     };
 
+    bool existingWeatherPage(string SensorName);
+    void drawElementToLCD(LcdDriver lcd);
+    void checkValuesFitLcd();
+    void checkValuesFitLcd(float newValue, LcdDriver lcd);
+
     map<string, vector<Pageitem>> pages_map;
     map<string, vector<Pageitem>>::iterator pm_iter;
     vector<Pageitem>::iterator pi_iter;

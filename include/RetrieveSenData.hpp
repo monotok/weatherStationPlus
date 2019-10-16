@@ -4,6 +4,7 @@
 #include "data/WeatherSensor.hpp"
 #include "data/DynamicSensorFactory.hpp"
 #include "i2cControl.hpp"
+#include "lcdController.h"
 
 static const int GET_LOCAL_DATA = 0;
 static const int GET_REMOTE_DATA = 1;
@@ -11,12 +12,13 @@ static const int GET_REMOTE_DATA = 1;
 class RetrieveSenData
 {
 public:
-  RetrieveSenData(I2cControl *, unsigned char);
+  RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char);
   void get_RemoteWeatherSenData(DynamicSensorFactory *);
   void get_LocalWeatherData(DynamicSensorFactory *);
 
 private:
   I2cControl *i2c_controller;
+  LcdController *lcd_controller;
   unsigned char I2C_ADDR;
   int temporaryStructSize = sizeof(weatherSensorUnion.tsd);
   int get_temporaryStructSize()  { return this->temporaryStructSize; }

@@ -3,9 +3,10 @@
 
 using namespace std;
 
-RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, unsigned char I2C_ADDR)
+RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, LcdController* lcdc, unsigned char I2C_ADDR)
 {
     this->i2c_controller = i2c_controller;
+    this->lcd_controller = lcdc;
     this->I2C_ADDR = I2C_ADDR;
 }
 
@@ -21,6 +22,7 @@ void RetrieveSenData::get_LocalWeatherData(DynamicSensorFactory *ptr_dsf)
     if(check_imcoming_data())
     {
         WeatherSensor* temp = ptr_dsf->getWeatherSensor_ptr(get_retrievedSensorName());
+        this->lcd_controller->createWeatherPage(temp);
         temp->set_temperature(weatherSensorUnion.tsd.temperature);
         temp->set_humidity(weatherSensorUnion.tsd.perBatt);
     }
@@ -38,6 +40,7 @@ void RetrieveSenData::get_RemoteWeatherSenData(DynamicSensorFactory *ptr_dsf)
     if(check_imcoming_data())
     {
         WeatherSensor* temp = ptr_dsf->getWeatherSensor_ptr(get_retrievedSensorName());
+        this->lcd_controller->createWeatherPage(temp);
         temp->set_temperature(weatherSensorUnion.tsd.temperature);
         temp->set_humidity(weatherSensorUnion.tsd.perBatt);
     }

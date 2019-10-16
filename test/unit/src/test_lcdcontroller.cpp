@@ -6,7 +6,7 @@
 #define private public
 
 #define lcdAdd 0x3f // I2C device address
-#define i2cbusno 1
+#define i2cbusno 3
 
 #include "../../../include/data/WeatherSensor.hpp"
 #include "../../../include/lcdController.h"
@@ -18,9 +18,9 @@
 TEST(LcdController, create_new_weather_page_struct_independant)
 {
     WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
-    ws1->set_temperature(36);
+    ws1->set_temperature(3600);
     WeatherSensor* ws2 = new WeatherSensor("weather2", "weather");
-    ws2->set_temperature(25);
+    ws2->set_temperature(2500);
 
     LcdController lcdc;
     lcdc.createWeatherPage(ws1);
@@ -37,14 +37,26 @@ TEST(LcdController, create_new_weather_page_struct_independant)
 
 }
 
+TEST(LcdController, check_for_existing_weather_sensor)
+{
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+
+    LcdController lcdc;
+    lcdc.createWeatherPage(ws1);
+
+    EXPECT_EQ(lcdc.existingWeatherPage("weather1"), true);
+    EXPECT_EQ(lcdc.existingWeatherPage("weather2"), false);
+
+}
+
 TEST(LcdController, draw_basic_page_to_lcd)
 {
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
 
     WeatherSensor* ws1 = new WeatherSensor("mysensor", "weather");
-    ws1->set_temperature(27.8);
-    ws1->set_humidity(45.0);
+    ws1->set_temperature(2708);
+    ws1->set_humidity(4500);
     LcdController lcdc;
     lcdc.createWeatherPage(ws1);
 
@@ -57,8 +69,8 @@ TEST(LcdController, update_values_only_on_existing_page)
     LcdDriver lcd(lcdAdd, i2c);
 
     WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
-    ws1->set_temperature(36);
-    ws1->set_humidity(79);
+    ws1->set_temperature(3600);
+    ws1->set_humidity(7900);
 
     LcdController lcdc;
     lcdc.createWeatherPage(ws1);
@@ -69,10 +81,10 @@ TEST(LcdController, update_values_only_on_existing_page)
     EXPECT_EQ(found1->second[3].value, "36.00");
     EXPECT_EQ(found1->second[5].value, "79.00");
 
-    ws1->set_temperature(24);
-    ws1->set_humidity(56);
+    ws1->set_temperature(2400);
+    ws1->set_humidity(5600);
 
-    lcdc.updatePageValues(ws1);
+    lcdc.updatePageValues(ws1, lcd);
     EXPECT_EQ(found1->second[3].value, "24.00");
     EXPECT_EQ(found1->second[5].value, "56.00");
 

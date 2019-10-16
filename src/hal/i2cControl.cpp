@@ -39,7 +39,7 @@ I2cControl::I2cControl(int i2cBusNumber)
 void I2cControl::writeByte(unsigned char address, unsigned char byte)
 {
     lock_guard<mutex> guard(mu);
-    usleep(10000);
+//    usleep(10000);
     if (address != this->I2C_ADDR)
 	{
 		this->I2C_ADDR = address;
@@ -66,7 +66,7 @@ void I2cControl::readI2c(unsigned char address, char *buffer, int length)
 {
 	//----- READ BYTES -----
     lock_guard<mutex> guard(mu);
-    usleep(10000);
+//    usleep(10000);
     if (address != this->I2C_ADDR)
     {
         this->I2C_ADDR = address;
