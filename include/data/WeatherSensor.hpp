@@ -6,8 +6,8 @@
 class WeatherSensor : public Sensor
 {
 private:
-  float temperature;
-  float humidity;
+  float temperature = 0.0;
+  float humidity = 0.0;
 
 public:
     WeatherSensor(string SensorName, string SensorType) : Sensor(SensorName, SensorType) {};
