@@ -25,6 +25,7 @@ public:
     void createWeatherPage(WeatherSensor* ws);
     void drawPage(string SensorName, LcdDriver lcd);
     void updatePageValues(WeatherSensor* ws, LcdDriver lcd);
+    string getNextPage(string CurrentPage);
 
 private:
     struct Pageitem {

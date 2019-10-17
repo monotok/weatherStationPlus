@@ -25,6 +25,21 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
     }
 }
 
+string LcdController::getNextPage(string CurrentPage)
+{
+    pm_iter = pages_map.find(CurrentPage);
+    if(pm_iter != pages_map.end())
+    {
+        pm_iter = next(pm_iter, 1);
+        if(pm_iter == pages_map.end())
+        {
+            pm_iter = pages_map.begin();
+        }
+        return pm_iter->first;
+    }
+    return "No Pages";
+}
+
 bool LcdController::existingWeatherPage(string SensorName)
 {
     pm_iter = pages_map.find(SensorName);

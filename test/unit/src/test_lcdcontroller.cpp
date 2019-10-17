@@ -37,6 +37,28 @@ TEST(LcdController, create_new_weather_page_struct_independant)
 
 }
 
+TEST(LcdController, iterate_over_pages_onebyone)
+{
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+    ws1->set_temperature(3600);
+    WeatherSensor* ws2 = new WeatherSensor("weather2", "weather");
+    ws2->set_temperature(2500);
+    WeatherSensor* ws3 = new WeatherSensor("weather3", "weather");
+    ws2->set_temperature(2500);
+    WeatherSensor* ws4 = new WeatherSensor("weather4", "weather");
+    ws2->set_temperature(2500);
+
+    LcdController lcdc;
+    lcdc.createWeatherPage(ws1);
+    lcdc.createWeatherPage(ws2);
+    lcdc.createWeatherPage(ws3);
+    lcdc.createWeatherPage(ws4);
+
+    EXPECT_EQ(lcdc.getNextPage("weather1"), "weather2");
+    EXPECT_EQ(lcdc.getNextPage("weather4"), "weather1");
+
+}
+
 TEST(LcdController, check_for_existing_weather_sensor)
 {
     WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
