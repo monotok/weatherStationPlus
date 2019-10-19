@@ -10,9 +10,13 @@
 #include "i2cControl.hpp"
 #include "lcdController.h"
 #include "lcdDriver.hpp"
+#include "GPIOControl.hpp"
+#include "BtnControl.hpp"
 
 #include <thread>
 
 //void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr);
+
+string currentPage = "Here";
 
 #endif //WEATHERSTATIONPLUS_MAIN_H

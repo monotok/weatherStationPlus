@@ -23,7 +23,7 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
     {
         rsd.get_LocalWeatherData(dynamsensors_ptr);
         WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
-        LOG(INFO) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
+        LOG(DEBUG) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
                    << "Local Temp: " << Utilities::to_string_with_precision<float>(here->get_temperature(), 2) << "\n"
                    << "Local Humidity: " << Utilities::to_string_with_precision<float>(here->get_humidity(), 2) << endl;
 
@@ -31,7 +31,7 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
         rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
         WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
-        LOG(INFO) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
+        LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
                    << "Remote Temp: " << Utilities::to_string_with_precision<float>(remote->get_temperature(), 2) << "\n"
                    << "Remote Humidity: " << Utilities::to_string_with_precision<float>(remote->get_humidity(), 2) << endl;
 
@@ -43,18 +43,41 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void updateLcdWeatherPage(WeatherSensor* ws, LcdController* lcdc_ptr, LcdDriver lcd)
+void updateLcdWeatherPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver lcd)
 {
     while(true)
     {
-        lcdc_ptr->updatePageValues(ws, lcd);
+        lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), lcd);
         usleep(5000000);
     }
 
 }
 #pragma clang diagnostic pop
 
-//void detect
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+void detectbtnpress(LcdController *lcdc, LcdDriver lcd)
+{
+    GPIOControl gpio17 = GPIOControl("17");
+    gpio17.g_setdir("in");
+    BtnState bs;
+
+    while(true)
+    {
+        bs.initBtnState(&gpio17);
+        if(bs.debounceBtn())
+        {
+            LOG(DEBUG) << "Button Pressed";
+            currentPage = lcdc->getNextPage(currentPage);
+            lcd.clearDisplayClearMem();
+            lcdc->drawPage(currentPage, lcd);
+        }
+        bs.reInitBtnState();
+        usleep(50000);
+    }
+
+}
+#pragma clang diagnostic pop
 
 int main(int argc, char** argv)
 {
@@ -72,14 +95,20 @@ int main(int argc, char** argv)
     LOG(INFO) << "Starting the getting sensor data thread. ID: "
          << gettingSensorData.get_id() << endl;
     usleep(5000000);
-    lcdc.drawPage("BackBed", lcd);
+    lcdc.drawPage(currentPage, lcd);
+    //Create a thread for the buttons
+    std::thread listenForBtns (detectbtnpress, &lcdc, lcd);
+    LOG(INFO) << "Starting the button listener thread. ID: "
+              << listenForBtns.get_id() << endl;
+
 
     // Create another thread to draw to the LCD display
-    std::thread updatingLcd (updateLcdWeatherPage, dsf.getWeatherSensor_ptr("BackBed"), &lcdc, lcd);
+    std::thread updatingLcd (updateLcdWeatherPage, &dsf, &lcdc, lcd);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
     //Join the threads
     gettingSensorData.join();
     updatingLcd.join();
+    listenForBtns.join();
 
 }

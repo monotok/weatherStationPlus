@@ -34,7 +34,10 @@ set(MAIN_SOURCE_FILES src/main.cpp
         src/data/DynamicSensorFactory.cpp
         src/hal/i2cControl.cpp
         src/hal/lcdDriver.cpp
-        src/controller/lcdController.cpp)
+        src/controller/lcdController.cpp
+        src/hal/GPIOControl.cpp
+        src/hwcontrol/BtnControl.cpp
+        src/tools/Utilities.cpp)
 
 add_executable(DynamSensors ${DYNAM_SOURCE_FILES})
 add_executable(TestLCD ${LCD_SOURCE_FILES})

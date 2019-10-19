@@ -46,6 +46,7 @@ void RetrieveSenData::get_RemoteWeatherSenData(DynamicSensorFactory *ptr_dsf)
     }
 }
 
+//TODO: Fix this because it is checking the value of I and not the sensorID
 bool RetrieveSenData::check_imcoming_data()
 {
     for(int i = 0; i <= sizeof(weatherSensorUnion.tsd.sensorID); i++)
