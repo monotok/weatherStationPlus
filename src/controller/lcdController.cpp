@@ -8,25 +8,32 @@
 //TODO: Set the values to blank string or zero
 void LcdController::createWeatherPage(WeatherSensor* ws)
 {
+    lock_guard<mutex> guard(lcdcMu);
     if( ! existingWeatherPage(ws->get_sensorID()))
     {
         Pageitem sensorID = {"sensorID", 1, 0, FIXED, "SensorID:"};
         Pageitem sensorID_val = {"sensorID",1, 10, VAR, ws->get_sensorID()};
         Pageitem temp = {"temp", 2,0,FIXED, "Temp"};
         Pageitem temp_val = {"temp", 2,5,VAR,
-                             Utilities::to_string_with_precision<float>(ws->get_temperature(), 2)};
-        Pageitem hum = {"hum", 2,11,FIXED, "Hum"};
+                             Utilities::to_string_with_precision<float>(ws->get_temperature(), 1)+"C"};
+        Pageitem hum;
+        if(strcmp(ws->get_sensorID().c_str(), "Here") == 0)
+            hum = {"hum", 2,11,FIXED, "Hum"};
+        else
+            hum = {"hum", 2,11,FIXED, "Bat"};
         Pageitem hum_val = {"hum", 2,15,VAR,
-                            Utilities::to_string_with_precision<float>(ws->get_humidity(), 2)};
+                            Utilities::to_string_with_precision<float>(ws->get_humidity(), 1)+"%"};
 
         vector<Pageitem> items{sensorID, sensorID_val, temp, temp_val, hum, hum_val};
 
         pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
+        LOG(INFO) << "Created a new weather page for " << ws->get_sensorID() << endl;
     }
 }
 
 string LcdController::getNextPage(string CurrentPage)
 {
+    lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(CurrentPage);
     if(pm_iter != pages_map.end())
     {
@@ -58,7 +65,7 @@ void LcdController::checkValuesFitLcd()
     {
         float valFloat = stof(pi_iter->value);
         if(valFloat > 99.99){
-            pi_iter->value = Utilities::to_string_with_precision<float>(valFloat, 1);
+            pi_iter->value = Utilities::to_string_with_precision<float>(valFloat, 0);
         }
     }
 }
@@ -75,6 +82,7 @@ void LcdController::checkValuesFitLcd(float newValue, LcdDriver lcd)
 // TODO: Need to prevent left over chars on display when writing a new smaller value
 void LcdController::drawPage(string SensorName, LcdDriver lcd)
 {
+    lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(SensorName);
     if(pm_iter != pages_map.end())
     {
@@ -92,6 +100,7 @@ void LcdController::drawPage(string SensorName, LcdDriver lcd)
 
 void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver lcd)
 {
+    lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(ws->get_sensorID());
     if(pm_iter != pages_map.end())
     {
@@ -102,20 +111,20 @@ void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver lcd)
                 if(pi_iter->id == "temp")
                 {
                     checkValuesFitLcd();
-                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_temperature(), 2))
+                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_temperature(), 1)+"C")
                     {
                         checkValuesFitLcd(ws->get_temperature(), lcd);
-                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_temperature(), 2);
+                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_temperature(), 1)+"C";
                         checkValuesFitLcd();
                         drawElementToLCD(lcd);
                     }
                 }
                 if(pi_iter->id == "hum")
                 {
-                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_humidity(), 2))
+                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_humidity(), 1)+"%")
                     {
                         checkValuesFitLcd(ws->get_humidity(), lcd);
-                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_humidity(), 2);
+                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_humidity(), 1)+"%";
                         checkValuesFitLcd();
                         drawElementToLCD(lcd);
                     }

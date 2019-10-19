@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <thread>
 #include "data/WeatherSensor.hpp""
 #include "../include/i2cControl.hpp"
 #include "../include/lcdDriver.hpp"
@@ -45,6 +46,7 @@ private:
     map<string, vector<Pageitem>>::iterator pm_iter;
     vector<Pageitem>::iterator pi_iter;
 
+    mutex lcdcMu;
 };
 
 #endif //WEATHERSTATIONPLUS_LCDCONTROLLER_H
