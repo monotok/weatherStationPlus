@@ -14,15 +14,13 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
         Pageitem sensorID = {"sensorID", 1, 0, FIXED, "SensorID:"};
         Pageitem sensorID_val = {"sensorID",1, 10, VAR, ws->get_sensorID()};
         Pageitem temp = {"temp", 2,0,FIXED, "Temp"};
-        Pageitem temp_val = {"temp", 2,5,VAR,
-                             Utilities::to_string_with_precision<float>(ws->get_temperature(), 1)+"C"};
+        Pageitem temp_val = {"temp", 2,5,VAR, ws->get_temperature()};
         Pageitem hum;
         if(strcmp(ws->get_sensorID().c_str(), "Here") == 0)
             hum = {"hum", 2,11,FIXED, "Hum"};
         else
             hum = {"hum", 2,11,FIXED, "Bat"};
-        Pageitem hum_val = {"hum", 2,15,VAR,
-                            Utilities::to_string_with_precision<float>(ws->get_humidity(), 1)+"%"};
+        Pageitem hum_val = {"hum", 2,15,VAR, ws->get_humidity()};
 
         vector<Pageitem> items{sensorID, sensorID_val, temp, temp_val, hum, hum_val};
 
@@ -111,20 +109,20 @@ void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver lcd)
                 if(pi_iter->id == "temp")
                 {
                     checkValuesFitLcd();
-                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_temperature(), 1)+"C")
+                    if (pi_iter->value != ws->get_temperature())
                     {
-                        checkValuesFitLcd(ws->get_temperature(), lcd);
-                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_temperature(), 1)+"C";
+                        checkValuesFitLcd(ws->get_temperature_float(), lcd);
+                        pi_iter->value = ws->get_temperature();
                         checkValuesFitLcd();
                         drawElementToLCD(lcd);
                     }
                 }
                 if(pi_iter->id == "hum")
                 {
-                    if (pi_iter->value != Utilities::to_string_with_precision<float>(ws->get_humidity(), 1)+"%")
+                    if (pi_iter->value != ws->get_humidity())
                     {
-                        checkValuesFitLcd(ws->get_humidity(), lcd);
-                        pi_iter->value = Utilities::to_string_with_precision<float>(ws->get_humidity(), 1)+"%";
+                        checkValuesFitLcd(ws->get_humidity_float(), lcd);
+                        pi_iter->value = ws->get_humidity();
                         checkValuesFitLcd();
                         drawElementToLCD(lcd);
                     }

@@ -24,16 +24,16 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
         rsd.get_LocalWeatherData(dynamsensors_ptr);
         WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
         LOG(DEBUG) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
-                   << "Local Temp: " << Utilities::to_string_with_precision<float>(here->get_temperature(), 2) << "\n"
-                   << "Local Humidity: " << Utilities::to_string_with_precision<float>(here->get_humidity(), 2) << endl;
+                   << "Local Temp: " << here->get_temperature_float() << "\n"
+                   << "Local Humidity: " << here->get_humidity_float() << endl;
 
         usleep(3000000);
 
         rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
         WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
         LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
-                   << "Remote Temp: " << Utilities::to_string_with_precision<float>(remote->get_temperature(), 2) << "\n"
-                   << "Remote Humidity: " << Utilities::to_string_with_precision<float>(remote->get_humidity(), 2) << endl;
+                   << "Remote Temp: " << remote->get_temperature_float() << "\n"
+                   << "Remote Humidity: " << remote->get_humidity_float() << endl;
 
         usleep(3000000);
     }
@@ -56,23 +56,35 @@ void updateLcdWeatherPage(DynamicSensorFactory* dynamsensors_ptr, LcdController*
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void detectbtnpress(LcdController *lcdc, LcdDriver lcd)
+void detectbtnpress(LcdController *lcdc, LcdDriver lcd, DynamicSensorFactory *dsf)
 {
     GPIOControl gpio17 = GPIOControl("17");
     gpio17.g_setdir("in");
-    BtnState bs;
+    GPIOControl gpio27 = GPIOControl("27");
+    gpio27.g_setdir("in");
+    BtnState bs_17;
+    BtnState bs_27;
 
     while(true)
     {
-        bs.initBtnState(&gpio17);
-        if(bs.debounceBtn())
+        bs_17.initBtnState(&gpio17);
+        bs_27.initBtnState(&gpio27);
+        if(bs_17.debounceBtn())
         {
-            LOG(DEBUG) << "Button Pressed";
+            LOG(INFO) << "Button 17 Pressed";
             currentPage = lcdc->getNextPage(currentPage);
             lcd.clearDisplayClearMem();
             lcdc->drawPage(currentPage, lcd);
+        } else if(bs_27.debounceBtn())
+        {
+            LOG(INFO) << "Button 27 Pressed";
+            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage);
+            weather_ptr->switch_tempUnit();
+            lcdc->updatePageValues(weather_ptr, lcd);
         }
-        bs.reInitBtnState();
+
+        bs_17.reInitBtnState();
+        bs_27.reInitBtnState();
         usleep(50000);
     }
 
@@ -97,7 +109,7 @@ int main(int argc, char** argv)
     usleep(5000000);
     lcdc.drawPage(currentPage, lcd);
     //Create a thread for the buttons
-    std::thread listenForBtns (detectbtnpress, &lcdc, lcd);
+    std::thread listenForBtns (detectbtnpress, &lcdc, lcd, &dsf);
     LOG(INFO) << "Starting the button listener thread. ID: "
               << listenForBtns.get_id() << endl;
 
