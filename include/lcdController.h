@@ -10,6 +10,8 @@
 #include <map>
 #include <algorithm>
 #include <thread>
+#include <chrono>
+#include <ctime>
 #include "data/WeatherSensor.hpp""
 #include "../include/i2cControl.hpp"
 #include "../include/lcdDriver.hpp"
@@ -27,6 +29,9 @@ public:
     void drawPage(string SensorName, LcdDriver lcd);
     void updatePageValues(WeatherSensor* ws, LcdDriver lcd);
     string getNextPage(string CurrentPage);
+    void createDateTimePage();
+    void drawDateTimePage(LcdDriver lcd);
+    void updateDateTimePage(LcdDriver lcd);
 
 private:
     struct Pageitem {

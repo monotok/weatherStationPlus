@@ -131,3 +131,58 @@ void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver lcd)
         }
     }
 }
+
+void LcdController::createDateTimePage()
+{
+    auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
+    string date_str(30, '\0');
+    strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", std::localtime(&timenow));
+    string delimiter = "-";
+    vector<string> dateelements;
+    size_t pos = 0;
+
+    while ((pos = date_str.find(delimiter)) != string::npos)
+    {
+        dateelements.push_back(date_str.substr(0, pos));
+        date_str.erase(0, pos + delimiter.length());
+    }
+
+    Pageitem date = {"date", 1, 0, FIXED, "Date: "};
+    Pageitem date_day = {"day",1, 6, VAR, dateelements[0]};
+    Pageitem date_delimiter_1 = {"delimiter",1, 8, FIXED, "-"};
+    Pageitem date_month = {"month",1, 9, VAR, dateelements[1]};
+    Pageitem date_delimiter_2 = {"delimiter",1, 11, FIXED, "-"};
+    Pageitem date_year = {"year",1, 12, VAR, dateelements[2]};
+
+    Pageitem time = {"time", 2,0,FIXED, "Time: "};
+    Pageitem time_hour = {"hour", 2,6,VAR, dateelements[3]};
+    Pageitem time_delimiter_1 = {"delimiter",2, 8, FIXED, ":"};
+    Pageitem time_min = {"min", 2,9,VAR, dateelements[3]};
+    Pageitem time_delimiter_2 = {"delimiter",2, 11, FIXED, ":"};
+    Pageitem time_sec = {"sec", 2,12,VAR, dateelements[3]};
+
+    vector<Pageitem> items{date, date_day, date_delimiter_1, date_month, date_delimiter_2,
+                           date_year, time, time_delimiter_1, time_hour, time_delimiter_2, time_min, time_sec};
+
+    lock_guard<mutex> guard(lcdcMu);
+    pages_map.insert(std::pair<string,vector<Pageitem>>("date",items));
+    LOG(INFO) << "Created a new page " << "date" << endl;
+}
+
+void LcdController::updateDateTimePage(LcdDriver lcd)
+{
+    LOG(INFO) << "NOT IMPLEMENTED" << endl;
+}
+
+void LcdController::drawDateTimePage(LcdDriver lcd)
+{
+    lock_guard<mutex> guard(lcdcMu);
+    pm_iter = pages_map.find("date");
+    if(pm_iter != pages_map.end())
+    {
+        for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
+        {
+            drawElementToLCD(lcd);
+        }
+    }
+}

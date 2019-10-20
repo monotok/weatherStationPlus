@@ -43,12 +43,18 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void updateLcdWeatherPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver lcd)
+void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver lcd)
 {
     while(true)
     {
-        lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), lcd);
-        usleep(5000000);
+        if(currentPage == "date") {
+            lcdc_ptr->updateDateTimePage(lcd);
+            usleep(500000);
+        } else
+        {
+            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), lcd);
+            usleep(5000000);
+        }
     }
 
 }
@@ -62,13 +68,17 @@ void detectbtnpress(LcdController *lcdc, LcdDriver lcd, DynamicSensorFactory *ds
     gpio17.g_setdir("in");
     GPIOControl gpio27 = GPIOControl("27");
     gpio27.g_setdir("in");
+    GPIOControl gpio22 = GPIOControl("22");
+    gpio22.g_setdir("in");
     BtnState bs_17;
     BtnState bs_27;
+    BtnState bs_22;
 
     while(true)
     {
         bs_17.initBtnState(&gpio17);
         bs_27.initBtnState(&gpio27);
+        bs_22.initBtnState(&gpio22);
         if(bs_17.debounceBtn())
         {
             LOG(INFO) << "Button 17 Pressed";
@@ -81,10 +91,18 @@ void detectbtnpress(LcdController *lcdc, LcdDriver lcd, DynamicSensorFactory *ds
             WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage);
             weather_ptr->switch_tempUnit();
             lcdc->updatePageValues(weather_ptr, lcd);
+        } else if(bs_22.debounceBtn())
+        {
+            LOG(INFO) << "Button 22 Pressed";
+            lcd.clearDisplayClearMem();
+            lcdc->drawDateTimePage(lcd);
+            currentPage = "date";
         }
+
 
         bs_17.reInitBtnState();
         bs_27.reInitBtnState();
+        bs_22.reInitBtnState();
         usleep(50000);
     }
 
@@ -102,6 +120,9 @@ int main(int argc, char** argv)
     LcdController lcdc;
     LcdDriver lcd(LCD_ADDRESS, i2c);
 
+    //Create the date time page
+    lcdc.createDateTimePage();
+
     //Start a new thread getting new sensors
     std::thread gettingSensorData (getNewSensorData, &dsf, i2c, &lcdc);
     LOG(INFO) << "Starting the getting sensor data thread. ID: "
@@ -115,7 +136,7 @@ int main(int argc, char** argv)
 
 
     // Create another thread to draw to the LCD display
-    std::thread updatingLcd (updateLcdWeatherPage, &dsf, &lcdc, lcd);
+    std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc, lcd);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
     //Join the threads
