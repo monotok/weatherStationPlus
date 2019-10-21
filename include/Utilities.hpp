@@ -20,6 +20,19 @@ class Utilities
         return out.str();
     }
 
+    template<class Container>
+    static void split_string(const std::string &str, Container &cont, char delim)
+    {
+        std::size_t current, previous = 0;
+        current = str.find(delim);
+        while (current != std::string::npos) {
+            cont.push_back(str.substr(previous, current - previous));
+            previous = current + 1;
+            current = str.find(delim, previous);
+        }
+        cont.push_back(str.substr(previous, current - previous));
+    }
+
   private:
     Utilities(){}; //Disallow creating an instance of this class
 };

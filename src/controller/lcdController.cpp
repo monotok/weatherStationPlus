@@ -139,13 +139,8 @@ void LcdController::createDateTimePage()
     strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", std::localtime(&timenow));
     string delimiter = "-";
     vector<string> dateelements;
-    size_t pos = 0;
 
-    while ((pos = date_str.find(delimiter)) != string::npos)
-    {
-        dateelements.push_back(date_str.substr(0, pos));
-        date_str.erase(0, pos + delimiter.length());
-    }
+    Utilities::split_string(date_str, dateelements, '-');
 
     Pageitem date = {"date", 1, 0, FIXED, "Date: "};
     Pageitem date_day = {"day",1, 6, VAR, dateelements[0]};
@@ -157,9 +152,9 @@ void LcdController::createDateTimePage()
     Pageitem time = {"time", 2,0,FIXED, "Time: "};
     Pageitem time_hour = {"hour", 2,6,VAR, dateelements[3]};
     Pageitem time_delimiter_1 = {"delimiter",2, 8, FIXED, ":"};
-    Pageitem time_min = {"min", 2,9,VAR, dateelements[3]};
+    Pageitem time_min = {"min", 2,9,VAR, dateelements[4]};
     Pageitem time_delimiter_2 = {"delimiter",2, 11, FIXED, ":"};
-    Pageitem time_sec = {"sec", 2,12,VAR, dateelements[3]};
+    Pageitem time_sec = {"sec", 2,12,VAR, dateelements[5]};
 
     vector<Pageitem> items{date, date_day, date_delimiter_1, date_month, date_delimiter_2,
                            date_year, time, time_delimiter_1, time_hour, time_delimiter_2, time_min, time_sec};
@@ -171,7 +166,73 @@ void LcdController::createDateTimePage()
 
 void LcdController::updateDateTimePage(LcdDriver lcd)
 {
-    LOG(INFO) << "NOT IMPLEMENTED" << endl;
+    auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
+    string date_str(30, '\0');
+    strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", std::localtime(&timenow));
+    string delimiter = "-";
+    vector<string> dateelements;
+
+    Utilities::split_string(date_str, dateelements, '-');
+
+    lock_guard<mutex> guard(lcdcMu);
+    pm_iter = pages_map.find("date");
+    if(pm_iter != pages_map.end())
+    {
+        for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
+        {
+            if(pi_iter->type == VAR)
+            {
+                if(pi_iter->id == "sec")
+                {
+                    if (pi_iter->value != dateelements[5])
+                    {
+                        pi_iter->value = dateelements[5];
+                        drawElementToLCD(lcd);
+                    }
+                }
+                if(pi_iter->id == "min")
+                {
+                    if (pi_iter->value != dateelements[4])
+                    {
+                        pi_iter->value = dateelements[4];
+                        drawElementToLCD(lcd);
+                    }
+                }
+                if(pi_iter->id == "hour")
+                {
+                    if (pi_iter->value != dateelements[3])
+                    {
+                        pi_iter->value = dateelements[3];
+                        drawElementToLCD(lcd);
+                    }
+                }
+                if(pi_iter->id == "day")
+                {
+                    if (pi_iter->value != dateelements[2])
+                    {
+                        pi_iter->value = dateelements[2];
+                        drawElementToLCD(lcd);
+                    }
+                }
+                if(pi_iter->id == "month")
+                {
+                    if (pi_iter->value != dateelements[1])
+                    {
+                        pi_iter->value = dateelements[1];
+                        drawElementToLCD(lcd);
+                    }
+                }
+                if(pi_iter->id == "year")
+                {
+                    if (pi_iter->value != dateelements[0])
+                    {
+                        pi_iter->value = dateelements[0];
+                        drawElementToLCD(lcd);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void LcdController::drawDateTimePage(LcdDriver lcd)
