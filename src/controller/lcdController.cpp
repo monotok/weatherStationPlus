@@ -29,6 +29,7 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
     }
 }
 
+//TODO: Need to find a better solution for ignoring non weather pages.
 string LcdController::getNextPage(string CurrentPage)
 {
     lock_guard<mutex> guard(lcdcMu);
@@ -39,6 +40,13 @@ string LcdController::getNextPage(string CurrentPage)
         if(pm_iter == pages_map.end())
         {
             pm_iter = pages_map.begin();
+        } else if(pm_iter->first == "date")
+        {
+            pm_iter = next(pm_iter, 1);
+            if(pm_iter == pages_map.end())
+            {
+                pm_iter = pages_map.begin();
+            }
         }
         return pm_iter->first;
     }
