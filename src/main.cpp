@@ -43,16 +43,16 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver lcd)
+void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver *lcd)
 {
     while(true)
     {
         if(currentPage == "date") {
-            lcdc_ptr->updateDateTimePage(lcd);
+            lcdc_ptr->updateDateTimePage(*lcd);
             usleep(500000);
         } else
         {
-            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), lcd);
+            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), *lcd);
             usleep(5000000);
         }
     }
@@ -62,7 +62,7 @@ void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController*
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void detectbtnpress(LcdController *lcdc, LcdDriver lcd, DynamicSensorFactory *dsf)
+void detectbtnpress(LcdController *lcdc, LcdDriver *lcd, DynamicSensorFactory *dsf)
 {
     GPIOControl gpio17 = GPIOControl("17");
     gpio17.g_setdir("in");
@@ -70,39 +70,49 @@ void detectbtnpress(LcdController *lcdc, LcdDriver lcd, DynamicSensorFactory *ds
     gpio27.g_setdir("in");
     GPIOControl gpio22 = GPIOControl("22");
     gpio22.g_setdir("in");
+    GPIOControl gpio18 = GPIOControl("18");
+    gpio18.g_setdir("in");
     BtnState bs_17;
     BtnState bs_27;
     BtnState bs_22;
+    BtnState bs_18;
 
     while(true)
     {
         bs_17.initBtnState(&gpio17);
         bs_27.initBtnState(&gpio27);
         bs_22.initBtnState(&gpio22);
+        bs_18.initBtnState(&gpio18);
         if(bs_17.debounceBtn())
         {
             LOG(INFO) << "Button 17 Pressed";
             currentPage = lcdc->getNextPage(currentPage);
-            lcd.clearDisplayClearMem();
-            lcdc->drawPage(currentPage, lcd);
+            lcd->clearDisplayClearMem();
+            lcdc->drawPage(currentPage, *lcd);
         } else if(bs_27.debounceBtn())
         {
             LOG(INFO) << "Button 27 Pressed";
             WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage);
             weather_ptr->switch_tempUnit();
-            lcdc->updatePageValues(weather_ptr, lcd);
+            lcdc->updatePageValues(weather_ptr, *lcd);
         } else if(bs_22.debounceBtn())
         {
             LOG(INFO) << "Button 22 Pressed";
-            lcd.clearDisplayClearMem();
-            lcdc->drawDateTimePage(lcd);
+            lcd->clearDisplayClearMem();
+            lcdc->drawDateTimePage(*lcd);
             currentPage = "date";
+        } else if(bs_18.debounceBtn())
+        {
+            LOG(INFO) << "Button 18 Pressed";
+            lcd->changeBacklight();
+            lcdc->drawPage(currentPage, *lcd);
         }
 
 
         bs_17.reInitBtnState();
         bs_27.reInitBtnState();
         bs_22.reInitBtnState();
+        bs_18.reInitBtnState();
         usleep(50000);
     }
 
@@ -130,13 +140,13 @@ int main(int argc, char** argv)
     usleep(5000000);
     lcdc.drawPage(currentPage, lcd);
     //Create a thread for the buttons
-    std::thread listenForBtns (detectbtnpress, &lcdc, lcd, &dsf);
+    std::thread listenForBtns (detectbtnpress, &lcdc, &lcd, &dsf);
     LOG(INFO) << "Starting the button listener thread. ID: "
               << listenForBtns.get_id() << endl;
 
 
     // Create another thread to draw to the LCD display
-    std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc, lcd);
+    std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc, &lcd);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
     //Join the threads

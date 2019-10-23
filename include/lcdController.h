@@ -26,12 +26,12 @@ class LcdController
 {
 public:
     void createWeatherPage(WeatherSensor* ws);
-    void drawPage(string SensorName, LcdDriver lcd);
-    void updatePageValues(WeatherSensor* ws, LcdDriver lcd);
+    void drawPage(string SensorName, LcdDriver &lcd);
+    void updatePageValues(WeatherSensor* ws, LcdDriver &lcd);
     string getNextPage(string CurrentPage);
     void createDateTimePage();
-    void drawDateTimePage(LcdDriver lcd);
-    void updateDateTimePage(LcdDriver lcd);
+    void drawDateTimePage(LcdDriver &lcd);
+    void updateDateTimePage(LcdDriver &lcd);
 
 private:
     struct Pageitem {
@@ -43,9 +43,9 @@ private:
     };
 
     bool existingWeatherPage(string SensorName);
-    void drawElementToLCD(LcdDriver lcd);
+    void drawElementToLCD(LcdDriver &lcd);
     void checkValuesFitLcd();
-    void checkValuesFitLcd(float newValue, LcdDriver lcd);
+    void checkValuesFitLcd(float newValue, LcdDriver &lcd);
 
     map<string, vector<Pageitem>> pages_map;
     map<string, vector<Pageitem>>::iterator pm_iter;

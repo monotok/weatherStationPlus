@@ -59,7 +59,7 @@ bool LcdController::existingWeatherPage(string SensorName)
     return pm_iter != pages_map.end();
 }
 
-void LcdController::drawElementToLCD(LcdDriver lcd)
+void LcdController::drawElementToLCD(LcdDriver &lcd)
 {
     lcd.setCursorPositionRowCol(pi_iter->row_start, pi_iter->col_start);
     lcd.lcdString(pi_iter->value.c_str());
@@ -76,7 +76,7 @@ void LcdController::checkValuesFitLcd()
     }
 }
 
-void LcdController::checkValuesFitLcd(float newValue, LcdDriver lcd)
+void LcdController::checkValuesFitLcd(float newValue, LcdDriver &lcd)
 {
     float valFloat = stof(pi_iter->value);
     if(valFloat > 9.99 && newValue < 10.0)
@@ -86,7 +86,7 @@ void LcdController::checkValuesFitLcd(float newValue, LcdDriver lcd)
 }
 
 // TODO: Need to prevent left over chars on display when writing a new smaller value
-void LcdController::drawPage(string SensorName, LcdDriver lcd)
+void LcdController::drawPage(string SensorName, LcdDriver &lcd)
 {
     lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(SensorName);
@@ -104,7 +104,7 @@ void LcdController::drawPage(string SensorName, LcdDriver lcd)
     }
 }
 
-void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver lcd)
+void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver &lcd)
 {
     lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(ws->get_sensorID());
@@ -172,7 +172,7 @@ void LcdController::createDateTimePage()
     LOG(INFO) << "Created a new page " << "date" << endl;
 }
 
-void LcdController::updateDateTimePage(LcdDriver lcd)
+void LcdController::updateDateTimePage(LcdDriver &lcd)
 {
     auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string date_str(30, '\0');
@@ -243,7 +243,7 @@ void LcdController::updateDateTimePage(LcdDriver lcd)
     }
 }
 
-void LcdController::drawDateTimePage(LcdDriver lcd)
+void LcdController::drawDateTimePage(LcdDriver &lcd)
 {
     lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find("date");
