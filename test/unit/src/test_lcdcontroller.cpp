@@ -32,8 +32,8 @@ TEST(LcdController, create_new_weather_page_struct_independant)
     EXPECT_NE(found1, lcdc.pages_map.end());
     EXPECT_NE(found2, lcdc.pages_map.end());
 
-    EXPECT_EQ(found1->second[3].value, "36.00");
-    EXPECT_EQ(found2->second[3].value, "25.00");
+    EXPECT_EQ(found1->second[3].value, "36.0C");
+    EXPECT_EQ(found2->second[3].value, "25.0C");
 
 }
 
@@ -100,15 +100,15 @@ TEST(LcdController, update_values_only_on_existing_page)
     lcdc.drawPage("weather1", lcd);
 
     auto found1 = lcdc.pages_map.find("weather1");
-    EXPECT_EQ(found1->second[3].value, "36.00");
-    EXPECT_EQ(found1->second[5].value, "79.00");
+    EXPECT_EQ(found1->second[3].value, "36.0C");
+    EXPECT_EQ(found1->second[5].value, "79.0%");
 
     ws1->set_temperature(2400);
     ws1->set_humidity(5600);
 
     lcdc.updatePageValues(ws1, lcd);
-    EXPECT_EQ(found1->second[3].value, "24.00");
-    EXPECT_EQ(found1->second[5].value, "56.00");
+    EXPECT_EQ(found1->second[3].value, "24.0C");
+    EXPECT_EQ(found1->second[5].value, "56.0%");
 
     //Sleep for 4 seconds so we can observe the display
     std::this_thread::sleep_for(std::chrono::milliseconds(4000));

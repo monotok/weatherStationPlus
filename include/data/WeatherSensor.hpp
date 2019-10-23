@@ -2,7 +2,7 @@
 #define TEMP_SENSOR_H
 
 #include "Abc_Sensor.hpp"
-#include "../include/Utilities.hpp"
+#include "../Utilities.hpp"
 #include <string>
 
 using namespace std;

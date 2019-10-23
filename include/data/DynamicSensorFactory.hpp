@@ -1,7 +1,7 @@
 #ifndef DYNAMIC_SEN_FACTORY_H
 #define DYNAMIC_SEN_FACTORY_H
 
-#include "easylogging++.hpp"
+#include "../easylogging++.hpp"
 #include "WeatherSensor.hpp"
 #include <vector>
 #include <mutex>
