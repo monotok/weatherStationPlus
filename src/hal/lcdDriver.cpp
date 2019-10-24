@@ -42,8 +42,8 @@
 #define LCD_SCROLL_1_CHAR_RIGHT_ALL_LINES 0x1E
 #define LCD_SCROLL_1_CHAR_LEFT_ALL_LINES 0x18
 
-#define LCD_BACKLIGHT 0x08  // On
-//#LCD_BACKLIGHT = 0x00  # Off
+#define LCD_BACKLIGHT_ON 0x08  // On
+#define LCD_BACKLIGHT_OFF 0x00  //Off
 
 #define ENABLE 0b00000100 // Enable bit
 #define READWRITE 0b00000010  // Read/Write bit
@@ -58,6 +58,7 @@ LcdDriver::LcdDriver(unsigned char lcdAdd, I2cControl *i2c)
 {
   this->I2C_ADDR = lcdAdd;
   this->i2c = i2c;
+  backlight = BACKLIGHT_ON;
   lcdByte(0x33,LCD_CMD); // 110011 Initialise
   lcdByte(0x32,LCD_CMD); // 110010 Initialise
   lcdSendCommand(LCD_UNDERLINE_CURSOR);
@@ -107,8 +108,16 @@ void LcdDriver::lcdByte(unsigned char bits, unsigned char mode)
   // mode = 1 for data
   //        0 for command
 
-  bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT;
-  bits_low = mode | ((bits<<4) & 0xF0) | LCD_BACKLIGHT;
+  if(backlight == BACKLIGHT_OFF)
+  {
+    bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT_OFF;
+    bits_low = mode | ((bits<<4) & 0xF0) | LCD_BACKLIGHT_OFF;
+  }
+  else
+  {
+    bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT_ON;
+    bits_low = mode | ((bits << 4) & 0xF0) | LCD_BACKLIGHT_ON;
+  }
 
   // High bits
   i2c->writeByte(this->I2C_ADDR, bits_high);
@@ -246,4 +255,12 @@ void LcdDriver::clearLine(int lineNo)
     default:
       error("No such line to clear!");
   }
+}
+
+void LcdDriver::changeBacklight()
+{
+    if(backlight == BACKLIGHT_ON)
+        backlight = BACKLIGHT_OFF;
+    else if(backlight == BACKLIGHT_OFF)
+        backlight = BACKLIGHT_ON;
 }

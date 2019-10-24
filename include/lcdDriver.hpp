@@ -34,6 +34,9 @@
 #define LCD_BEG_LINE_4 0xD4 // LCD RAM address for the 4th line
 #define LCD_END_LINE_4 0xE7 // LCD RAM address for the 4th line
 
+#define BACKLIGHT_ON 1
+#define BACKLIGHT_OFF 0
+
 class LcdDriver
 {
     private:
@@ -44,7 +47,8 @@ class LcdDriver
         unsigned char convertRowColtoHex(int row, int col);
         void setCursorPositionHex(unsigned char position);
         void clearColumnsHex(unsigned char positionToClearTo, unsigned char positionToClearFrom);
-        void error(const char *msg);        
+        void error(const char *msg);
+        short backlight;
         
     public:
         LcdDriver(unsigned char I2C_ADDR, I2cControl *i2c);
@@ -66,5 +70,6 @@ class LcdDriver
         void scroll1CharRightAllLines();
         void scroll1CharLeftAllLines();
         void clearLine(int lineNo);
+        void changeBacklight();
 };
 #endif //LCD_DRIVER_H

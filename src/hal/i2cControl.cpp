@@ -25,7 +25,7 @@ using namespace std;
 
 I2cControl::I2cControl(int i2cBusNumber)
 {
-	char i2cBus[10];
+	char i2cBus[12];
 	sprintf(i2cBus, "/dev/i2c-%i", i2cBusNumber);
 	//----- OPEN THE I2C BUS -----
 	char *filename = (char *)i2cBus;
@@ -38,7 +38,9 @@ I2cControl::I2cControl(int i2cBusNumber)
 
 void I2cControl::writeByte(unsigned char address, unsigned char byte)
 {
-	if (address != this->I2C_ADDR)
+    lock_guard<mutex> guard(mu);
+//    usleep(10000);
+    if (address != this->I2C_ADDR)
 	{
 		this->I2C_ADDR = address;
 		if (ioctl(this->file_i2c, I2C_SLAVE, this->I2C_ADDR) < 0)
@@ -53,22 +55,37 @@ void I2cControl::writeByte(unsigned char address, unsigned char byte)
 	int length = 1;										 //<<< Number of bytes to write
 	if (write(this->file_i2c, buffer, length) != length) //write() returns the number of bytes actually written
 	{
-		error("write_i2c Failed to write to the i2c bus.\n");
+        ostringstream ss;
+        ss << this_thread::get_id();
+        string msg = "write_i2c Failed to write to the i2c bus.\n" + ss.str();
+        error(msg);
 	}
 }
-
-void I2cControl::readI2c(char *buffer, int length)
+//TODO: Take in and set the i2c address and then protect with mutex
+void I2cControl::readI2c(unsigned char address, char *buffer, int length)
 {
 	//----- READ BYTES -----
-	// int length = 4;										//<<< Number of bytes to read
+    lock_guard<mutex> guard(mu);
+//    usleep(10000);
+    if (address != this->I2C_ADDR)
+    {
+        this->I2C_ADDR = address;
+        if (ioctl(this->file_i2c, I2C_SLAVE, this->I2C_ADDR) < 0)
+        {
+            error("Failed to acquire bus access and/or talk to slave.\n");
+            exit(1);
+        }
+    }
 	if (read(this->file_i2c, buffer, length) != length) //read() returns the number of bytes actually read
 	{
-		error("readI2c Failed to read from the i2c bus.\n");
+	    ostringstream ss;
+	    ss << this_thread::get_id();
+        string msg = "readI2c Failed to read from the i2c bus.\n" + ss.str();
+		error(msg);
 	}
 }
 
-void I2cControl::error(const char *msg)
+void I2cControl::error(string msg)
 {
 	LOG(ERROR) << msg << " " << strerror(errno);
-	exit(1);
 }

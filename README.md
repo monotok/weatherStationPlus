@@ -1,27 +1,34 @@
 # Build
-Go to the src directory
 
-This will create the object file for the testmain. Only create object file for things that have changed.
+## CMake
 
-`g++ -c GPIOTestMain.cpp`
+The project has been changed to use cmake and therefore it is more portable than previously.
 
-Now re-link all the objects into an executable.
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ../src
+```
 
-`g++ *.o -o GPIOControl`
+If you want to build for the raspberry pi and then move the executable over to the pi later then pass this option to cmake.
 
-To build the GPIOTestMain:
+`-DCMAKE_TOOLCHAIN_FILE=rasp/toolchain-rasppi.cmake`
 
-`g++ -c prototype/GPIOTestMain.cpp -o build/GPIOTestMain`  
-`g++ -c src/hal/GPIOControl.cpp -o build/hal/GPIOControl`  
-`g++ build/logging/easylogging++.o build/hal/GPIOControl.o build/GPIOTestMain -o bin/GPIOControl`
+Eg: `cmake -DCMAKE_TOOLCHAIN_FILE=rasp/toolchain-rasppi.cmake`
 
-## Running
+Now run make to build the binary. There are quite a few build targers the but main program is "weatherStationPlus"
 
-You must run this from **BIN** as the log configuration file is referenced recursively.
+`make weatherStationPlus`
 
-`cd bin`
+Now inside the binary directory at the top level `../bin` should be the executable.
 
-`sudo ./GPIOControl`
+Run with `./bin/weatherStationPlus`
+
+## Tests
+
+To build the tests. 
+
+# References
 
 ## GPIO Manually
 
@@ -38,14 +45,4 @@ root@raspdev:/home/pi# cat /sys/class/gpio/gpio17/value
 0
 root@raspdev:/home/pi# echo "4" > /sys/class/gpio/unexport
 root@raspdev:/home/pi# echo "17" > /sys/class/gpio/unexport
-```
-
-## Google Test 
-
-To compile the object file
-
-```
-set GTEST_DIR /home/hammer/SoftwareDevelopment/Libaries/googletest/googletest/
-g++ -isystem $GTEST_DIR/include -I$GTEST_DIR -pthread -c $GTEST_DIR/src/gtest-all.cc
-ar -rv libgtest.a gtest-all.o
 ```

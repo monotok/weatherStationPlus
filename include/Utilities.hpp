@@ -12,12 +12,25 @@ class Utilities
     static uint64_t getMicrotime();
 
     template <typename T>
-    static string to_string_with_precision(const T a_value, const int n = 2)
+    static string to_string_with_precision(const T a_value, int n)
     {
         ostringstream out;
         out.precision(n);
         out << fixed << a_value;
         return out.str();
+    }
+
+    template<class Container>
+    static void split_string(const std::string &str, Container &cont, char delim)
+    {
+        std::size_t current, previous = 0;
+        current = str.find(delim);
+        while (current != std::string::npos) {
+            cont.push_back(str.substr(previous, current - previous));
+            previous = current + 1;
+            current = str.find(delim, previous);
+        }
+        cont.push_back(str.substr(previous, current - previous));
     }
 
   private:

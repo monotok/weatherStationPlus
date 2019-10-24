@@ -5,55 +5,41 @@
 #include "../../../include/data/WeatherSensor.hpp"
 
 #define I2C_ADDR 0x04
+#define private public
 
 TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
 {
     I2cControl *i2c = new I2cControl(1);
-    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *ptr_remoteWeatherData = new WeatherSensor();
-    rsd.get_RemoteWeatherSenData(ptr_remoteWeatherData);
+    LcdController lcdc;
+    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
+    DynamicSensorFactory dsf;
+    rsd.get_RemoteWeatherSenData(&dsf);
 
-    printf("Remote Sensor ID: %s\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.sensorID);
-    printf("Remote Temp: %i\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.temperature);
-    printf("Remote Battery: %i\n", ptr_remoteWeatherData->weatherSensorUnion.tsd.perBatt);
+    WeatherSensor* backbed = dsf.getWeatherSensor_ptr("BackBed");
+    printf("Sensor ID: %s\n", backbed->get_sensorID().c_str());
+    printf("Temp: %s\n", backbed->get_temperature().c_str());
+    printf("Hum: %s\n", backbed->get_humidity().c_str());
 
-    EXPECT_STREQ("BackBed", ptr_remoteWeatherData->weatherSensorUnion.tsd.sensorID);
+    EXPECT_STREQ("BackBed", backbed->get_sensorID().c_str());
 
-    delete (ptr_remoteWeatherData);
     delete (i2c);
 }
 
 TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
 {
     I2cControl *i2c = new I2cControl(1);
-    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *ptr_localWeatherData = new WeatherSensor();
-    rsd.get_LocalWeatherData(ptr_localWeatherData);
+    LcdController lcdc;
+    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
+    DynamicSensorFactory dsf;
+    rsd.get_LocalWeatherData(&dsf);
 
-    printf("Sensor ID: %s\n", ptr_localWeatherData->weatherSensorUnion.tsd.sensorID);
-    printf("Temp: %i\n", ptr_localWeatherData->weatherSensorUnion.tsd.temperature);
-    printf("Hum: %i\n", ptr_localWeatherData->weatherSensorUnion.tsd.perBatt);
+    WeatherSensor* backbed = dsf.getWeatherSensor_ptr("Here");
+    printf("Sensor ID: %s\n", backbed->get_sensorID().c_str());
+    printf("Temp: %s\n", backbed->get_temperature().c_str());
+    printf("Hum: %s\n", backbed->get_humidity().c_str());
 
-    EXPECT_STREQ("Here", ptr_localWeatherData->weatherSensorUnion.tsd.sensorID);
+    EXPECT_STREQ("Here", backbed->get_sensorID().c_str());
 
-    delete (ptr_localWeatherData);
-    delete (i2c);
-}
-
-TEST(RetrieveSensorData, Get_local_weather_sensor_data_and_check_data_persistence)
-{
-    I2cControl *i2c = new I2cControl(1);
-    RetrieveSenData rsd = RetrieveSenData(i2c, I2C_ADDR);
-    WeatherSensor *ptr_localWeatherData = new WeatherSensor();
-    rsd.get_LocalWeatherData(ptr_localWeatherData);
-
-    cout << "Sensor ID: " << ptr_localWeatherData->get_sensorID() << endl;
-    cout << "Temp: " << ptr_localWeatherData->get_temperature() << endl;
-    cout << "Hum: " << ptr_localWeatherData->get_humidity() << endl;
-
-    EXPECT_EQ("Here", ptr_localWeatherData->get_sensorID());
-
-    delete (ptr_localWeatherData);
     delete (i2c);
 }
 
@@ -74,12 +60,38 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     I2cControl *i2c = new I2cControl(1);
     i2c->writeByte(I2C_ADDR, 1);
     usleep(50000);
-    i2c->readI2c(weatherSensorUnionRemote.packet, 14);
+    i2c->readI2c(I2C_ADDR, weatherSensorUnionRemote.packet, 14);
 
     i2c->writeByte(I2C_ADDR, 0);
     usleep(50000);
-    i2c->readI2c(weatherSensorUnionLocal.packet, 14);
+    i2c->readI2c(I2C_ADDR, weatherSensorUnionLocal.packet, 14);
 
     EXPECT_STREQ("Here", weatherSensorUnionLocal.tsd.sensorID);
     EXPECT_STREQ("BackBed", weatherSensorUnionRemote.tsd.sensorID);
+}
+
+TEST(RetrieveSenData, check_incoming_data_valid)
+{
+    I2cControl *i2c = new I2cControl(1);
+    LcdController lcdc;
+    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
+    string str = "Valid";
+    strcpy(rsd.weatherSensorUnion.tsd.sensorID, str.c_str());
+    rsd.weatherSensorUnion.tsd.temperature = 3444;
+    rsd.weatherSensorUnion.tsd.perBatt = 8845;
+
+    EXPECT_TRUE(rsd.check_imcoming_data());
+}
+
+TEST(RetrieveSenData, check_incoming_data_invalid)
+{
+    I2cControl *i2c = new I2cControl(1);
+    LcdController lcdc;
+    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
+    string str = "Valid";
+    strcpy(rsd.weatherSensorUnion.tsd.sensorID, str.c_str());
+    rsd.weatherSensorUnion.tsd.temperature = 27521;
+    rsd.weatherSensorUnion.tsd.perBatt = -8845;
+
+    EXPECT_FALSE(rsd.check_imcoming_data());
 }

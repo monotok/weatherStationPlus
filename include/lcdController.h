@@ -9,6 +9,9 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <thread>
+#include <chrono>
+#include <ctime>
 #include "data/WeatherSensor.hpp""
 #include "../include/i2cControl.hpp"
 #include "../include/lcdDriver.hpp"
@@ -23,8 +26,12 @@ class LcdController
 {
 public:
     void createWeatherPage(WeatherSensor* ws);
-    void drawPage(string SensorName, LcdDriver lcd);
-    void updatePageValues(WeatherSensor* ws);
+    void drawPage(string SensorName, LcdDriver &lcd);
+    void updatePageValues(WeatherSensor* ws, LcdDriver &lcd);
+    string getNextPage(string CurrentPage);
+    void createDateTimePage();
+    void drawDateTimePage(LcdDriver &lcd);
+    void updateDateTimePage(LcdDriver &lcd);
 
 private:
     struct Pageitem {
@@ -35,10 +42,16 @@ private:
         string value;
     };
 
+    bool existingWeatherPage(string SensorName);
+    void drawElementToLCD(LcdDriver &lcd);
+    void checkValuesFitLcd();
+    void checkValuesFitLcd(float newValue, LcdDriver &lcd);
+
     map<string, vector<Pageitem>> pages_map;
     map<string, vector<Pageitem>>::iterator pm_iter;
     vector<Pageitem>::iterator pi_iter;
 
+    mutex lcdcMu;
 };
 
 #endif //WEATHERSTATIONPLUS_LCDCONTROLLER_H
