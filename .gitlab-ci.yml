@@ -1,0 +1,19 @@
+# This file is a template, and might need editing before it works on your project.
+# use the official gcc image, based on debian
+# can use verions as well, like gcc:5.2
+# see https://hub.docker.com/_/gcc/
+
+build:
+  stage: build
+  script:
+    - mkdir build
+    - cd build
+    - cmake ../test
+    - make test_all_unit
+
+# run tests using the binary built before
+test:
+  stage: test
+  script:
+    #- ./test/unit/bin/test_all_unit
+    - make cov
