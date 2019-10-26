@@ -87,6 +87,8 @@ add_executable(test_dynamsensorfact
 add_executable(test_retrievesendata
         unit/src/test_retrievesendata.cpp
         ${MAIN_PROJECT_DIR}/src/data/DynamicSensorFactory.cpp
+        ${MAIN_PROJECT_DIR}/src/controller/lcdController.cpp
+        ${MAIN_PROJECT_DIR}/src/hal/lcdDriver.cpp
         ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
         ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
         ${MAIN_PROJECT_DIR}/src/sensor/retrieveSenData.cpp
@@ -113,7 +115,7 @@ target_link_libraries(test_retrievesendata gtest)
 
 add_custom_target(cov
         COMMAND mkdir -p ${COVERAGE_DIR}
-        COMMAND test_btncontrol
+        COMMAND test_all_unit
         COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/test_* --output-file ${COVERAGE_DIR}/coverage.info
         COMMAND genhtml ${COVERAGE_DIR}/coverage.info --output-directory ${COVERAGE_DIR}
         )

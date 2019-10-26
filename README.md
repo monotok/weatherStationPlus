@@ -7,7 +7,7 @@ The project has been changed to use cmake and therefore it is more portable than
 ```
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Debug ../src
+cmake -DCMAKE_BUILD_TYPE=Debug ../
 ```
 
 If you want to build for the raspberry pi and then move the executable over to the pi later then pass this option to cmake.
@@ -27,6 +27,24 @@ Run with `./bin/weatherStationPlus`
 ## Tests
 
 To build the tests. 
+
+```
+mkdir build
+cd build
+cmake ../test
+
+make test_all_unit
+
+./test/unit/bin/test_all_unit
+```
+
+### Coverage Report
+
+Run this after executing the test binary. 
+
+`make cov`
+
+HTML report is located within the coverage directory.
 
 # References
 

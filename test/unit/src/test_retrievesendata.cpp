@@ -1,8 +1,9 @@
 #include "gtest/gtest.h"
 #include <iostream>
 #include "../../../include/RetrieveSenData.hpp"
-#include "../../../include/i2cControl.hpp"
+#include "../../../include/lcdController.h"
 #include "../../../include/data/WeatherSensor.hpp"
+#include "../../../include/data/DynamicSensorFactory.hpp"
 
 #define I2C_ADDR 0x04
 #define private public
