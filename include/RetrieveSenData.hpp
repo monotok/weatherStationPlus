@@ -1,5 +1,6 @@
 #ifndef RETRIEVE_SEN_DATA_H
 #define RETRIEVE_SEN_DATA_H
+#include <gtest/gtest_prod.h>
 #include "data/Abc_Sensor.hpp"
 #include "data/WeatherSensor.hpp"
 #include "data/DynamicSensorFactory.hpp"
@@ -24,6 +25,10 @@ private:
   int get_temporaryStructSize()  { return this->temporaryStructSize; }
   string get_retrievedSensorName() { string s(weatherSensorUnion.tsd.sensorID); return s; }
   bool check_imcoming_data();
+
+  FRIEND_TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c);
+  FRIEND_TEST(RetrieveSensorData, check_incoming_data_valid);
+  FRIEND_TEST(RetrieveSensorData, check_incoming_data_invalid);
 
     typedef struct tempSensorData
     {

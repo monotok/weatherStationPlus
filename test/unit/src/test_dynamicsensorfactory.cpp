@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include <algorithm>
-#define private public
 
 #include <iostream>
 #include "../../../include/data/WeatherSensor.hpp"

@@ -5,6 +5,7 @@
 #ifndef WEATHERSTATIONPLUS_LCDCONTROLLER_H
 #define WEATHERSTATIONPLUS_LCDCONTROLLER_H
 
+#include <gtest/gtest_prod.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -41,6 +42,9 @@ private:
         int type;
         string value;
     };
+
+    FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
+    FRIEND_TEST(LcdController, update_values_only_on_existing_page);
 
     bool existingWeatherPage(string SensorName);
     void drawElementToLCD(LcdDriver &lcd);
