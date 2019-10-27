@@ -3,17 +3,14 @@
 //
 
 #include "gtest/gtest.h"
-#define private public
-
-#define lcdAdd 0x3f // I2C device address
-#define i2cbusno 3
-
 #include "../../../include/data/WeatherSensor.hpp"
 #include "../../../include/lcdController.h"
-
 //Only included to allow a sleep to show clearing display etc
 #include <chrono>
 #include <thread>
+
+#define lcdAdd 0x3f // I2C device address
+#define i2cbusno 3
 
 TEST(LcdController, create_new_weather_page_struct_independant)
 {

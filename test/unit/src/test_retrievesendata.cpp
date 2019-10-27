@@ -71,7 +71,7 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     EXPECT_STREQ("BackBed", weatherSensorUnionRemote.tsd.sensorID);
 }
 
-TEST(RetrieveSenData, check_incoming_data_valid)
+TEST(RetrieveSensorData, check_incoming_data_valid)
 {
     I2cControl *i2c = new I2cControl(1);
     LcdController lcdc;
@@ -84,7 +84,7 @@ TEST(RetrieveSenData, check_incoming_data_valid)
     EXPECT_TRUE(rsd.check_imcoming_data());
 }
 
-TEST(RetrieveSenData, check_incoming_data_invalid)
+TEST(RetrieveSensorData, check_incoming_data_invalid)
 {
     I2cControl *i2c = new I2cControl(1);
     LcdController lcdc;

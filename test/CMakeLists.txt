@@ -107,7 +107,7 @@ add_executable(test_lcdcontroller
         unit/src/myGtestMain.cpp
         )
 
-target_link_libraries(test_btncontrol gtest)
+target_link_libraries(test_btncontrol gtest rt)
 target_link_libraries(test_dynamsensorfact gtest)
 target_link_libraries(test_all_unit gtest rt) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt)
@@ -120,4 +120,4 @@ add_custom_target(cov
         COMMAND genhtml ${COVERAGE_DIR}/coverage.info --output-directory ${COVERAGE_DIR}
         )
 
-add_dependencies(cov test_btncontrol)
+add_dependencies(cov test_all_unit)

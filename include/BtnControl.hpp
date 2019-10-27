@@ -1,5 +1,6 @@
 #ifndef BTN_CONTROL_H
 #define BTN_CONTROL_H
+#include <gtest/gtest_prod.h>
 #include "Utilities.hpp"
 #include "GPIOControl.hpp"
 
@@ -26,6 +27,11 @@ class BtnState
     void setBtnInterruptTime();
     void updateLastDebounceTime();
     void updateLastBtnState();
+
+    FRIEND_TEST(BTNControl, button_pressed);
+    FRIEND_TEST(BTNControl, button_pressed_and_held_only_detect_one_press);
+    FRIEND_TEST(BTNControl, button_not_pressed);
+
 };
 
 #endif //ifndef BTN_CONTROL_H
