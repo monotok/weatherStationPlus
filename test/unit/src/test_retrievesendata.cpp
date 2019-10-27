@@ -6,11 +6,11 @@
 #include "../../../include/data/DynamicSensorFactory.hpp"
 
 #define I2C_ADDR 0x04
-#define private public
 
+//TODO: Fix this test case. Does not test anything.
 TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
 {
-    I2cControl *i2c = new I2cControl(1);
+    I2cControl *i2c = new I2cControl(3);
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     DynamicSensorFactory dsf;
@@ -28,7 +28,7 @@ TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
 
 TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
 {
-    I2cControl *i2c = new I2cControl(1);
+    I2cControl *i2c = new I2cControl(3);
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     DynamicSensorFactory dsf;
@@ -58,7 +58,7 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     union convertSensorClassChar weatherSensorUnionLocal;
     union convertSensorClassChar weatherSensorUnionRemote;
 
-    I2cControl *i2c = new I2cControl(1);
+    I2cControl *i2c = new I2cControl(3);
     i2c->writeByte(I2C_ADDR, 1);
     usleep(50000);
     i2c->readI2c(I2C_ADDR, weatherSensorUnionRemote.packet, 14);
@@ -68,12 +68,12 @@ TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c)
     i2c->readI2c(I2C_ADDR, weatherSensorUnionLocal.packet, 14);
 
     EXPECT_STREQ("Here", weatherSensorUnionLocal.tsd.sensorID);
-    EXPECT_STREQ("BackBed", weatherSensorUnionRemote.tsd.sensorID);
+    EXPECT_TRUE(strcmp("BackBed", weatherSensorUnionRemote.tsd.sensorID) == 0 || strcmp("Loft", weatherSensorUnionRemote.tsd.sensorID) == 0);
 }
 
 TEST(RetrieveSensorData, check_incoming_data_valid)
 {
-    I2cControl *i2c = new I2cControl(1);
+    I2cControl *i2c = new I2cControl(3);
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     string str = "Valid";
@@ -86,7 +86,7 @@ TEST(RetrieveSensorData, check_incoming_data_valid)
 
 TEST(RetrieveSensorData, check_incoming_data_invalid)
 {
-    I2cControl *i2c = new I2cControl(1);
+    I2cControl *i2c = new I2cControl(3);
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     string str = "Valid";
