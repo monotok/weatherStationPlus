@@ -8,12 +8,11 @@ build:
   script:
     - mkdir build
     - cd build
-    - cmake ../test
+    - cmake -DCMAKE_BUILD_TYPE=Debug ../test
     - make test_all_unit
 
 # run tests using the binary built before
 test:
   stage: test
   script:
-    #- ./test/unit/bin/test_all_unit
-    - make cov
+    - ./test/test/unit/bin/test_all_unit
