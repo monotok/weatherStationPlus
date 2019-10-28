@@ -2,12 +2,11 @@
 # use the official gcc image, based on debian
 # can use verions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
-job:
-  tags:
-    - raspberrypi
-    
+
 build:
   stage: build
+  tags:
+   - raspberrypi
   script:
     - mkdir build
     - cd build
@@ -17,5 +16,7 @@ build:
 # run tests using the binary built before
 test:
   stage: test
+  tags:
+   - raspberrypi
   script:
     - ./test/test/unit/bin/test_all_unit
