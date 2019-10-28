@@ -19,4 +19,4 @@ test:
   tags:
    - raspberrypi
   script:
-    - ./test/test/unit/bin/test_all_unit
+    - ./test/unit/bin/test_all_unit
