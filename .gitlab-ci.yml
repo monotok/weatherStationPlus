@@ -21,7 +21,7 @@ test:alltests:
    - raspberrypi
   script:
     - cd build/test
-    - ./test_all_unit
+    - sudo ./test_all_unit
     - mkdir coverage
     - lcov --capture --directory CMakeFiles/test_all_unit.dir/ --output-file coverage/coverage.info
     - genhtml coverage/coverage.info --output-directory coverage
