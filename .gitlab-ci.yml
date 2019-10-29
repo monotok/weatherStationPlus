@@ -12,6 +12,10 @@ test:alltests:
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - cmake --build . --target test_all_unit
+  cache:
+    key: build-cache
+    paths:
+      - build/
   stage: test
   tags:
    - raspberrypi
