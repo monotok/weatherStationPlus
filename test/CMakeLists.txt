@@ -1,14 +1,17 @@
 project(Google_Test_Suit)
 
 #Set the flags for testing
-set(CMAKE_CXX_FLAGS_DEBUG "-DELPP_NO_DEFAULT_LOG_FILE -ftest-coverage ${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG -fno-access-control")
+#set(CMAKE_CXX_FLAGS_DEBUG "-DELPP_NO_DEFAULT_LOG_FILE -ftest-coverage ${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG -fno-access-control")
+SET(CMAKE_CXX_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -fprofile-arcs -ftest-coverage")
+SET(CMAKE_C_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
+SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 
 #Stop gcno being prepended with file type as GOV can't find them
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
 
 #Output folders
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/test/unit/bin)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/test/unit/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(COVERAGE_DIR coverage)
 
 # Download and unpack googletest at configure time

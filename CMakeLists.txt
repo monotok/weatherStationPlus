@@ -15,9 +15,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE" -O2)
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-fsanitize=address -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 
 #Output folders
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+#set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+#set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 #Include the tests
 add_subdirectory(test)
