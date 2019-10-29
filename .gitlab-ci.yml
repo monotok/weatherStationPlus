@@ -21,6 +21,10 @@ test:
   stage: test
   tags:
    - raspberrypi
+  cache:
+   paths:
+    - build/
+   policy: pull
   script:
     - cd build/test
     - ./test_all_unit
