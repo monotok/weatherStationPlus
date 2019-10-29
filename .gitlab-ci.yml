@@ -13,6 +13,7 @@ build:alltests:
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - cmake --build . --target test_all_unit
   cache:
+    key: build-cache
     paths:
       - build/
 
@@ -21,16 +22,14 @@ test:
   stage: test
   tags:
    - raspberrypi
-  cache:
-   paths:
-    - build/
-   policy: pull
   script:
     - cd build/test
     - ./test_all_unit
     - mkdir coverage
     - lcov --capture --directory CMakeFiles/test_all_unit.dir/ --output-file coverage/coverage.info
     - genhtml coverage/coverage.info --output-directory coverage
+  cache:
+   key: build-cache
   artifacts:
     paths:
       - coverage
