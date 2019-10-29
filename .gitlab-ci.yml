@@ -3,7 +3,7 @@
 # can use verions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
 
-build:
+build:alltests:
   stage: build
   tags:
    - raspberrypi
@@ -12,6 +12,9 @@ build:
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - cmake --build . --target test_all_unit
+  artifacts:
+    paths:
+      - build/
 
 # run tests using the binary built before
 test:
@@ -19,7 +22,7 @@ test:
   tags:
    - raspberrypi
   script:
-    - cd test
+    - cd build/test
     - ./test_all_unit
     - mkdir coverage
     - lcov --capture --directory CMakeFiles/test_all_unit.dir/ --output-file coverage/coverage.info
@@ -27,3 +30,5 @@ test:
   artifacts:
     paths:
       - coverage
+  dependencies:
+   - build:alltests
