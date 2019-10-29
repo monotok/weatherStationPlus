@@ -4,10 +4,6 @@
 # see https://hub.docker.com/_/gcc/
 
 test:alltests:
-  only:
-   - schedules
-   - web
-   - merge_requests
   stage: build
   tags:
    - raspberrypi
