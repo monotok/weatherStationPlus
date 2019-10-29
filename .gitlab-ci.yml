@@ -12,7 +12,7 @@ build:alltests:
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - cmake --build . --target test_all_unit
-  artifacts:
+  cache:
     paths:
       - build/
 
@@ -30,5 +30,4 @@ test:
   artifacts:
     paths:
       - coverage
-  dependencies:
-   - build:alltests
+      - test_all_unit
