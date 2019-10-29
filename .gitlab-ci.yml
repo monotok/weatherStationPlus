@@ -4,6 +4,10 @@
 # see https://hub.docker.com/_/gcc/
 
 test:alltests:
+  only:
+   - schedules
+   - web
+   - merge_requests
   stage: build
   tags:
    - raspberrypi
@@ -21,11 +25,13 @@ test:alltests:
    - raspberrypi
   script:
     - cd build/test
-    - sudo ./test_all_unit
+    - sudo ./test_all_unit --gtest_output="xml:report.xml"
     - mkdir coverage
     - lcov --capture --directory CMakeFiles/test_all_unit.dir/ --output-file coverage/coverage.info
     - genhtml coverage/coverage.info --output-directory coverage
   artifacts:
     paths:
-      - coverage
-      - test_all_unit
+      - $CI_PROJECT_DIR/build/test/coverage
+      - $CI_PROJECT_DIR/build/test/test_all_unit
+    reports:
+      junit: $CI_PROJECT_DIR/build/test/report.xml
