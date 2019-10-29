@@ -3,7 +3,7 @@
 # can use verions as well, like gcc:5.2
 # see https://hub.docker.com/_/gcc/
 
-build:alltests:
+test:alltests:
   stage: build
   tags:
    - raspberrypi
@@ -16,9 +16,6 @@ build:alltests:
     key: build-cache
     paths:
       - build/
-
-# run tests using the binary built before
-test:
   stage: test
   tags:
    - raspberrypi
@@ -28,8 +25,6 @@ test:
     - mkdir coverage
     - lcov --capture --directory CMakeFiles/test_all_unit.dir/ --output-file coverage/coverage.info
     - genhtml coverage/coverage.info --output-directory coverage
-  cache:
-   key: build-cache
   artifacts:
     paths:
       - coverage
