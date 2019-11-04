@@ -11,9 +11,9 @@ SET(CMAKE_FIND_ROOT_PATH $ENV{HOME}/SoftwareDevelopment/Libaries/raspberrypi-too
 #SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
 #SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} --sysroot=${CMAKE_FIND_ROOT_PATH}")
 
-#SET(CMAKE_CXX_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -fprofile-arcs -ftest-coverage" CACHE STRING "" FORCE)
-#SET(CMAKE_C_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -W -fprofile-arcs -ftest-coverage" CACHE STRING "" FORCE)
-#SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage" CACHE STRING "" FORCE)
+SET(CMAKE_CXX_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -fprofile-arcs -ftest-coverage" CACHE STRING "" FORCE)
+SET(CMAKE_C_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -W -fprofile-arcs -ftest-coverage" CACHE STRING "" FORCE)
+SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage" CACHE STRING "" FORCE)
 
 # Search for programs only in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
