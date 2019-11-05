@@ -71,6 +71,8 @@ Unfortunately I had quite a few problems regarding this; I did eventually get it
 - GCDA version mismatch. Expected 603* got 408* etc. 
 	+ **No FIX**: Could not get this to work as expected. Used many different compilers for armv6. Most useful looking: https://sourceforge.net/projects/raspberry-pi-cross-compilers/
 	+ **Work Around**: Don't use version 6 gcc, just use the standard raspberry pi cross platform tools (version 4.8.3) and force the raspberry pi default version of gcc to be 4.8.x. `sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/arm-linux-gnueabihf-gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/arm-linux-gnueabihf-g++-4.8 --slave /usr/bin/gcov gcov /usr/bin/arm-linux-gnueabihf-gcov-4.8 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/arm-linux-gnueabihf-gcc-ar-4.8 --slave /usr/bin/gcc-nm gcc-nm /usr/bin/arm-linux-gnueabihf-gcc-nm-4.8`. This command will make gcc 4.8.x to be default. Must make sure to include the gcc-nm for gcda to work.
+	+ Can also add GCC 6 so we can easily change back and forth. `sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/arm-linux-gnueabihf-gcc-6 80 --slave /usr/bin/g++ g++ /usr/bin/arm-linux-gnueabihf-g++-6 --slave /usr/bin/gcov gcov /usr/bin/arm-linux-gnueabihf-gcov-6 --slave /usr/bin/gcc-ar gcc-ar /usr/bin/arm-linux-gnueabihf-gcc-ar-6 --slave /usr/bin/gcc-nm gcc-nm /usr/bin/arm-linux-gnueabihf-gcc-nm-6`
+	+ Switch between them with `sudo update-alternatives --config gcc`
 
 # References
 
