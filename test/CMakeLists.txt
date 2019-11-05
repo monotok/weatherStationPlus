@@ -116,6 +116,17 @@ target_link_libraries(test_all_unit gtest rt) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt)
 target_link_libraries(test_retrievesendata gtest)
 
+set_target_properties(test_btncontrol PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_dynamsensorfact PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_all_unit PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_lcdcontroller PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_retrievesendata PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+
 add_custom_target(cov
         COMMAND mkdir -p ${COVERAGE_DIR}
         COMMAND test_all_unit

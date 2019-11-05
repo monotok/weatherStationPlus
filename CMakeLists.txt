@@ -47,7 +47,8 @@ add_executable(weatherStationPlus ${MAIN_SOURCE_FILES})
 
 target_link_libraries(weatherStationPlus
         pthread
-        rt)
+        rt
+        gtest)
 
 target_link_libraries(GPIOTest
         rt)
@@ -56,13 +57,17 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
     target_link_libraries(weatherStationPlus
             pthread
             rt
+            gtest
             -fno-omit-frame-pointer
             -fsanitize=address)
 endif()
 
+set_target_properties(weatherStationPlus PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PROJECT_SOURCE_DIR}/bin/debug)
+
 set(lfc "\"~/.config/wsp/logging.conf\"")
 if (lfc)
-    target_compile_definitions(DynamSensors PUBLIC -DLOGCONFIGLOCATION=${lfc})
+    target_compile_definitions(weatherStationPlus PUBLIC -DLOGCONFIGLOCATION=${lfc})
 endif()
 
 add_custom_target(fullclean

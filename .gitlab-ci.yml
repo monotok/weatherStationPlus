@@ -20,6 +20,7 @@ build:alltests_pi:
   
   stage: build
   script:
+    - rm -f $CI_PROJECT_DIR/test/unit/bin/*
     - mkdir build
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -28,6 +29,7 @@ build:alltests_pi:
     paths:
     - $CI_PROJECT_DIR/build/test/test_all_unit
     - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
+    - $CI_PROJECT_DIR/test/unit/bin
 
 test:alltests_pi:
   tags:
@@ -39,7 +41,7 @@ test:alltests_pi:
   
   stage: test
   script:
-      - cd build/test
+      - cd test/unit/bin
       - sudo ./test_all_unit --gtest_output="xml:report.xml"
       - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
       - mkdir -p coverage
@@ -51,9 +53,11 @@ test:alltests_pi:
     paths:
       - $CI_PROJECT_DIR/build/test/coverage
     reports:
-      junit: $CI_PROJECT_DIR/build/test/report.xml
+      junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
   after_script:
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
+
 
 
 build:alltests_quick:
@@ -66,6 +70,7 @@ build:alltests_quick:
   
   stage: build
   script:
+    - rm -f $CI_PROJECT_DIR/test/unit/bin/*
     - mkdir build
     - cd build
     - cmake -DCMAKE_TOOLCHAIN_FILE=rasp/toolchain-rasppi.cmake ..
@@ -74,6 +79,7 @@ build:alltests_quick:
     paths:
     - $CI_PROJECT_DIR/build/test/test_all_unit
     - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
+    - $CI_PROJECT_DIR/test/unit/bin
 
 test:alltests_quick:
   tags:
@@ -85,15 +91,16 @@ test:alltests_quick:
   
   stage: test
   script:
-    - cd build/test
+    - cd test/unit/bin
     - sudo ./test_all_unit --gtest_output="xml:report.xml"
   dependencies: 
     - build:alltests_quick
   artifacts:
     reports:
-      junit: $CI_PROJECT_DIR/build/test/report.xml
+      junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
   after_script:
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
 
 #build:alltests_quick_cov:
