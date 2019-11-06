@@ -44,6 +44,7 @@ private:
     };
 
     FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
+    FRIEND_TEST(LcdController, create_new_datetime_page_struct_independant);
     FRIEND_TEST(LcdController, update_values_only_on_existing_page);
     FRIEND_TEST(LcdController, check_for_existing_weather_sensor);
 

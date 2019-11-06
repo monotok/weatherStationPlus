@@ -113,3 +113,19 @@ TEST(LcdController, update_values_only_on_existing_page)
     lcdc.drawPage("weather1", lcd);
 
 }
+
+TEST(LcdController, create_new_datetime_page_struct_independant)
+{
+    LcdController lcdc;
+    lcdc.createDateTimePage();
+
+    auto founddate = lcdc.pages_map.find("date");
+
+    EXPECT_NE(founddate, lcdc.pages_map.end());
+
+    auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
+    string date_str(30, '\0');
+    strftime(&date_str[0], date_str.size(), "%d", std::localtime(&timenow));
+    auto found = date_str.find(founddate->second[1].value);
+    EXPECT_NE(found, string::npos);
+}
