@@ -12,7 +12,6 @@ set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
 #Output folders
 #set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/test/unit/bin)
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(COVERAGE_DIR coverage)
 
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
@@ -127,11 +126,19 @@ set_target_properties(test_lcdcontroller PROPERTIES
 set_target_properties(test_retrievesendata PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
 
-add_custom_target(cov
-        COMMAND mkdir -p ${COVERAGE_DIR}
+set(COVERAGE_DIR ${MAIN_PROJECT_DIR}/coverage)
+
+add_custom_target(cov_all
+        COMMAND mkdir -p ${COVERAGE_DIR}/test_all_unit
         COMMAND test_all_unit
-        COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/test_* --output-file ${COVERAGE_DIR}/coverage.info
-        COMMAND genhtml ${COVERAGE_DIR}/coverage.info --output-directory ${COVERAGE_DIR}
+        COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/test_all_unit.dir/__/src --output-file ${COVERAGE_DIR}/test_all_unit/coverage.info
+        COMMAND genhtml ${COVERAGE_DIR}/test_all_unit/coverage.info --output-directory ${COVERAGE_DIR}/test_all_unit
         )
 
-add_dependencies(cov test_all_unit)
+add_dependencies(cov_all test_all_unit)
+
+add_custom_target(cov_manual_run
+        COMMAND mkdir -p ${COVERAGE_DIR}/manual
+        COMMAND lcov --capture --directory ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles --output-file ${COVERAGE_DIR}/manual/coverage.info
+        COMMAND genhtml ${COVERAGE_DIR}/manual/coverage.info --output-directory ${COVERAGE_DIR}/manual
+        )

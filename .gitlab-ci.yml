@@ -51,7 +51,7 @@ test:alltests_pi:
     - build:alltests_pi
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/build/test/coverage
+      - $CI_PROJECT_DIR/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
   after_script:

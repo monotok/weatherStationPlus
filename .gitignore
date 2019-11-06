@@ -14,3 +14,4 @@ test/coverage/*
 /cmake-build-asan-pi/
 /README.md.backup
 !.gitkeep
+/coverage/
