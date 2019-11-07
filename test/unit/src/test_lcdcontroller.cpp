@@ -129,3 +129,21 @@ TEST(LcdController, create_new_datetime_page_struct_independant)
     auto found = date_str.find(founddate->second[1].value);
     EXPECT_NE(found, string::npos);
 }
+
+TEST(LcdController, update_only_changed_values_datetime)
+{
+    I2cControl *i2c = new I2cControl(i2cbusno);
+    LcdDriver lcd(lcdAdd, i2c);
+
+    LcdController lcdc;
+    lcdc.createDateTimePage();
+
+    auto founddate = lcdc.pages_map.find("date");
+
+    EXPECT_NE(founddate, lcdc.pages_map.end());
+    auto oldSecond = founddate->second[11].value;
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    lcdc.updateDateTimePage(lcd);
+    auto newSecond = founddate->second[11].value;
+    EXPECT_NE(oldSecond, newSecond);
+}
