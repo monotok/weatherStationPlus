@@ -6,6 +6,9 @@ SET(CMAKE_CXX_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -fprofile-arcs -fte
 SET(CMAKE_C_FLAGS "-DELPP_NO_DEFAULT_LOG_FILE -g -O0 -Wall -W -fprofile-arcs -ftest-coverage")
 SET(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
 
+# Allow the building of pqxx to work
+ADD_DEFINITIONS ( -DPQXX_HIDE_EXP_OPTIONAL )
+
 #Stop gcno being prepended with file type as GOV can't find them
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE 1)
 
@@ -113,7 +116,7 @@ target_link_libraries(test_btncontrol gtest rt)
 target_link_libraries(test_dynamsensorfact gtest)
 target_link_libraries(test_all_unit gtest rt) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt)
-target_link_libraries(test_retrievesendata gtest)
+target_link_libraries(test_retrievesendata gtest pqxx pq)
 
 set_target_properties(test_btncontrol PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)

@@ -96,3 +96,26 @@ TEST(RetrieveSensorData, check_incoming_data_invalid)
 
     EXPECT_FALSE(rsd.check_imcoming_data());
 }
+
+TEST(RetrieveSenData, store_incoming_data_in_database)
+{
+    RetrieveSenData rsd = RetrieveSenData(NULL, NULL, I2C_ADDR);
+    WeatherSensor* mySen;
+    mySen->set_humidity(55.0);
+    mySen->set_temperature(23.5);
+    mySen->set_sensorID("atest");
+
+    pqxx::connection C("dbname = weather_test user = postgres password = password \
+      hostaddr = 127.0.0.1 port = 9432");
+    pqxx::work w(C);
+    rsd.store_incoming_data_database();
+
+    pqxx::result r = w.exec("select * from sensors.data where sensorid = 'atest';");
+
+    for (auto row: r)
+    {
+        EXPECT_EQ(row[0].c_str(), "atest");
+    }
+
+    w.commit();
+}

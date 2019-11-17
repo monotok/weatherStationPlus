@@ -1,5 +1,67 @@
 # Build
 
+## MongoDB (Optional)
+This is used to store the weather information so that it can be used and graphed over a period of time.
+
+### Build the C Driver
+
+[C Driver Instructions](http://mongoc.org/libmongoc/current/installing.html)
+
+You can follow the above installation instructions or follow the summary below.
+
+```
+$ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.15.2/mongo-c-driver-1.15.2.tar.gz
+$ tar xzf mongo-c-driver-1.15.2.tar.gz
+$ cd mongo-c-driver-1.15.2
+$ mkdir cmake-build
+$ cd cmake-build
+$ cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
+```
+
+### Install C Driver
+
+```
+$ make
+$ sudo make install
+```
+
+### Uninstall C Driver
+
+```
+sudo /usr/local/share/mongo-c-driver/uninstall.sh
+
+OR from build directory (if left intact)
+
+sudo make uninstall
+```
+
+
+## Build C++ Driver
+
+Firstly the C driver needs to be installed.
+
+[C++ Install Instructions](http://mongocxx.org/mongocxx-v3/installation/)
+
+This project uses C++ 11 so needs to use an extra option.
+
+```
+git clone https://github.com/mongodb/mongo-cxx-driver.git \                                                                                    
+    --branch releases/stable --depth 1
+cd mongo-cxx-driver/build
+```
+
+`cmake -DCMAKE_BUILD_TYPE=Release -DBSONCXX_POLY_USE_MNMLSTC=1 -DCMAKE_INSTALL_PREFIX=/usr/local ..`
+
+So you don't have to run the whole make as sudo (Because we are installing to /usr/local)
+
+`sudo make EP_mnmlstc_core`
+
+`make && sudo make install`
+
+### Testing the Driver
+
+
+
 ## CMake
 
 The project has been changed to use cmake and therefore it is more portable than previously.

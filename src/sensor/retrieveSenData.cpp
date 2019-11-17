@@ -70,3 +70,8 @@ bool RetrieveSenData::check_imcoming_data()
 
     return true;
 }
+
+void RetrieveSenData::store_incoming_data_database()
+{
+
+}
