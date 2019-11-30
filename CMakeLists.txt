@@ -14,6 +14,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "-DELPP_NO_DEFAULT_LOG_FILE" -O2)
 
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-fsanitize=address -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 
+# Allow the building of pqxx to work
+ADD_DEFINITIONS ( -DPQXX_HIDE_EXP_OPTIONAL )
 #Output folders
 #set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -48,7 +50,9 @@ add_executable(weatherStationPlus ${MAIN_SOURCE_FILES})
 target_link_libraries(weatherStationPlus
         pthread
         rt
-        gtest)
+        gtest
+        pqxx
+        pq)
 
 target_link_libraries(GPIOTest
         rt)
@@ -58,6 +62,8 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
             pthread
             rt
             gtest
+            pqxx
+            pq
             -fno-omit-frame-pointer
             -fsanitize=address)
 endif()
