@@ -15,3 +15,6 @@ test/coverage/*
 /README.md.backup
 !.gitkeep
 /coverage/
+/cmake-build-debug-dockerarmv6/
+/cmake-build-cov-dockerarmv6/
+/cmake-build-reldebinfo-dockerarmv6/
