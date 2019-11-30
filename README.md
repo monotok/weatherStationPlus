@@ -1,65 +1,116 @@
 # Build
 
-## MongoDB (Optional)
-This is used to store the weather information so that it can be used and graphed over a period of time.
+## Timescaledb (PostgresSQL Extension)
 
-### Build the C Driver
+### Required Packages
 
-[C Driver Instructions](http://mongoc.org/libmongoc/current/installing.html)
+- libpq-dev
+- libpqxx-dev
 
-You can follow the above installation instructions or follow the summary below.
+### Install DB (Ubuntu 18.04 LTS)
+
+This can be a remote database or a local one. A remote database is probably best as it reduces writes to the sd card of the pi. 
+
+- Install postgres from the Ubuntu repo.
+	+ `sudo apt install postgresql`
+- Add timescaledb repo and install
+	+ `sudo add-apt-repository ppa:timescale/timescaledb-ppa`
+	+ `sudo apt-get update`
+	+ `sudo apt install timescaledb-postgresql-10`
+	+ `sudo timescaledb-tune` (Optional, read the official documentation on tuning [Tuning](https://docs.timescale.com/latest/getting-started/configuring))
+
+
+### Configuring the DB
+
+- Login to the DB user `sudo su - postgres`
+- Now enter the command line utility `psql`
+- Create the weather station user
+	+ `create role weather login password 'password goes here';`
+- Create the database
+	+ `create database weather with owner = 'weather';`
+- Quit the utility `\q`
+- Test logging in with the new user `psql -h localhost -d weather -U weather`
+
+### Configure Remote Access
+
+We want to allow the remote user and others access to the database over the network.
+
+Edit `sudo vim /etc/postgresql/10/main/pg_hba.conf`
+
+Now add this towards the top of the file. Replace the network range with your LAN.
+
+`host  all  all 192.168.1.0/24 md5`
+
+Now edit the postgresql.conf file. `sudo vim /etc/postgresql/10/main/postgresql.conf`
+
+Change the listen address `listen_addresses = '*' `
+
+### Restart service
+
+Restart the service `sudo service postgresql restart` to apply the changes.
+
+### Enable timescaledb extension on the new database
+
+This must be done via the postgres account.
+
+`sudo -u postgres psql`
+
+`\c weather`
+
+`create extension if not exists timescaledb cascade;`
+
+This should show.
 
 ```
-$ wget https://github.com/mongodb/mongo-c-driver/releases/download/1.15.2/mongo-c-driver-1.15.2.tar.gz
-$ tar xzf mongo-c-driver-1.15.2.tar.gz
-$ cd mongo-c-driver-1.15.2
-$ mkdir cmake-build
-$ cd cmake-build
-$ cmake -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF ..
-```
+WARNING:  
+WELCOME TO
+ _____ _                               _     ____________  
+|_   _(_)                             | |    |  _  \ ___ \ 
+  | |  _ _ __ ___   ___  ___  ___ __ _| | ___| | | | |_/ / 
+  | | | |  _ ` _ \ / _ \/ __|/ __/ _` | |/ _ \ | | | ___ \ 
+  | | | | | | | | |  __/\__ \ (_| (_| | |  __/ |/ /| |_/ /
+  |_| |_|_| |_| |_|\___||___/\___\__,_|_|\___|___/ \____/
+               Running version 1.5.1
+For more information on TimescaleDB, please visit the following links:
 
-### Install C Driver
+ 1. Getting started: https://docs.timescale.com/getting-started
+ 2. API reference documentation: https://docs.timescale.com/api
+ 3. How TimescaleDB is designed: https://docs.timescale.com/introduction/architecture
 
-```
-$ make
-$ sudo make install
-```
+Note: TimescaleDB collects anonymous reports to better understand and assist our users.
+For more information and how to disable, please see our docs https://docs.timescaledb.com/using-timescaledb/telemetry.
 
-### Uninstall C Driver
-
-```
-sudo /usr/local/share/mongo-c-driver/uninstall.sh
-
-OR from build directory (if left intact)
-
-sudo make uninstall
-```
-
-
-## Build C++ Driver
-
-Firstly the C driver needs to be installed.
-
-[C++ Install Instructions](http://mongocxx.org/mongocxx-v3/installation/)
-
-This project uses C++ 11 so needs to use an extra option.
+CREATE EXTENSION
 
 ```
-git clone https://github.com/mongodb/mongo-cxx-driver.git \                                                                                    
-    --branch releases/stable --depth 1
-cd mongo-cxx-driver/build
+
+### Create the DB Schema
+
+```sql
+create schema sensors;
+create table sensors.data
+(
+    sensorid    text                     not null,
+    time        timestamp with time zone not null,
+    temperature double precision default 0,
+    humidity    double precision default 0,
+    battery     integer
+);
+
+SELECT create_hypertable('sensors.data', 'time');
+
+create index data_sensorid_time_idx
+    on sensors.data (sensorid asc, time desc);
+
+create index data_temp_index
+    on sensors.data (time desc, temperature asc)
+    where (temperature IS NOT NULL);
+
+create index data_hum_index
+    on sensors.data (time desc, humidity asc)
+    where (humidity IS NOT NULL);
+
 ```
-
-`cmake -DCMAKE_BUILD_TYPE=Release -DBSONCXX_POLY_USE_MNMLSTC=1 -DCMAKE_INSTALL_PREFIX=/usr/local ..`
-
-So you don't have to run the whole make as sudo (Because we are installing to /usr/local)
-
-`sudo make EP_mnmlstc_core`
-
-`make && sudo make install`
-
-### Testing the Driver
-
 
 
 ## CMake
@@ -120,6 +171,26 @@ HTML report is located within the coverage directory.
 # Cross Platform Builds (Gitlab Ci)
 
 Unfortunately I had quite a few problems regarding this; I did eventually get it working but felt it would be more reliable to just have the coverage via the local raspberry pi builds and runs these on merge requests only.
+
+## Setup
+
+- Download the compiler toolchain [Git Hub](https://github.com/abhiTronix/raspberry-pi-cross-compilers/wiki/Cross-Compiler:-Installation-Instructions)
+- Copy the sysroot files from raspberry pi to a folder on pc
+
+```
+rsync -avz root@dev_root:/lib sysroot
+rsync -avz root@dev_root:/usr/include sysroot/usr
+rsync -avz root@dev_root:/usr/lib sysroot/usr
+rsync -avz root@dev_root:/opt/vc sysroot/opt 
+```
+Down this python file to repoint the symlinks in the root directory. Otherwise they will point to the hosts root
+`wget https://raw.githubusercontent.com/riscv/riscv-poky/master/scripts/sysroot-relativelinks.py`
+
+`./sysroot-relativelinks.py sysroot`
+
+- Modify the toolchain file to point to correct dirs
+
+
 
 ## Issues
 
