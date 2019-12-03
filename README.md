@@ -172,7 +172,7 @@ HTML report is located within the coverage directory.
 
 Unfortunately I had quite a few problems regarding this; I did eventually get it working but felt it would be more reliable to just have the coverage via the local raspberry pi builds and runs these on merge requests only.
 
-## Setup
+## Setup (old)
 
 - Download the compiler toolchain [Git Hub](https://github.com/abhiTronix/raspberry-pi-cross-compilers/wiki/Cross-Compiler:-Installation-Instructions)
 - Copy the sysroot files from raspberry pi to a folder on pc
@@ -189,6 +189,43 @@ Down this python file to repoint the symlinks in the root directory. Otherwise t
 `./sysroot-relativelinks.py sysroot`
 
 - Modify the toolchain file to point to correct dirs
+
+
+## Setup (Docker)
+
+- Create a .env variable with (Replace user with matching host user and uid. Can then optionally bind git directory inside the container):
+
+```
+	USERNAME=gitlab-runner
+	USERID=999
+	GROUPID=998
+```
+
+- sudo apt install qemu-user-static
+- docker-compose up -d
+- cp the git dir into the container or git clone
+	+ docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
+- docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
+
+To build the tests we run:
+
+```
+docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target test_all_unit"
+docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
+```
+
+or to build the main application we run:
+
+```
+docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
+mkdir -p bin/debug
+docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/bin/debug/weatherStationPlus bin/debug/
+```
+
+- docker-compose down
+- upload as an artifact
+- via next job via pi run and optionally collect cov
+- upload test report
 
 
 

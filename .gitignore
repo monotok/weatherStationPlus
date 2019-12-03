@@ -1,6 +1,6 @@
 .vscode
 build
-bin/*
+bin/debug/*
 test/build
 test/gtest
 test/gmock
