@@ -9,6 +9,7 @@ variables:
 stages:
   - build
   - test
+  - deploybuild
   - deploy
 
 build:alltests_pi:
@@ -119,7 +120,7 @@ build:mainapp_quick:
     - schedules
     - merge_requests
 
-  stage: deploy
+  stage: deploybuild
   script:
     - docker-compose up -d
     - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
