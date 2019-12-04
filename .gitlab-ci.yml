@@ -9,6 +9,7 @@ variables:
 stages:
   - build
   - test
+  - deploy
 
 build:alltests_pi:
   tags:
@@ -83,29 +84,6 @@ build:alltests_quick:
     paths:
       - $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
-build:mainapp_quick:
-  tags:
-    - crossplatform
-
-  except:
-    - schedules
-    - merge_requests
-
-  stage: build
-  script:
-    - docker-compose up -d
-    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
-    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/bin/debug/weatherStationPlus bin/debug/
-
-  after_script:
-    - docker-compose down
-
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/bin/debug/weatherStationPlus
-
 test:alltests_quick:
   tags:
   - raspberrypi
@@ -118,15 +96,60 @@ test:alltests_quick:
   script:
     - cd test/unit/bin
     - sudo ./test_all_unit --gtest_output="xml:report.xml"
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
+    - mkdir -p coverage
+    - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
+    - genhtml coverage/coverage.info --output-directory coverage
   dependencies: 
     - build:alltests_quick
   artifacts:
+    paths:
+      - $CI_PROJECT_DIR/build/test/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
-  after_script:
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
+#  after_script:
+#    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+#    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
+build:mainapp_quick:
+  tags:
+    - crossplatform
+
+  except:
+    - schedules
+    - merge_requests
+
+  stage: deploy
+  script:
+    - docker-compose up -d
+    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
+    - mkdir -p bin/debug
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/bin/debug/weatherStationPlus bin/debug/
+
+  after_script:
+    - docker-compose down
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/bin/debug/weatherStationPlus
+
+deploy:
+  tags:
+    - raspberrypi
+
+  except:
+    - schedules
+    - merge_requests
+
+  stage: deploy
+  script:
+    - sudo ./bin/debug/weatherStationPlus &
+  dependencies:
+    - build:mainapp_quick
+
+  when: manual
 
 #build:alltests_quick_cov:
 #  tags:
