@@ -1,3 +1,9 @@
+# Status
+
+[![pipeline status](https://sds.monotok.org/WeatherStationProject/weatherStationPlus/badges/master/pipeline.svg)](https://sds.monotok.org/WeatherStationProject/weatherStationPlus/commits/master)
+
+[![coverage report](https://sds.monotok.org/WeatherStationProject/weatherStationPlus/badges/master/coverage.svg)](https://sds.monotok.org/WeatherStationProject/weatherStationPlus/commits/master)
+
 # Build
 
 ## Timescaledb (PostgresSQL Extension)
