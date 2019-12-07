@@ -239,7 +239,8 @@ docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/bin/debug/weatherStati
 
 - GCDA files produced in the wrong directory, based on the previous runner that built the binaries.
 	+ `GCOV_PREFIX and GCOV_PREFIX_STRIP` did not work when set on the raspberry pi running the binaries.
-	+ **FIX**: Had to set the gitlab runner to build in a specific directory. https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runnerscustom_build_dir-section & https://docs.gitlab.com/ee/ci/yaml/README.html#custom-build-directories
+	+ **FIX**: ~~Had to set the gitlab runner to build in a specific directory. https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runnerscustom_build_dir-section & https://docs.gitlab.com/ee/ci/yaml/README.html#custom-build-directories~~
+	+ **FIX**: Need to pass the -E option to sudo so it picks up the environment variables.
 
 - Cannot open source file `......raspberrypi-toolchains/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3`.
 	+ **Fix**: Needed to copy the raspberry pi cross compiling tools over to the pi (Just this folder). Potential issue was with generating coverage for standard library files.  

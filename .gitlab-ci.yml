@@ -7,7 +7,6 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/wsp
 
 stages:
-  - clean
   - build
   - test
   - deploy
@@ -40,6 +39,9 @@ test:alltests_pi:
   only:
    - schedules
    - merge_requests
+
+  before_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
   
   stage: test
   script:
@@ -56,20 +58,7 @@ test:alltests_pi:
       - $CI_PROJECT_DIR/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
-  after_script:
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
-clean_docker:
-  tags:
-    - crossplatform
-
-  only:
-   - schedules
-
-  stage: clean
-
-  script: docker-compose down
 
 build:alltests_quick:
   tags:
@@ -81,7 +70,7 @@ build:alltests_quick:
   
   stage: build
   script:
-    - docker-compose up -d
+    - docker-compose up --no-recreate -d
     - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target test_all_unit"
@@ -98,7 +87,10 @@ test:alltests_quick:
   except:
    - schedules
    - merge_requests
-  
+
+  before_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+
   stage: test
   script:
     - cd test/unit/bin
@@ -114,8 +106,7 @@ test:alltests_quick:
       - $CI_PROJECT_DIR/build/test/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
-  after_script:
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+
 
 build:mainapp_quick:
   tags:
