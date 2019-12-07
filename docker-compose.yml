@@ -6,6 +6,7 @@ services:
   gdbserver:
     build:
       context: ./
+      restart: always
       args:
         debuguser: $USERNAME
         userid: $USERID
