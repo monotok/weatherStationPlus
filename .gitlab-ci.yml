@@ -78,12 +78,12 @@ build:alltests_quick:
   
   stage: build
   script:
-    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target test_all_unit"
-    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
+    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target test_all_unit"
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
     - mkdir -p build/test/CMakeFiles/test_all_unit.dir/__/
-    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/build/test/CMakeFiles/test_all_unit.dir/__/src build/test/CMakeFiles/test_all_unit.dir/__/src
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/build/test/CMakeFiles/test_all_unit.dir/__/src build/test/CMakeFiles/test_all_unit.dir/__/src
 
   artifacts:
     paths:
@@ -105,12 +105,11 @@ test:alltests_quick:
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
     - mkdir -p coverage
     - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
-    - genhtml coverage/coverage.info --output-directory coverage
   dependencies: 
     - build:alltests_quick
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/build/test/coverage
+      - $CI_PROJECT_DIR/build/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
 
@@ -127,11 +126,11 @@ build:mainapp_quick:
 
   stage: build
   script:
-    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/code/
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
+    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
     - mkdir -p bin/debug
-    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/bin/debug/weatherStationPlus bin/debug/
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/bin/debug/weatherStationPlus bin/debug/
 
   artifacts:
     paths:

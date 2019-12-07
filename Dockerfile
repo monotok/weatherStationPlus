@@ -23,7 +23,7 @@ EXPOSE 22 7777
 RUN groupadd -g $groupid $debuguser && useradd -ms /bin/bash -u $userid -g $groupid $debuguser
 RUN echo "$debuguser:pwd" | chpasswd
 
-RUN mkdir -p /home/$debuguser/code && chown -R $debuguser:$debuguser /home/$debuguser/code
-WORKDIR /home/$debuguser/code
+RUN mkdir -p /home/$debuguser/builds/wsp && chown -R $debuguser:$debuguser /home/$debuguser/builds/wsp
+WORKDIR /home/$debuguser/builds/wsp
 RUN /usr/bin/ssh-keygen -A
 CMD ["/usr/sbin/sshd", "-D"]
