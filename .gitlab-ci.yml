@@ -86,6 +86,7 @@ build:alltests_quick:
 
   artifacts:
     paths:
+      - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
       - $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
 test:alltests_quick:
