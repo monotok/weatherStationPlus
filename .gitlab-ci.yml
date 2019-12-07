@@ -56,9 +56,9 @@ test:alltests_pi:
       - $CI_PROJECT_DIR/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
-#  after_script:
-#    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-#    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
+  after_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
 clean_docker:
   tags:
@@ -102,7 +102,7 @@ test:alltests_quick:
   stage: test
   script:
     - cd test/unit/bin
-    - sudo ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
+    - sudo -E ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
     - mkdir -p coverage
     - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
@@ -114,9 +114,8 @@ test:alltests_quick:
       - $CI_PROJECT_DIR/build/test/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
-#  after_script:
-#    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-#    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
+  after_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
 
 build:mainapp_quick:
   tags:
