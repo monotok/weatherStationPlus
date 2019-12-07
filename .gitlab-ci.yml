@@ -29,7 +29,6 @@ build:alltests_pi:
     - cmake --build . --target test_all_unit
   artifacts:
     paths:
-    - $CI_PROJECT_DIR/build/test/test_all_unit
     - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
     - $CI_PROJECT_DIR/test/unit/bin
 
@@ -83,6 +82,7 @@ build:alltests_quick:
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/code && mkdir -p build && cd build && cmake --build . --target test_all_unit"
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/build/test/CMakeFiles/test_all_unit.dir/__/src build/test/CMakeFiles/test_all_unit.dir/__/src
 
   artifacts:
     paths:
