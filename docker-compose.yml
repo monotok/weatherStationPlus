@@ -6,7 +6,6 @@ services:
   gdbserver:
     build:
       context: ./
-      restart: always
       args:
         debuguser: $USERNAME
         userid: $USERID
@@ -16,6 +15,7 @@ services:
     security_opt:
       - seccomp:unconfined
     container_name: arm_v6_raspberrypi_one
+    restart: always
     ports:
       - "7776:22"
       - "7777:7777"
