@@ -40,9 +40,6 @@ test:alltests_pi:
    - schedules
    - merge_requests
 
-  before_script:
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-  
   stage: test
   script:
       - cd test/unit/bin
@@ -59,6 +56,8 @@ test:alltests_pi:
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
 
+  after_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
 
 build:alltests_quick:
   tags:
@@ -88,9 +87,6 @@ test:alltests_quick:
    - schedules
    - merge_requests
 
-  before_script:
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-
   stage: test
   script:
     - cd test/unit/bin
@@ -107,6 +103,8 @@ test:alltests_quick:
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
 
+  after_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
 
 build:mainapp_quick:
   tags:
