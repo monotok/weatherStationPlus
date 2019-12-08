@@ -109,7 +109,7 @@ test:alltests_quick:
     - build:alltests_quick
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/build/test/unit/bin/coverage
+      - $CI_PROJECT_DIR/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
 
