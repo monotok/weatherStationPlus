@@ -31,6 +31,8 @@ build:alltests_pi:
     paths:
     - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
     - $CI_PROJECT_DIR/test/unit/bin
+  after_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
 
 test:alltests_pi:
   tags:
@@ -41,6 +43,8 @@ test:alltests_pi:
    - merge_requests
 
   stage: test
+  before_script:
+    - sudo killall ./bin/debug/weatherStationPlus
   script:
       - cd test/unit/bin
       - sudo ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
@@ -102,6 +106,8 @@ test:alltests_quick:
    - merge_requests
 
   stage: test
+  before_script:
+    - sudo killall ./bin/debug/weatherStationPlus
   script:
     - cd test/unit/bin
     - sudo -E ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
@@ -150,8 +156,11 @@ deploy:
     - merge_requests
 
   stage: deploy
+  before_script:
+    - sudo killall ./bin/debug/weatherStationPlus
   script:
-    - sudo ./bin/debug/weatherStationPlus &
+    - sudo ./bin/debug/weatherStationPlus & &>/dev/null &
+    - disown
   dependencies:
     - build:mainapp_quick
 
