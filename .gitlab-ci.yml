@@ -67,7 +67,9 @@ clean_docker:
 
   stage: clean
 
-  script: docker-compose down
+  script: 
+   - docker-compose down
+   - docker-compose up
 
 build:alltests_quick:
   tags:
