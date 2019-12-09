@@ -44,7 +44,7 @@ test:alltests_pi:
 
   stage: test
   before_script:
-    - sudo killall ./bin/debug/weatherStationPlus
+    - sudo killall 'weatherStationPlus' | echo "No process found"
   script:
       - cd test/unit/bin
       - sudo ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
@@ -107,7 +107,7 @@ test:alltests_quick:
 
   stage: test
   before_script:
-    - sudo killall ./bin/debug/weatherStationPlus
+    - sudo killall 'weatherStationPlus' | echo "No process found"
   script:
     - cd test/unit/bin
     - sudo -E ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
@@ -157,7 +157,7 @@ deploy:
 
   stage: deploy
   before_script:
-    - sudo killall ./bin/debug/weatherStationPlus
+    - sudo killall 'weatherStationPlus' | echo "No process found"
   script:
     - sudo ./bin/debug/weatherStationPlus & &>/dev/null &
     - disown
