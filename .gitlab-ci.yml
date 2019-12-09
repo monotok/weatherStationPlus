@@ -45,14 +45,11 @@ test:alltests_pi:
       - cd test/unit/bin
       - sudo ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
       - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
-      - mkdir -p coverage
-      - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
-      - genhtml coverage/coverage.info --output-directory coverage
+      - cd $CI_PROJECT/build
+      - gcovr -r .. -e "../include/easylogging*" -e "../src/logging/*"
   dependencies: 
     - build:alltests_pi
   artifacts:
-    paths:
-      - $CI_PROJECT_DIR/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
 
@@ -103,13 +100,11 @@ test:alltests_quick:
     - cd test/unit/bin
     - sudo -E ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
-    - mkdir -p coverage
-    - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
+    - cd $CI_PROJECT/build
+    - gcovr -r .. -e "../include/easylogging*" -e "../src/logging/*"
   dependencies: 
     - build:alltests_quick
   artifacts:
-    paths:
-      - $CI_PROJECT_DIR/test/unit/bin/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
 
