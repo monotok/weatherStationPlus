@@ -13,6 +13,7 @@
 #include "GPIOControl.hpp"
 #include "BtnControl.hpp"
 
+#include <pqxx/pqxx>
 #include <thread>
 
 //void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr);

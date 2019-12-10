@@ -1,0 +1,25 @@
+# From: https://github.com/shuhaoliu/docker-clion-dev/blob/master/docker-compose.yml
+
+version: '3'
+
+services:
+  gdbserver:
+    build:
+      context: ./
+      args:
+        debuguser: $USERNAME
+        userid: $USERID
+        groupid: $GROUPID
+      dockerfile: ./Dockerfile
+    image: clion_dev
+    security_opt:
+      - seccomp:unconfined
+    container_name: arm_v6_raspberrypi_one
+    restart: always
+    ports:
+      - "7776:22"
+      - "7777:7777"
+#    volumes:
+#      - .:/home/$USERNAME/code/bin
+    working_dir: /home/$USERNAME/builds/wsp
+    hostname: arm_v6_raspberrypi_one

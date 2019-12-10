@@ -7,8 +7,10 @@ variables:
   GIT_CLONE_PATH: $CI_BUILDS_DIR/wsp
 
 stages:
+  - clean
   - build
   - test
+  - deploy
 
 build:alltests_pi:
   tags:
@@ -27,9 +29,10 @@ build:alltests_pi:
     - cmake --build . --target test_all_unit
   artifacts:
     paths:
-    - $CI_PROJECT_DIR/build/test/test_all_unit
     - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
     - $CI_PROJECT_DIR/test/unit/bin
+  after_script:
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
 
 test:alltests_pi:
   tags:
@@ -38,27 +41,39 @@ test:alltests_pi:
   only:
    - schedules
    - merge_requests
-  
+
   stage: test
+  before_script:
+    - sudo killall 'weatherStationPlus' || echo "No process found"
   script:
       - cd test/unit/bin
-      - sudo ./test_all_unit --gtest_output="xml:report.xml"
+      - sudo ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
       - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
-      - mkdir -p coverage
-      - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
-      - genhtml coverage/coverage.info --output-directory coverage
+      - cd $CI_PROJECT_DIR/build
+      - mkdir coverage
+      - gcovr -r .. -e "../include/easylogging*" -e "../src/logging/*" --html --html-details -o coverage/weatherstation.html
+      - gcovr -r .. -e "../include/easylogging*" -e "../src/logging/*"
   dependencies: 
     - build:alltests_pi
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/test/unit/bin/coverage
+      - $CI_PROJECT_DIR/build/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
-  after_script:
-    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
+clean_docker:
+  tags:
+    - crossplatform
 
+  only:
+   - schedules
+   - merge_requests
+
+  stage: clean
+
+  script: 
+   - docker-compose down
+   - docker-compose up -d
 
 build:alltests_quick:
   tags:
@@ -70,16 +85,17 @@ build:alltests_quick:
   
   stage: build
   script:
-    - rm -f $CI_PROJECT_DIR/test/unit/bin/*
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_TOOLCHAIN_FILE=rasp/toolchain-rasppi.cmake ..
-    - cmake --build . --target test_all_unit
+    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target test_all_unit"
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
+    - mkdir -p build/test/CMakeFiles/test_all_unit.dir/__/
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/build/test/CMakeFiles/test_all_unit.dir/__/src build/test/CMakeFiles/test_all_unit.dir/__/src
+
   artifacts:
     paths:
-    - $CI_PROJECT_DIR/build/test/test_all_unit
-    - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
-    - $CI_PROJECT_DIR/test/unit/bin
+      - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
+      - $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
 test:alltests_quick:
   tags:
@@ -88,60 +104,64 @@ test:alltests_quick:
   except:
    - schedules
    - merge_requests
-  
+
   stage: test
+  before_script:
+    - sudo killall 'weatherStationPlus' || echo "No process found"
   script:
     - cd test/unit/bin
-    - sudo ./test_all_unit --gtest_output="xml:report.xml"
+    - sudo -E ./test_all_unit --gtest_filter=*:-RetrieveSensorData.store_* --gtest_output="xml:report.xml"
+    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
+    - cd $CI_PROJECT_DIR/build
+    - mkdir coverage
+    - gcovr -r .. -e "../include/easylogging*" -e "../src/logging/*" --html --html-details -o coverage/weatherstation.html
+    - gcovr -r .. -e "../include/easylogging*" -e "../src/logging/*"
   dependencies: 
     - build:alltests_quick
   artifacts:
+    paths:
+      - $CI_PROJECT_DIR/build/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
+
   after_script:
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
-    - sudo rm -f $CI_PROJECT_DIR/test/unit/bin/test_all_unit
 
+build:mainapp_quick:
+  tags:
+    - crossplatform
 
-#build:alltests_quick_cov:
-#  tags:
-#    - crossplatform
-#
-#  only:
-#    - web
-#
-#  stage: build
-#  script:
-#    - mkdir build
-#    - cd build
-#    - cmake -DCMAKE_TOOLCHAIN_FILE=rasp/toolchain-rasppi_coverage.cmake ..
-#    - cmake --build . --target test_all_unit
-#  artifacts:
-#    paths:
-#      - $CI_PROJECT_DIR/build/test/test_all_unit
-#      - $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src
-#
-#test:alltests_quick_cov:
-#  tags:
-#    - raspberrypi
-#
-#  except:
-#    - schedules
-#
-#  stage: test
-#  script:
-#    - cd build/test
-#    - sudo ./test_all_unit --gtest_output="xml:report.xml"
-#    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src/
-#    - mkdir -p coverage
-#    - lcov --capture --directory $CI_PROJECT_DIR/build/test/CMakeFiles/test_all_unit.dir/__/src --output-file coverage/coverage.info
-#    - genhtml coverage/coverage.info --output-directory coverage
-#  dependencies:
-#    - build:alltests_quick
-#  artifacts:
-#    paths:
-#      - $CI_PROJECT_DIR/build/test/coverage
-#    reports:
-#      junit: $CI_PROJECT_DIR/build/test/report.xml
-#  after_script:
-#    - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+  only:
+    - schedules
+    - merge_requests
+
+  stage: build
+  script:
+    - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
+    - mkdir -p bin/debug
+    - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/bin/debug/weatherStationPlus bin/debug/
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/bin/debug/weatherStationPlus
+
+deploy:
+  tags:
+    - raspberrypi
+
+  only:
+    - schedules
+    - merge_requests
+
+  stage: deploy
+  before_script:
+    - sudo killall 'weatherStationPlus' || echo "No process found"
+  script:
+    - sudo ./bin/debug/weatherStationPlus & &>/dev/null &
+    - disown
+  dependencies:
+    - build:mainapp_quick
+
+  when: manual

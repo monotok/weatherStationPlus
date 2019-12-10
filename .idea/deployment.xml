@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="Remote (d1f5612f-44bb-4468-96b4-b09977424de0)" preserveFilePermissions="true" showEqualInSync="true" showDifferentInSync="false" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
+  <component name="PublishConfigData" serverName="ARM_v6 Debugger (c39e6476-1163-4aca-9e87-a193a7838701)" preserveFilePermissions="true" showEqualInSync="true" showDifferentInSync="false" showNewOnSourceInSync="false" showNewOnTargetInSync="false">
     <serverData>
+      <paths name="ARM_v6 Debugger (c39e6476-1163-4aca-9e87-a193a7838701)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/hammer/code" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-dockerarmv6" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-remotedebug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-reldebinfo-dockerarmv6" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
       <paths name="Remote (d1f5612f-44bb-4468-96b4-b09977424de0)">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/tmp.wsp" local="$PROJECT_DIR$" />
+            <mapping deploy="/root/builds/clion_wsp" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug-dockerarmv6" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-remotedebug" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-asan" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-rasppi-build-local" />
-            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-asan-pi" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-reldebinfo-dockerarmv6" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
           </excludedPaths>
         </serverdata>

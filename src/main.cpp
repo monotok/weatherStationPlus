@@ -18,24 +18,33 @@ using namespace std;
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
 {
-    RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, ATMEGA_ADDRESS);
-    while(true)
+    pqxx::connection C("dbname = weather user = weather password = siesta_Usn_4Gulag_ \
+      hostaddr = 172.16.20.5 port = 5432");
+    if (C.is_open()) {
+        LOG(INFO) << "Opened database successfully: " << C.dbname() << endl;
+        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, ATMEGA_ADDRESS, &C);
+        while(true)
+        {
+            rsd.get_LocalWeatherData(dynamsensors_ptr);
+            WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
+            LOG(DEBUG) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
+                       << "Local Temp: " << here->get_temperature_float() << "\n"
+                       << "Local Humidity: " << here->get_humidity_float() << endl;
+
+            usleep(3000000);
+
+            rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
+            WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
+            LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
+                       << "Remote Temp: " << remote->get_temperature_float() << "\n"
+                       << "Remote Humidity: " << remote->get_humidity_float() << endl;
+
+            usleep(3000000);
+        }
+    }
+    else
     {
-        rsd.get_LocalWeatherData(dynamsensors_ptr);
-        WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
-        LOG(DEBUG) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
-                   << "Local Temp: " << here->get_temperature_float() << "\n"
-                   << "Local Humidity: " << here->get_humidity_float() << endl;
-
-        usleep(3000000);
-
-        rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
-        WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
-        LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
-                   << "Remote Temp: " << remote->get_temperature_float() << "\n"
-                   << "Remote Humidity: " << remote->get_humidity_float() << endl;
-
-        usleep(3000000);
+        LOG(ERROR) << "Can't open database" << endl;
     }
 
 }

@@ -81,7 +81,7 @@ TEST(RetrieveSensorData, check_incoming_data_valid)
     rsd.weatherSensorUnion.tsd.temperature = 3444;
     rsd.weatherSensorUnion.tsd.perBatt = 8845;
 
-    EXPECT_TRUE(rsd.check_imcoming_data());
+    EXPECT_TRUE(rsd.check_incoming_data());
 }
 
 TEST(RetrieveSensorData, check_incoming_data_invalid)
@@ -94,5 +94,87 @@ TEST(RetrieveSensorData, check_incoming_data_invalid)
     rsd.weatherSensorUnion.tsd.temperature = 27521;
     rsd.weatherSensorUnion.tsd.perBatt = -8845;
 
-    EXPECT_FALSE(rsd.check_imcoming_data());
+    EXPECT_FALSE(rsd.check_incoming_data());
+}
+
+TEST(RetrieveSensorData, store_incoming_data_in_database)
+{
+    pqxx::connection C("dbname = weather_test user = postgres password = password \
+      hostaddr = 127.0.0.1 port = 9432");
+
+    pqxx::connection REAL_C("dbname = weather_test user = postgres password = password \
+      hostaddr = 127.0.0.1 port = 9432");
+
+    RetrieveSenData rsd = RetrieveSenData(NULL, NULL, I2C_ADDR, &REAL_C);
+    WeatherSensor* mySen = new WeatherSensor("here", "weather");
+    mySen->set_humidity(55.0);
+    mySen->set_temperature(23.5);
+
+    pqxx::work w(C);
+    rsd.store_local_weathersensor_data_in_database(mySen);
+
+    pqxx::result r = w.exec("select * from sensors.data where sensorid = 'here';");
+
+    EXPECT_EQ(r.size(), 1);
+
+    for (auto row: r)
+    {
+        EXPECT_STREQ(row[0].c_str(), "here");
+        EXPECT_STREQ(row[2].c_str(), "23.5");
+        EXPECT_STREQ(row[3].c_str(), "55");
+    }
+
+    w.commit();
+
+    //Clean up DB
+    pqxx::work w1(C);
+    w1.exec(
+            "delete FROM sensors.data where sensorid = 'atest';"
+    );
+    w1.commit();
+
+    pqxx::work w2(C);
+    r = w2.exec("select * from sensors.data where sensorid = 'atest';");
+    EXPECT_EQ(r.size(), 0);
+}
+
+TEST(RetrieveSensorData, store_battery_correctly_for_non_here_sensors)
+{
+    pqxx::connection C("dbname = weather_test user = postgres password = password \
+      hostaddr = 127.0.0.1 port = 9432");
+
+    pqxx::connection REAL_C("dbname = weather_test user = postgres password = password \
+      hostaddr = 127.0.0.1 port = 9432");
+
+    RetrieveSenData rsd = RetrieveSenData(NULL, NULL, I2C_ADDR, &REAL_C);
+    WeatherSensor* mySen = new WeatherSensor("atest", "weather");
+    mySen->set_humidity(55.0);
+    mySen->set_temperature(23.5);
+
+    pqxx::work w(C);
+    rsd.store_remote_weathersensor_data_in_database(mySen);
+
+    pqxx::result r = w.exec("select * from sensors.data where sensorid = 'atest';");
+
+    EXPECT_EQ(r.size(), 1);
+
+    for (auto row: r)
+    {
+        EXPECT_STREQ(row[0].c_str(), "atest");
+        EXPECT_STREQ(row[2].c_str(), "23.5");
+        EXPECT_STREQ(row[4].c_str(), "55");
+    }
+
+    w.commit();
+
+    //Clean up DB
+    pqxx::work w1(C);
+    w1.exec(
+            "delete FROM sensors.data where sensorid = 'atest';"
+    );
+    w1.commit();
+
+    pqxx::work w2(C);
+    r = w2.exec("select * from sensors.data where sensorid = 'atest';");
+    EXPECT_EQ(r.size(), 0);
 }
