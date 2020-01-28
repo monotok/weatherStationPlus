@@ -200,7 +200,13 @@ Down this python file to repoint the symlinks in the root directory. Otherwise t
 
 Install some tools.
 
-`sudo apt install git cmake`
+`sudo apt install git cmake gcovr`
+
+Allow the gitlab-runner user to use sudo without a password
+
+`nano /etc/sudoers.d/010_pi-nopasswd`
+
+Change it to gitlab-runner and **SAVE AS A NEW FILE NAME**
 
 ### Git lab runner
 
