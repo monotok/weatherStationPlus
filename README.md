@@ -196,6 +196,42 @@ Down this python file to repoint the symlinks in the root directory. Otherwise t
 
 - Modify the toolchain file to point to correct dirs
 
+## Setup Raspberry Pi
+
+Install some tools.
+
+`sudo apt install git cmake`
+
+### Git lab runner
+
+```bash
+curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | bash
+
+cat <<EOF | sudo tee /etc/apt/preferences.d/pin-gitlab-runner.pref
+Explanation: Prefer GitLab provided packages over the Debian native ones
+Package: gitlab-runner
+Pin: origin packages.gitlab.com
+Pin-Priority: 1001
+EOF
+
+apt-get install gitlab-runner
+```
+
+Now register the runner.
+
+`gitlab-runner register`
+
+Now fix a bug in the runner that prevents it from cloning the project.
+
+Comment out this file `cat .bash_logout`
+
+Eg:
+
+```bash
+#if [ "$SHLVL" = 1 ]; then
+#    [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+#fi
+```
 
 ## Setup (Docker)
 
