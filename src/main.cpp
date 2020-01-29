@@ -6,11 +6,7 @@ INITIALIZE_EASYLOGGINGPP
 #define ATMEGA_ADDRESS 0x04 // I2C device address
 #define i2cbusno 3
 
-//TODO: Setup threading to run all the background stuff
 //TODO: Add logging to all the functions like LCD controller.
-//TODO: Define what the buttons do to control different bits eg. Change page.
-//TODO: Setup lcd driver
-//TODO: Build the sensors based on the incoming data from the arduino
 
 using namespace std;
 
