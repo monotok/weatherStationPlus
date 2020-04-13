@@ -1,7 +1,8 @@
 #include "../../include/configParser.hpp"
 
-ConfigParser::ConfigParser(const char* settingsFileLocation)
+ConfigParser::ConfigParser(settings* wsettings, const char* settingsFileLocation)
 {
+    this->wsettings = wsettings;
     readSettingsFile(settingsFileLocation);
 }
 
@@ -23,12 +24,7 @@ void ConfigParser::readSettingsFile(const char* settingsFileLocation)
     }
 }
 
-string ConfigParser::getStringValue()
+void ConfigParser::getVersion()
 {
-    return string();
-}
-
-string ConfigParser::getVersion()
-{
-    return confsettings.lookup("version");
+    wsettings->version = confsettings.lookup("version");
 }

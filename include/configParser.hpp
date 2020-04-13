@@ -7,6 +7,7 @@
 
 #include <libconfig.h++>
 #include "easylogging++.hpp"
+#include "settings.hpp"
 #include <stdlib.h>
 #include <string>
 
@@ -16,12 +17,12 @@ class ConfigParser
 {
 private:
     libconfig::Config confsettings;
+    settings* wsettings;
     void readSettingsFile(const char* settingsFileLocation);
-    string getStringValue();
 
 public:
-    ConfigParser(const char* settingsFileLocation = "conf/settings.conf");
-    string getVersion();
+    ConfigParser(settings* wsettings, const char* settingsFileLocation = "conf/settings.conf");
+    void getVersion();
 };
 
 #endif //WEATHERSTATIONPLUS_CONFIGPARSER_HPP

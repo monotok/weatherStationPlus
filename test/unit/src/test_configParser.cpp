@@ -1,9 +1,11 @@
 #include "gtest/gtest.h"
 #include "../../../include/configParser.hpp"
+#include "../../../include/settings.hpp"
 
 TEST(ConfigParser, read_version_number)
 {
-    ConfigParser conf("../../../conf/settings.conf");
-    EXPECT_EQ(conf.getVersion(), "1.0");
+    settings weatherStationSettings;
+    ConfigParser conf(&weatherStationSettings, "../../../conf/settings.conf");
+    EXPECT_EQ(weatherStationSettings.version, 1.0);
 }
 
