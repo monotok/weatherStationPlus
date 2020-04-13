@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="test_configparser" type="CMakeRunConfiguration" factoryName="Application" folderName="CMAKE Tests" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_configparser" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_configparser">
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>

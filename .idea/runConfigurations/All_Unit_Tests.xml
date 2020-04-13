@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="All Unit Tests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_all_unit" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_all_unit" TEST_MODE="SUITE_TEST">
-    <method v="2">
-      <option name="BeforeTestRunTask" enabled="true" />
-    </method>
+  <configuration default="false" name="All Unit Tests" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" folderName="Build CrossPlatform">
+    <makefile filename="$PROJECT_DIR$/cmake-build-rasppi-build-local/test/Makefile" target="test_all_unit" workingDirectory="" arguments="">
+      <envs />
+    </makefile>
+    <method v="2" />
   </configuration>
 </component>
