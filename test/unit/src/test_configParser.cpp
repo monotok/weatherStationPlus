@@ -17,3 +17,19 @@ TEST(ConfigParser, get_database_details)
     conf.ParseConfiguration();
     EXPECT_EQ(weatherStationSettings.db.host, "172.16.20.5");
 }
+
+TEST(ConfigParser, get_gpio_details)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    conf.ParseConfiguration();
+    EXPECT_EQ(weatherStationSettings.gpio.gpio3, "22");
+}
+
+TEST(ConfigParser, get_logging_details)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    conf.ParseConfiguration();
+    EXPECT_EQ(weatherStationSettings.logg.configFile, "conf/logging.conf");
+}

@@ -30,6 +30,8 @@ void ConfigParser::ParseConfiguration()
     {
         getVersion();
         getDatabaseDetails(root);
+        getGPIODetails(root);
+        getLogDetails(root);
     }
     catch(const libconfig::SettingNotFoundException &nfex)
     {
@@ -42,8 +44,20 @@ void ConfigParser::getVersion()
     wsettings.version = confsettings.lookup("version");
 }
 
-void ConfigParser::getDatabaseDetails(const libconfig::Setting& root)
+void ConfigParser::getDatabaseDetails(const libconfig::Setting &root)
 {
     const libconfig::Setting &db = root["database"];
     db.lookupValue("host", wsettings.db.host);
+}
+
+void ConfigParser::getGPIODetails(const libconfig::Setting &root)
+{
+    const libconfig::Setting &gpio = root["gpio"];
+    gpio.lookupValue("gpio3", wsettings.gpio.gpio3);
+}
+
+void ConfigParser::getLogDetails(const libconfig::Setting &root)
+{
+    const libconfig::Setting &logg = root["logging"];
+    logg.lookupValue("configFile", wsettings.logg.configFile);
 }

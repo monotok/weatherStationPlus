@@ -21,6 +21,8 @@ private:
     void readSettingsFile(const char* settingsFileLocation);
     void getVersion();
     void getDatabaseDetails(const libconfig::Setting& root);
+    void getGPIODetails(const libconfig::Setting& root);
+    void getLogDetails(const libconfig::Setting& root);
 
 public:
     ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");
