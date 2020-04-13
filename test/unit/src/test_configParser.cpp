@@ -4,8 +4,16 @@
 
 TEST(ConfigParser, read_version_number)
 {
-    settings weatherStationSettings;
-    ConfigParser conf(&weatherStationSettings, "../../../conf/settings.conf");
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    conf.ParseConfiguration();
     EXPECT_EQ(weatherStationSettings.version, 1.0);
 }
 
+TEST(ConfigParser, get_database_details)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    conf.ParseConfiguration();
+    EXPECT_EQ(weatherStationSettings.db.host, "172.16.20.5");
+}

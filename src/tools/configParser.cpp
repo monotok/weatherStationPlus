@@ -1,8 +1,7 @@
 #include "../../include/configParser.hpp"
 
-ConfigParser::ConfigParser(settings* wsettings, const char* settingsFileLocation)
+ConfigParser::ConfigParser(Settings& wsettings, const char* settingsFileLocation): wsettings(wsettings)
 {
-    this->wsettings = wsettings;
     readSettingsFile(settingsFileLocation);
 }
 
@@ -24,7 +23,27 @@ void ConfigParser::readSettingsFile(const char* settingsFileLocation)
     }
 }
 
+void ConfigParser::ParseConfiguration()
+{
+    const libconfig::Setting& root = confsettings.getRoot();
+    try
+    {
+        getVersion();
+        getDatabaseDetails(root);
+    }
+    catch(const libconfig::SettingNotFoundException &nfex)
+    {
+        LOG(INFO) << "Setting not found" << endl;
+    }
+}
+
 void ConfigParser::getVersion()
 {
-    wsettings->version = confsettings.lookup("version");
+    wsettings.version = confsettings.lookup("version");
+}
+
+void ConfigParser::getDatabaseDetails(const libconfig::Setting& root)
+{
+    const libconfig::Setting &db = root["database"];
+    db.lookupValue("host", wsettings.db.host);
 }

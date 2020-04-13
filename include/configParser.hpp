@@ -17,12 +17,14 @@ class ConfigParser
 {
 private:
     libconfig::Config confsettings;
-    settings* wsettings;
+    Settings& wsettings;
     void readSettingsFile(const char* settingsFileLocation);
+    void getVersion();
+    void getDatabaseDetails(const libconfig::Setting& root);
 
 public:
-    ConfigParser(settings* wsettings, const char* settingsFileLocation = "conf/settings.conf");
-    void getVersion();
+    ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");
+    void ParseConfiguration();
 };
 
 #endif //WEATHERSTATIONPLUS_CONFIGPARSER_HPP
