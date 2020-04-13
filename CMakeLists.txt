@@ -24,8 +24,14 @@ ADD_DEFINITIONS ( -DPQXX_HIDE_EXP_OPTIONAL )
 #Include the tests
 add_subdirectory(test)
 
+#Find libraries
+find_library(LIBCONFIGPP config++)
+find_library(LIBCONFIG config)
+message(STATUS "FOUND LIBCONFIG ++: " ${LIBCONFIGPP})
+message(STATUS "FOUND LIBCONFIG : " ${LIBCONFIG})
 
 include_directories(include)
+include_directories(SYSTEM /usr/include)
 
 set(DYNAM_SOURCE_FILES prototype/DynamicSensors.cpp src/logging/easylogging++.cpp src/hal/GPIOControl.cpp src/hwcontrol/BtnControl.cpp src/data/WeatherSensor.cpp src/tools/Utilities.cpp)
 set(LCD_SOURCE_FILES prototype/testLCD.cpp src/logging/easylogging++.cpp src/hal/i2cControl.cpp src/hal/lcdDriver.cpp)
