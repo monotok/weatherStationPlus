@@ -33,3 +33,10 @@ TEST(ConfigParser, get_logging_details)
     conf.ParseConfiguration();
     EXPECT_EQ(weatherStationSettings.logg.configFile, "conf/logging.conf");
 }
+
+TEST(ConfigParser, get_sensor2_details)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    EXPECT_EQ(conf.getSensorsDetails("s2"), "Backbed");
+}

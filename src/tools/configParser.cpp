@@ -61,3 +61,17 @@ void ConfigParser::getLogDetails(const libconfig::Setting &root)
     const libconfig::Setting &logg = root["logging"];
     logg.lookupValue("configFile", wsettings.logg.configFile);
 }
+
+string ConfigParser::getSensorsDetails(const char *sensorID)
+{
+    try
+    {
+        const libconfig::Setting& root = confsettings.getRoot();
+        const libconfig::Setting &sen = root["sensors"][sensorID];
+        return sen.lookup("name");
+    }
+    catch(const libconfig::SettingNotFoundException &nfex)
+    {
+        LOG(INFO) << "Settings for sensor not found" << endl;
+    }
+}
