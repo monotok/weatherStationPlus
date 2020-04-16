@@ -46,6 +46,7 @@ set(MAIN_SOURCE_FILES src/main.cpp
         src/hal/GPIOControl.cpp
         src/hwcontrol/BtnControl.cpp
         src/tools/Utilities.cpp
+        src/tools/configParser.cpp
         src/data/WeatherSensor.cpp)
 
 add_executable(DynamSensors ${DYNAM_SOURCE_FILES})
@@ -58,7 +59,8 @@ target_link_libraries(weatherStationPlus
         rt
         gtest
         pqxx
-        pq)
+        pq
+        ${LIBCONFIGPP})
 
 target_link_libraries(GPIOTest
         rt)
@@ -70,6 +72,7 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
             gtest
             pqxx
             pq
+            ${LIBCONFIGPP}
             -fno-omit-frame-pointer
             -fsanitize=address)
 endif()

@@ -23,6 +23,7 @@ private:
     void getDatabaseDetails(const libconfig::Setting& root);
     void getGPIODetails(const libconfig::Setting& root);
     void getLogDetails(const libconfig::Setting& root);
+    void getI2cDetails(const libconfig::Setting& root);
 
 public:
     ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");

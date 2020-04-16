@@ -29,11 +29,18 @@ struct Logging {
     string configFile;
 };
 
+struct I2c {
+    int busno;
+    int atmega;
+    int lcd;
+};
+
 struct Settings {
     float version;
     struct Database db;
     struct Gpio gpio;
     struct Logging logg;
+    struct I2c i2c;
 };
 
 #endif //WEATHERSTATIONPLUS_SETTINGS_HPP
