@@ -14,8 +14,10 @@ using namespace std;
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
 {
-    pqxx::connection C("dbname = weather user = weather password = siesta_Usn_4Gulag_ \
-      hostaddr = 172.16.20.5 port = 5432");
+    string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
+    password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
+    +" port = " + to_string(weatherStationSettings.db.port);
+    pqxx::connection C(db_conn_str);
     if (C.is_open()) {
         LOG(INFO) << "Opened database successfully: " << C.dbname() << endl;
         RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C);
