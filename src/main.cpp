@@ -134,7 +134,7 @@ int main(int argc, char** argv)
     el::Configurations conf(weatherStationSettings.logg.configFile);
     el::Loggers::reconfigureAllLoggers(conf);
 
-    DynamicSensorFactory dsf;
+    DynamicSensorFactory dsf(wss);
     auto* i2c = new I2cControl(weatherStationSettings.i2c.busno);
     LcdController lcdc;
     LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);

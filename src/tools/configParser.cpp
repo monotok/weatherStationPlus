@@ -81,7 +81,7 @@ void ConfigParser::getI2cDetails(const libconfig::Setting &root)
     i2c.lookupValue("lcd", wsettings.i2c.lcd);
 }
 
-string ConfigParser::getSensorsDetails(const char *sensorID)
+string ConfigParser::getSensorsName(string sensorID)
 {
     try
     {

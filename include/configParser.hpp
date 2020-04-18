@@ -28,7 +28,7 @@ private:
 public:
     ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");
     void ParseConfiguration();
-    string getSensorsDetails(const char *sensorID);
+    string getSensorsName(string sensorID);
 
 };
 

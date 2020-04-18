@@ -2,6 +2,8 @@
 
 using namespace std;
 
+DynamicSensorFactory::DynamicSensorFactory(ConfigParser& wss): wss(wss) {}
+
 DynamicSensorFactory::~DynamicSensorFactory()
 {
     for(weatherSensorIterator = weatherSensors_vector.begin(); weatherSensorIterator != weatherSensors_vector.end(); ++weatherSensorIterator)

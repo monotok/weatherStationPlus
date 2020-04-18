@@ -38,5 +38,5 @@ TEST(ConfigParser, get_sensor2_details)
 {
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
-    EXPECT_EQ(conf.getSensorsDetails("s2"), "Backbed");
+    EXPECT_EQ(conf.getSensorsName("s1"), "Shed");
 }
