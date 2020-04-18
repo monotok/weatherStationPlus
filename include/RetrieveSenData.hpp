@@ -26,7 +26,7 @@ private:
   pqxx::connection* C = nullptr;
   int temporaryStructSize = sizeof(weatherSensorUnion.tsd);
   int get_temporaryStructSize()  { return this->temporaryStructSize; }
-  string get_retrievedSensorName() { string s(weatherSensorUnion.tsd.sensorID); return s; }
+  string get_retrievedSensorID() { string s(weatherSensorUnion.tsd.sensorID); return s; }
   bool check_incoming_data();
   void store_local_weathersensor_data_in_database(WeatherSensor *ws);
   void store_remote_weathersensor_data_in_database(WeatherSensor *ws);

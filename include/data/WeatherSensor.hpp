@@ -15,7 +15,7 @@ private:
   char tempUnit = 'c';
 
 public:
-    WeatherSensor(string SensorName, string SensorType) : Sensor(SensorName, SensorType) {};
+    WeatherSensor(string sensorID, string sensorName, string sensorType) : Sensor(sensorID, sensorName, sensorType) {};
     ~WeatherSensor(){};
 
     //Sensor Values

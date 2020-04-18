@@ -30,7 +30,7 @@ void RetrieveSenData::get_LocalWeatherData(DynamicSensorFactory *ptr_dsf)
 
     if(check_incoming_data())
     {
-        WeatherSensor* temp = ptr_dsf->getWeatherSensor_ptr(get_retrievedSensorName());
+        WeatherSensor* temp = ptr_dsf->getWeatherSensor_ptr(get_retrievedSensorID());
         this->lcd_controller->createWeatherPage(temp);
         temp->set_temperature(weatherSensorUnion.tsd.temperature);
         temp->set_humidity(weatherSensorUnion.tsd.perBatt);
@@ -50,7 +50,7 @@ void RetrieveSenData::get_RemoteWeatherSenData(DynamicSensorFactory *ptr_dsf)
 
     if(check_incoming_data())
     {
-        WeatherSensor* temp = ptr_dsf->getWeatherSensor_ptr(get_retrievedSensorName());
+        WeatherSensor* temp = ptr_dsf->getWeatherSensor_ptr(get_retrievedSensorID());
         this->lcd_controller->createWeatherPage(temp);
         temp->set_temperature(weatherSensorUnion.tsd.temperature);
         temp->set_humidity(weatherSensorUnion.tsd.perBatt);
