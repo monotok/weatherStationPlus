@@ -7,7 +7,9 @@
 
 TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector)
 {
-    DynamicSensorFactory dsf;
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    DynamicSensorFactory dsf(conf);
     WeatherSensor *tempSensor = dynamic_cast<WeatherSensor*>(dsf.CreateNewSensor_obj("myName", "weather"));
 
     tempSensor->set_temperature(23);
@@ -22,7 +24,10 @@ TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector)
 }
 
 TEST(DynamicSensorFactory, Find_existing_sensor) {
-    DynamicSensorFactory dsf;
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    DynamicSensorFactory dsf(conf);
+
     dsf.CreateNewSensor_obj("bob", "weather");
     dsf.CreateNewSensor_obj("ant", "weather");
     dsf.CreateNewSensor_obj("gar", "weather");
@@ -41,14 +46,20 @@ TEST(DynamicSensorFactory, Find_existing_sensor) {
 }
 
 TEST(DynamicSensorFactory, Get_temp_weathersensor) {
-    DynamicSensorFactory dsf;
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    DynamicSensorFactory dsf(conf);
+
     WeatherSensor* returnVal= dsf.getTempWeatherSensor_ptr();
 
     EXPECT_EQ("tempWeatherSensor", returnVal->get_sensorID());
 }
 
 TEST(DynamicSensorFactory, get_all_weathersensors) {
-    DynamicSensorFactory dsf;
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    DynamicSensorFactory dsf(conf);
+
     dsf.CreateNewSensor_obj("bob", "weather");
     dsf.CreateNewSensor_obj("ant", "weather");
     dsf.CreateNewSensor_obj("gar", "weather");

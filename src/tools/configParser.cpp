@@ -86,12 +86,13 @@ string ConfigParser::getSensorsName(string sensorID)
     try
     {
         const libconfig::Setting& root = confsettings.getRoot();
-        const libconfig::Setting &sen = root["sensors"][sensorID];
+        const libconfig::Setting &sen = root["sensors"][sensorID.c_str()];
         return sen.lookup("name");
     }
     catch(const libconfig::SettingNotFoundException &nfex)
     {
         LOG(INFO) << "Settings for sensor not found" << endl;
+        return "NotSet";
     }
 }
 

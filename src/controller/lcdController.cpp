@@ -12,7 +12,7 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
     if( ! existingWeatherPage(ws->get_sensorID()))
     {
         Pageitem sensorID = {"sensorID", 1, 0, FIXED, "SensorID:"};
-        Pageitem sensorID_val = {"sensorID",1, 10, VAR, ws->get_sensorID()};
+        Pageitem sensorID_val = {"sensorID",1, 10, VAR, ws->get_sensorName()};
         Pageitem temp = {"temp", 2,0,FIXED, "Temp"};
         Pageitem temp_val = {"temp", 2,5,VAR, ws->get_temperature()};
         Pageitem hum;
@@ -25,7 +25,8 @@ void LcdController::createWeatherPage(WeatherSensor* ws)
         vector<Pageitem> items{sensorID, sensorID_val, temp, temp_val, hum, hum_val};
 
         pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
-        LOG(INFO) << "Created a new weather page for " << ws->get_sensorID() << endl;
+        LOG(INFO) << "Created a new weather page for SensorID: " << ws->get_sensorID() << " SensorName: "
+                  << ws->get_sensorName() << endl;
     }
 }
 

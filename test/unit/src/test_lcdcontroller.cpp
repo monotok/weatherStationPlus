@@ -14,9 +14,9 @@
 
 TEST(LcdController, create_new_weather_page_struct_independant)
 {
-    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather1", "weather");
     ws1->set_temperature(3600);
-    WeatherSensor* ws2 = new WeatherSensor("weather2", "weather");
+    WeatherSensor* ws2 = new WeatherSensor("weather2", "weather2","weather");
     ws2->set_temperature(2500);
 
     LcdController lcdc;
@@ -36,13 +36,13 @@ TEST(LcdController, create_new_weather_page_struct_independant)
 
 TEST(LcdController, iterate_over_pages_onebyone)
 {
-    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather1","weather");
     ws1->set_temperature(3600);
-    WeatherSensor* ws2 = new WeatherSensor("weather2", "weather");
+    WeatherSensor* ws2 = new WeatherSensor("weather2", "weather2","weather");
     ws2->set_temperature(2500);
-    WeatherSensor* ws3 = new WeatherSensor("weather3", "weather");
+    WeatherSensor* ws3 = new WeatherSensor("weather3", "weather3","weather");
     ws2->set_temperature(2500);
-    WeatherSensor* ws4 = new WeatherSensor("weather4", "weather");
+    WeatherSensor* ws4 = new WeatherSensor("weather4", "weather4","weather");
     ws2->set_temperature(2500);
 
     LcdController lcdc;
@@ -58,7 +58,7 @@ TEST(LcdController, iterate_over_pages_onebyone)
 
 TEST(LcdController, check_for_existing_weather_sensor)
 {
-    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather1","weather");
 
     LcdController lcdc;
     lcdc.createWeatherPage(ws1);
@@ -73,7 +73,7 @@ TEST(LcdController, draw_basic_page_to_lcd)
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
 
-    WeatherSensor* ws1 = new WeatherSensor("mysensor", "weather");
+    WeatherSensor* ws1 = new WeatherSensor("mysensor", "mysensor","weather");
     ws1->set_temperature(2708);
     ws1->set_humidity(4500);
     LcdController lcdc;
@@ -87,7 +87,7 @@ TEST(LcdController, update_values_only_on_existing_page)
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
 
-    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather");
+    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather1","weather");
     ws1->set_temperature(3600);
     ws1->set_humidity(7900);
 
