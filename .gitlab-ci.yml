@@ -81,7 +81,7 @@ build:alltests_quick:
   tags:
   - crossplatform
   
-  except:
+  only:
    - schedules
    - merge_requests
   
@@ -103,7 +103,7 @@ test:alltests_quick:
   tags:
   - raspberrypi
 
-  except:
+  only:
    - schedules
    - merge_requests
 
