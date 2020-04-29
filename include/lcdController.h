@@ -13,7 +13,7 @@
 #include <thread>
 #include <chrono>
 #include <ctime>
-#include "data/WeatherSensor.hpp""
+#include "data/WeatherSensor.hpp"
 #include "../include/i2cControl.hpp"
 #include "../include/lcdDriver.hpp"
 #include "../include/Utilities.hpp"

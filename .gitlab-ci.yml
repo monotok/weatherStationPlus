@@ -33,6 +33,7 @@ build:alltests_pi:
     - $CI_PROJECT_DIR/test/unit/bin
   after_script:
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+  when: manual
 
 test:alltests_pi:
   tags:
@@ -60,6 +61,7 @@ test:alltests_pi:
       - $CI_PROJECT_DIR/build/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
+  when: manual
 
 clean_docker:
   tags:
