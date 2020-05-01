@@ -106,6 +106,71 @@ genhtml coverage/coverage.info --output-directory coverage
 
 HTML report is located within the coverage directory.
 
+== Configuring the Application
+
+There are two configuration files, one for the logging and the other for the application itself.
+
+The logging mechanism uses easylogging++ and all the detailed settings can be found https://github.com/amrayn/easyloggingpp[Easylogging Github].
+
+The application settings should be placed in the `conf` directory, if running this as a binary then it should be placed inside a `conf` directory one level up. For example:
+
+....
+/opt/wsp/bin/weatherStationPlus
+/opt/wsp/conf/settings.conf
+....
+
+Example Setting File:
+
+....
+version = 1.0;
+
+sensors =
+{
+    s1 = {
+        id = 1;
+        name = "Shed";
+    };
+    BackBed = {
+        id = 2;
+        name = "Backbed";
+    };
+    Loft = {
+        id = 3;
+        name = "Shed";
+    };
+}
+
+database =
+{
+    host = "172.16.20.5";
+    port = 5432;
+    database = "weather";
+    user = "weather";
+    password = "siesta_Usn_4Gulag_";
+};
+
+gpio =
+{
+    gpio1 = "17";
+    gpio2 = "27";
+    gpio3 = "22";
+    gpio4 = "18";
+    gpio5 = "17";
+};
+
+i2c =
+{
+    busno = 3;
+    atmega = 4;
+    lcd = 63;
+};
+
+logging =
+{
+    configFile = "conf/logging.conf";
+};
+....
+
 == PostgreSQL / Timescale DB
 
 So if you want to save the data into a database then the application currently supports postgresSQL.

@@ -89,7 +89,7 @@ build:alltests_quick:
   script:
     - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target test_all_unit"
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target test_all_unit -j 4"
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
     - mkdir -p build/test/CMakeFiles/test_all_unit.dir/__/
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/build/test/CMakeFiles/test_all_unit.dir/__/src build/test/CMakeFiles/test_all_unit.dir/__/src
@@ -141,7 +141,7 @@ build:mainapp_quick:
   script:
     - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target weatherStationPlus -j 4"
     - mkdir -p bin/debug
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/bin/debug/weatherStationPlus bin/debug/
 

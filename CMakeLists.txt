@@ -21,14 +21,14 @@ ADD_DEFINITIONS ( -DPQXX_HIDE_EXP_OPTIONAL )
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 #set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
-#Include the tests
-add_subdirectory(test)
-
 #Find libraries
 find_library(LIBCONFIGPP config++)
 find_library(LIBCONFIG config)
 message(STATUS "FOUND LIBCONFIG ++: " ${LIBCONFIGPP})
 message(STATUS "FOUND LIBCONFIG : " ${LIBCONFIG})
+
+#Include the tests
+add_subdirectory(test)
 
 include_directories(include)
 include_directories(SYSTEM /usr/include)

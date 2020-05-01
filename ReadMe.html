@@ -614,6 +614,80 @@ genhtml coverage/coverage.info --output-directory coverage</pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_configuring_the_application">Configuring the Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There are two configuration files, one for the logging and the other for the application itself.</p>
+</div>
+<div class="paragraph">
+<p>The logging mechanism uses easylogging++ and all the detailed settings can be found <a href="https://github.com/amrayn/easyloggingpp">Easylogging Github</a>.</p>
+</div>
+<div class="paragraph">
+<p>The application settings should be placed in the <code>conf</code> directory, if running this as a binary then it should be placed inside a <code>conf</code> directory one level up. For example:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>/opt/wsp/bin/weatherStationPlus
+/opt/wsp/conf/settings.conf</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Example Setting File:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>version = 1.0;
+
+sensors =
+{
+    s1 = {
+        id = 1;
+        name = "Shed";
+    };
+    BackBed = {
+        id = 2;
+        name = "Backbed";
+    };
+    Loft = {
+        id = 3;
+        name = "Shed";
+    };
+}
+
+database =
+{
+    host = "172.16.20.5";
+    port = 5432;
+    database = "weather";
+    user = "weather";
+    password = "siesta_Usn_4Gulag_";
+};
+
+gpio =
+{
+    gpio1 = "17";
+    gpio2 = "27";
+    gpio3 = "22";
+    gpio4 = "18";
+    gpio5 = "17";
+};
+
+i2c =
+{
+    busno = 3;
+    atmega = 4;
+    lcd = 63;
+};
+
+logging =
+{
+    configFile = "conf/logging.conf";
+};</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_postgresql_timescale_db">PostgreSQL / Timescale DB</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -804,7 +878,7 @@ CREATE EXTENSION</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-29 01:04:30 +0100
+Last updated 2020-04-29 23:44:17 +0100
 </div>
 </div>
 </body>
