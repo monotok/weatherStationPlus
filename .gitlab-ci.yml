@@ -159,11 +159,31 @@ deploy:
 
   stage: deploy
   before_script:
-    - sudo killall 'weatherStationPlus' || echo "No process found"
+    - sudo systemctl stop wsp.service || echo "Failed to stop service"
   script:
-    - sudo ./bin/debug/weatherStationPlus & &>/dev/null &
-    - disown
+    - sudo cp /bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
+    - sudo cp wsp.service /etc/systemd/system/
+    - sudo systemctl daemon-reload
+    - sudo systemctl start wsp.service
   dependencies:
     - build:mainapp_quick
 
+deploy_weatherstation:
+  tags:
+    - weatherstation
+
+  only:
+    - schedules
+    - merge_requests
+
+  stage: deploy
+  before_script:
+    - sudo systemctl stop wsp.service || echo "Failed to stop service"
+  script:
+    - sudo cp /bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
+    - sudo cp wsp.service /etc/systemd/system/
+    - sudo systemctl daemon-reload
+    - sudo systemctl start wsp.service
+  dependencies:
+    - build:mainapp_quick
   when: manual
