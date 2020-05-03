@@ -86,6 +86,7 @@ add_executable(test_dynamsensorfact
         ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
         ${MAIN_PROJECT_DIR}/src/data/DynamicSensorFactory.cpp
         ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/configParser.cpp
         unit/src/myGtestMain.cpp
         )
 
@@ -98,6 +99,7 @@ add_executable(test_retrievesendata
         ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
         ${MAIN_PROJECT_DIR}/src/sensor/retrieveSenData.cpp
         ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/configParser.cpp
         unit/src/myGtestMain.cpp
         )
 
@@ -109,16 +111,27 @@ add_executable(test_lcdcontroller
         ${MAIN_PROJECT_DIR}/src/hal/lcdDriver.cpp
         ${MAIN_PROJECT_DIR}/src/tools/Utilities.cpp
         ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/configParser.cpp
+        unit/src/myGtestMain.cpp
+        )
+
+add_executable(test_configparser
+        unit/src/test_configParser.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/configParser.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
         unit/src/myGtestMain.cpp
         )
 
 target_link_libraries(test_btncontrol gtest rt)
+target_link_libraries(test_configparser gtest ${LIBCONFIGPP})
 target_link_libraries(test_dynamsensorfact gtest)
-target_link_libraries(test_all_unit gtest rt pqxx pq) #Need rt for Utilites get time
+target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP}) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt)
 target_link_libraries(test_retrievesendata gtest pqxx pq)
 
 set_target_properties(test_btncontrol PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_configparser PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
 set_target_properties(test_dynamsensorfact PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)

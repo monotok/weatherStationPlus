@@ -1,0 +1,13 @@
+[Unit]
+Description=Weather Station Plus
+
+[Service]
+WorkingDirectory=/opt/wsp
+Restart=on-failure
+RestartSec=30
+
+ExecStart=/opt/wsp/weatherStationPlus
+
+[Install]
+WantedBy=multi-user.target
+Alias=weatherstationplus

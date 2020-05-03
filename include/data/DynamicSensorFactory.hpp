@@ -4,19 +4,21 @@
 #include <gtest/gtest_prod.h>
 #include "../easylogging++.hpp"
 #include "WeatherSensor.hpp"
+#include "../configParser.hpp"
 #include <vector>
 #include <mutex>
 
 class DynamicSensorFactory
 {
   public:
-    WeatherSensor* getWeatherSensor_ptr(string SensorName);
+    DynamicSensorFactory(ConfigParser& wss);
+    ~DynamicSensorFactory();
+    WeatherSensor* getWeatherSensor_ptr(string sensorID);
     WeatherSensor* getTempWeatherSensor_ptr();
     vector<WeatherSensor *> getAllWeatherSensors_ptr();
-    ~DynamicSensorFactory();
 
 private:
-    Sensor* CreateNewSensor_obj(string SensorName, string SensorType);
+    Sensor* CreateNewSensor_obj(string sensorID, string sensorType);
     vector<WeatherSensor *> weatherSensors_vector;
     vector<WeatherSensor *>::iterator weatherSensorIterator;
 
@@ -25,6 +27,7 @@ private:
     FRIEND_TEST(DynamicSensorFactory, get_all_weathersensors);
 
     mutex dyfMu;
+    ConfigParser& wss;
 };
 
 #endif //ifndef DYNAMIC_SEN_FACTORY_H

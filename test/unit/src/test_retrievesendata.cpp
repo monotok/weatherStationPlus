@@ -13,7 +13,9 @@ TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
     I2cControl *i2c = new I2cControl(3);
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
-    DynamicSensorFactory dsf;
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    DynamicSensorFactory dsf(conf);
     rsd.get_RemoteWeatherSenData(&dsf);
 
     WeatherSensor* backbed = dsf.getWeatherSensor_ptr("BackBed");
@@ -31,7 +33,9 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
     I2cControl *i2c = new I2cControl(3);
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
-    DynamicSensorFactory dsf;
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    DynamicSensorFactory dsf(conf);
     rsd.get_LocalWeatherData(&dsf);
 
     WeatherSensor* backbed = dsf.getWeatherSensor_ptr("Here");
@@ -106,7 +110,7 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
       hostaddr = 127.0.0.1 port = 9432");
 
     RetrieveSenData rsd = RetrieveSenData(NULL, NULL, I2C_ADDR, &REAL_C);
-    WeatherSensor* mySen = new WeatherSensor("here", "weather");
+    WeatherSensor* mySen = new WeatherSensor("here", "here", "weather");
     mySen->set_humidity(55.0);
     mySen->set_temperature(23.5);
 
@@ -147,7 +151,7 @@ TEST(RetrieveSensorData, store_battery_correctly_for_non_here_sensors)
       hostaddr = 127.0.0.1 port = 9432");
 
     RetrieveSenData rsd = RetrieveSenData(NULL, NULL, I2C_ADDR, &REAL_C);
-    WeatherSensor* mySen = new WeatherSensor("atest", "weather");
+    WeatherSensor* mySen = new WeatherSensor("atest", "atest","weather");
     mySen->set_humidity(55.0);
     mySen->set_temperature(23.5);
 

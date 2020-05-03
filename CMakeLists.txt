@@ -21,11 +21,17 @@ ADD_DEFINITIONS ( -DPQXX_HIDE_EXP_OPTIONAL )
 #set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 #set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
+#Find libraries
+find_library(LIBCONFIGPP config++)
+find_library(LIBCONFIG config)
+message(STATUS "FOUND LIBCONFIG ++: " ${LIBCONFIGPP})
+message(STATUS "FOUND LIBCONFIG : " ${LIBCONFIG})
+
 #Include the tests
 add_subdirectory(test)
 
-
 include_directories(include)
+include_directories(SYSTEM /usr/include)
 
 set(DYNAM_SOURCE_FILES prototype/DynamicSensors.cpp src/logging/easylogging++.cpp src/hal/GPIOControl.cpp src/hwcontrol/BtnControl.cpp src/data/WeatherSensor.cpp src/tools/Utilities.cpp)
 set(LCD_SOURCE_FILES prototype/testLCD.cpp src/logging/easylogging++.cpp src/hal/i2cControl.cpp src/hal/lcdDriver.cpp)
@@ -40,6 +46,7 @@ set(MAIN_SOURCE_FILES src/main.cpp
         src/hal/GPIOControl.cpp
         src/hwcontrol/BtnControl.cpp
         src/tools/Utilities.cpp
+        src/tools/configParser.cpp
         src/data/WeatherSensor.cpp)
 
 add_executable(DynamSensors ${DYNAM_SOURCE_FILES})
@@ -52,7 +59,8 @@ target_link_libraries(weatherStationPlus
         rt
         gtest
         pqxx
-        pq)
+        pq
+        ${LIBCONFIGPP})
 
 target_link_libraries(GPIOTest
         rt)
@@ -64,6 +72,7 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
             gtest
             pqxx
             pq
+            ${LIBCONFIGPP}
             -fno-omit-frame-pointer
             -fsanitize=address)
 endif()

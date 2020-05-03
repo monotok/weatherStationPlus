@@ -33,6 +33,7 @@ build:alltests_pi:
     - $CI_PROJECT_DIR/test/unit/bin
   after_script:
     - sudo chown -R gitlab-runner:gitlab-runner $CI_PROJECT_DIR/build
+  when: manual
 
 test:alltests_pi:
   tags:
@@ -60,6 +61,7 @@ test:alltests_pi:
       - $CI_PROJECT_DIR/build/coverage
     reports:
       junit: $CI_PROJECT_DIR/test/unit/bin/report.xml
+  when: manual
 
 clean_docker:
   tags:
@@ -79,7 +81,7 @@ build:alltests_quick:
   tags:
   - crossplatform
   
-  except:
+  only:
    - schedules
    - merge_requests
   
@@ -87,7 +89,7 @@ build:alltests_quick:
   script:
     - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target test_all_unit"
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target test_all_unit -j 4"
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/test/unit/bin/test_all_unit test/unit/bin/test_all_unit
     - mkdir -p build/test/CMakeFiles/test_all_unit.dir/__/
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/build/test/CMakeFiles/test_all_unit.dir/__/src build/test/CMakeFiles/test_all_unit.dir/__/src
@@ -101,7 +103,7 @@ test:alltests_quick:
   tags:
   - raspberrypi
 
-  except:
+  only:
    - schedules
    - merge_requests
 
@@ -139,7 +141,7 @@ build:mainapp_quick:
   script:
     - docker cp . arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/
     - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .."
-    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target weatherStationPlus"
+    - docker exec -i --user gitlab-runner arm_v6_raspberrypi_one bash -c "cd /home/gitlab-runner/builds/wsp && mkdir -p build && cd build && cmake --build . --target weatherStationPlus -j 4"
     - mkdir -p bin/debug
     - docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/builds/wsp/bin/debug/weatherStationPlus bin/debug/
 
@@ -157,11 +159,33 @@ deploy:
 
   stage: deploy
   before_script:
-    - sudo killall 'weatherStationPlus' || echo "No process found"
+    - sudo systemctl stop wsp.service || echo "Failed to stop service"
   script:
-    - sudo ./bin/debug/weatherStationPlus & &>/dev/null &
-    - disown
+    - sudo cp bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
+    - sudo cp wsp.service /etc/systemd/system/
+    - sudo systemctl daemon-reload
+    - sudo systemctl start wsp.service
   dependencies:
     - build:mainapp_quick
 
+deploy_weatherstation:
+  tags:
+    - weatherstation
+
+  only:
+    - schedules
+    - merge_requests
+
+  stage: deploy
+  before_script:
+    - sudo systemctl stop wsp.service || echo "Failed to stop service"
+  script:
+    - sudo cp bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
+    - sudo cp wsp.service /etc/systemd/system/
+    - sudo systemctl daemon-reload
+    - sudo systemctl start wsp.service
+    - sleep 5s
+    - sudo systemctl is-active --quiet wsp
+  dependencies:
+    - build:mainapp_quick
   when: manual
