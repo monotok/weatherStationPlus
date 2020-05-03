@@ -2,6 +2,7 @@
 Description=Weather Station Plus
 
 [Service]
+WorkingDirectory=/opt/wsp
 Restart=on-failure
 RestartSec=30
 
