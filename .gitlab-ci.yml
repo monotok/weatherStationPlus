@@ -161,7 +161,7 @@ deploy:
   before_script:
     - sudo systemctl stop wsp.service || echo "Failed to stop service"
   script:
-    - sudo cp /bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
+    - sudo cp bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
     - sudo cp wsp.service /etc/systemd/system/
     - sudo systemctl daemon-reload
     - sudo systemctl start wsp.service
@@ -180,7 +180,7 @@ deploy_weatherstation:
   before_script:
     - sudo systemctl stop wsp.service || echo "Failed to stop service"
   script:
-    - sudo cp /bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
+    - sudo cp bin/debug/weatherStationPlus /opt/wsp/weatherStationPlus
     - sudo cp wsp.service /etc/systemd/system/
     - sudo systemctl daemon-reload
     - sudo systemctl start wsp.service
