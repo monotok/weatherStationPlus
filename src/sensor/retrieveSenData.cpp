@@ -92,7 +92,7 @@ void RetrieveSenData::store_local_weathersensor_data_in_database(WeatherSensor *
                     "INSERT INTO sensors.data "
                     "(sensorid, time, temperature, humidity, battery) "
                     "VALUES "
-                    "('" + worker.esc(ws->get_sensorID()) + "' , current_timestamp, " +
+                    "('" + worker.esc(ws->get_sensorName()) + "' , current_timestamp, " +
                     worker.esc(to_string(ws->get_temperature_float() * 100)) + ", "
                     + worker.esc(to_string(ws->get_humidity_float() * 100)) + ", null)"
             );
@@ -111,7 +111,7 @@ void RetrieveSenData::store_remote_weathersensor_data_in_database(WeatherSensor 
                 "INSERT INTO sensors.data "
                 "(sensorid, time, temperature, humidity, battery) "
                 "VALUES "
-                "('" + worker.esc(ws->get_sensorID()) + "' , current_timestamp, " +
+                "('" + worker.esc(ws->get_sensorName()) + "' , current_timestamp, " +
                 worker.esc(to_string(ws->get_temperature_float() * 100)) + ", null, "
                 + worker.esc(to_string(ws->get_humidity_float() * 100)) + ")"
         );
