@@ -12,7 +12,8 @@ using namespace std;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
+
+[[noreturn]] void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
 {
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
     password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
@@ -50,7 +51,8 @@ void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_pt
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver *lcd)
+
+[[noreturn]] void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver *lcd)
 {
     while(true)
     {
@@ -69,7 +71,8 @@ void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController*
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-void detectbtnpress(LcdController *lcdc, LcdDriver *lcd, DynamicSensorFactory *dsf)
+
+[[noreturn]] void detectbtnpress(LcdController *lcdc, LcdDriver *lcd, DynamicSensorFactory *dsf)
 {
     GPIOControl gpio1 = GPIOControl(weatherStationSettings.gpio.gpio1);
     gpio1.g_setdir("in");

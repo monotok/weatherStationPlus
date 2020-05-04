@@ -169,14 +169,15 @@ deploy:
     - sudo systemctl is-active --quiet wsp
   dependencies:
     - build:mainapp_quick
+  environment:
+    name: staging
 
 deploy_weatherstation:
   tags:
     - weatherstation
 
   only:
-    - schedules
-    - merge_requests
+    - master
 
   stage: deploy
   before_script:
@@ -190,4 +191,6 @@ deploy_weatherstation:
     - sudo systemctl is-active --quiet wsp
   dependencies:
     - build:mainapp_quick
+  environment:
+    name: live
   when: manual
