@@ -165,6 +165,8 @@ deploy:
     - sudo cp wsp.service /etc/systemd/system/
     - sudo systemctl daemon-reload
     - sudo systemctl start wsp.service
+    - sleep 5s
+    - sudo systemctl is-active --quiet wsp
   dependencies:
     - build:mainapp_quick
 

@@ -75,6 +75,17 @@ docker cp arm_v6_raspberrypi_one:/home/gitlab-runner/code/bin/debug/weatherStati
 
 === IDE Integration
 
+== Gitlab Runner
+
+Need to comment out the contents of the bash_logout file within the home directory of the
+runner. See https://gitlab.com/gitlab-org/gitlab-runner/-/issues/1379[Gitlab Runner Issue]
+
+eg: `/home/gitlab-runner/.bash_logout`
+
+Allow the gitlab-runner account to run sudo commands without a password.
+
+Add the following: `gitlab-runner ALL=(ALL) NOPASSWD: ALL` to a new file `/etc/sudoers.d/020_gl-nopasswd`
+
 == Tests
 
 To build the tests. There are several test targets but the `test_all_unit` will test everything.

@@ -14,7 +14,7 @@ TEST(RetrieveSensorData, Get_remote_sensor_data_from_arduino_module)
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
     DynamicSensorFactory dsf(conf);
     rsd.get_RemoteWeatherSenData(&dsf);
 
@@ -34,7 +34,7 @@ TEST(RetrieveSensorData, Get_local_weather_sensor_data_from_arduino_module)
     LcdController lcdc;
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../../conf/settings.conf");
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
     DynamicSensorFactory dsf(conf);
     rsd.get_LocalWeatherData(&dsf);
 
