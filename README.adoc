@@ -154,23 +154,23 @@ sensors =
         id = 1;
         name = "Shed";
     };
-    BackBed = {
+    s2 = {
         id = 2;
         name = "Backbed";
     };
-    Loft = {
+    s3 = {
         id = 3;
-        name = "Shed";
+        name = "Garage";
     };
 }
 
 database =
 {
-    host = "172.16.20.5";
+    host = "ip address or localhost";
     port = 5432;
     database = "weather";
-    user = "weather";
-    password = "siesta_Usn_4Gulag_";
+    user = "test_user";
+    password = "test_pass";
 };
 
 gpio =
@@ -179,7 +179,7 @@ gpio =
     gpio2 = "27";
     gpio3 = "22";
     gpio4 = "18";
-    gpio5 = "17";
+    gpio5 = "12";
 };
 
 i2c =
