@@ -177,7 +177,8 @@ deploy_weatherstation:
     - weatherstation
 
   only:
-    - master
+    - schedules
+    - merge_requests
 
   stage: deploy
   before_script:
