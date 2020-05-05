@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="DynamicSensorFactory" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" folderName="Build CrossPlatform">
-    <makefile filename="$PROJECT_DIR$/cmake-build-rasppi-build-local/test/Makefile" target="test_dynamsensorfact" workingDirectory="" arguments="">
-      <envs />
-    </makefile>
-    <method v="2" />
-  </configuration>
-</component>

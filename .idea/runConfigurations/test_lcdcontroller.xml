@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="test_lcdcontroller" type="CMakeRunConfiguration" factoryName="Application" folderName="CMAKE Tests" nameIsGenerated="true" PASS_PARENT_ENVS_2="true" PROJECT_NAME="weatherStationPlus" TARGET_NAME="test_lcdcontroller" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="weatherStationPlus" RUN_TARGET_NAME="test_lcdcontroller">
-    <method v="2">
-      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-    </method>
-  </configuration>
-</component>
