@@ -1,4 +1,4 @@
-#Contributing Guide
+# Contributing Guide
 
 I hope you find this software useful and contributions are always welcome. Just a few
 usual things to try and follow to keep things tidy.
