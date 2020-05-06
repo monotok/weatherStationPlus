@@ -1,0 +1,16 @@
+path_classifiers:
+  test:
+    - "test/unit/src/test_*.cpp"
+queries:
+  - exclude: cpp/use-of-goto
+extraction:
+  cpp:
+    configure:    # Customizable step used only by C/C++ extraction.
+      command:
+        - mkdir build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=Debug ..
+    index:    # Customizable step used by all languages.
+      build_command:
+        - cd build
+        - cmake --build . --target weatherStationPlus
