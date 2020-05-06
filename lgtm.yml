@@ -1,8 +1,9 @@
 path_classifiers:
   test:
-    - "test/unit/src/test_*.cpp"
-queries:
-  - exclude: cpp/use-of-goto
+    - test
+  library:
+    - include/easylogging++.hpp
+    - src/logging/easylogging++.cpp
 extraction:
   cpp:
     configure:    # Customizable step used only by C/C++ extraction.
