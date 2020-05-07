@@ -36,6 +36,7 @@ private:
 
 public:
   I2cControl(int i2cNumber);
+  ~I2cControl();
   void readI2c(unsigned char address, char *buffer, int length);
   void writeByte(unsigned char address, unsigned char byte);
 };
