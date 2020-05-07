@@ -145,7 +145,8 @@ void LcdController::createDateTimePage()
 {
     auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string date_str(30, '\0');
-    strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", std::localtime(&timenow));
+    struct tm now{};
+    strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", localtime_r(&timenow, &now));
     string delimiter = "-";
     vector<string> dateelements;
 
@@ -177,7 +178,8 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
 {
     auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string date_str(30, '\0');
-    strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", std::localtime(&timenow));
+    struct tm now{};
+    strftime(&date_str[0], date_str.size(), "%d-%m-%y-%H-%M-%S", localtime_r(&timenow, &now));
     string delimiter = "-";
     vector<string> dateelements;
 

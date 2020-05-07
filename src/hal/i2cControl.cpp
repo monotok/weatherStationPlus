@@ -89,3 +89,8 @@ void I2cControl::error(string msg)
 {
 	LOG(ERROR) << msg << " " << strerror(errno);
 }
+
+I2cControl::~I2cControl()
+{
+    close(file_i2c);
+}

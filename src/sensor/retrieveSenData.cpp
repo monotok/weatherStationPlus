@@ -75,7 +75,7 @@ bool RetrieveSenData::check_incoming_data()
         LOG(ERROR) << "Out of range Temperature detected. " << weatherSensorUnion.tsd.temperature << endl;
         return false;
     }
-    if(weatherSensorUnion.tsd.perBatt < -10000 || weatherSensorUnion.tsd.perBatt > 15000)
+    if(weatherSensorUnion.tsd.perBatt > 15000)
     {
         LOG(ERROR) << "Out of range PerBatt detected. " << weatherSensorUnion.tsd.perBatt << endl;
         return false;

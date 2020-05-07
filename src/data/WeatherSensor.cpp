@@ -5,8 +5,7 @@ string WeatherSensor::get_temperature()
 {
     if(getTempUnit() == 'c')
         return Utilities::to_string_with_precision<float>(this->temperature/100, 1)+"C";
-    if(getTempUnit() == 'f')
-        return Utilities::to_string_with_precision<float>(((this->temperature/100)*9/5)+32, 1)+"F";
+    return Utilities::to_string_with_precision<float>(((this->temperature/100)*9/5)+32, 1)+"F";
 }
 string WeatherSensor::get_humidity()
 {

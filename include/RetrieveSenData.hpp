@@ -39,7 +39,7 @@ private:
 
     typedef struct tempSensorData
     {
-        uint16_t temperature;
+        int16_t temperature;
         char sensorID[10];
         uint16_t perBatt;
     };
