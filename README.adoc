@@ -1,5 +1,9 @@
 = Weather Station Plus ReadMe
 
+image::https://img.shields.io/lgtm/alerts/g/monotok/weatherStationPlus.svg?logo=lgtm&logoWidth=18[link="https://lgtm.com/projects/g/monotok/weatherStationPlus/alerts/"]
+
+image::https://img.shields.io/lgtm/grade/cpp/g/monotok/weatherStationPlus.svg?logo=lgtm&logoWidth=18[link="https://lgtm.com/projects/g/monotok/weatherStationPlus/context:cpp"]
+
 == Introduction
 
 This is the software for a physical box I built from a raspberry pi and arduino. It consists
