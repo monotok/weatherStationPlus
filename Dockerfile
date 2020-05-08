@@ -4,8 +4,10 @@ ARG debuguser=debugger
 ARG userid=1000
 ARG groupid=1000
 
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y git cmake make gcc g++ openssh-server libpq-dev libpqxx-dev build-essential gdb gdbserver rsync vim libconfig++-dev
+RUN apt-get update && \
+    apt-get install -y git cmake make gcc g++ openssh-server libpq-dev libpqxx-dev build-essential gdb gdbserver rsync vim libconfig++-dev \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /var/run/sshd
 RUN echo 'root:root' | chpasswd
