@@ -1,0 +1,3 @@
+[submodule "ReceiveModule"]
+	path = ReceiveModule
+	url = git@github.com:monotok/WS_Rec_Module.git
