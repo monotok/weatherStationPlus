@@ -25,11 +25,6 @@ using namespace std;
         while(true)
         {
             rsd.get_WeatherSenData(dynamsensors_ptr);
-            WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed", std::__cxx11::string());
-            LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
-                       << "Remote Temp: " << remote->get_reading_float() << "\n"
-                       << "Remote Humidity: " << remote->get_humidity_float() << endl;
-
             usleep(3000000);
         }
     }

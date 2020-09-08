@@ -65,18 +65,44 @@ void WeatherSensor::addNewReadingArray(WeatherSensor::Data *newReading)
     readings_vector.push_back(newReading);
 }
 
-void WeatherSensor::set_reading(string readingId, string type, float reading, string unit)
+void WeatherSensor::set_reading(string readingId, string type, float reading, string unit, pqxx::connection &C)
 {
     Data *sensor = getReading_ptr(readingId);
     if (sensor == nullptr) {
         sensor = createNewSensorReading_obj(readingId);
         sensor->type = type;
         sensor->unit = unit;
+        store_weathersensormetadata_data_in_database(sensor, C);
     }
     sensor->reading = reading;
+    store_weathersensor_data_in_database(sensor, C);
 }
 
 vector<WeatherSensor::Data *> WeatherSensor::getAvailableReadings()
 {
     return readings_vector;
+}
+
+void WeatherSensor::store_weathersensor_data_in_database(WeatherSensor::Data *reading, pqxx::connection &C)
+{
+    try {
+        pqxx::work worker(C);
+        worker.exec_prepared("sensor_readings", get_sensorID(), reading->readingId, reading->reading);
+        worker.commit();
+    } catch (const std::exception &e)
+    {
+        LOG(ERROR) << e.what() << std::endl;
+    }
+}
+
+void WeatherSensor::store_weathersensormetadata_data_in_database(WeatherSensor::Data *reading, pqxx::connection &C)
+{
+    try {
+        pqxx::work worker(C);
+        worker.exec_prepared("sensor_metadata", reading->readingId, reading->type, reading->unit);
+        worker.commit();
+    } catch (const std::exception &e)
+    {
+        LOG(ERROR) << e.what() << std::endl;
+    }
 }

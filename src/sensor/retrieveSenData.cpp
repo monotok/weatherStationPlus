@@ -17,6 +17,7 @@ RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, LcdController* lcdc
     this->lcd_controller = lcdc;
     this->I2C_ADDR = I2C_ADDR;
     this->C = conn;
+    prepare_insert_statements(*C);
 }
 
 void RetrieveSenData::get_WeatherSenData(DynamicSensorFactory *ptr_dsf)
@@ -41,10 +42,7 @@ bool RetrieveSenData::process_ReceivedSensor(DynamicSensorFactory *ptr_dsf)
     if (check_incoming_data(tempSensor)) {
         WeatherSensor *ptr_newlyCreatedWeatherSensor = ptr_dsf->getWeatherSensor_ptr(get_retrievedGroupSensorID(tempSensor));
         this->lcd_controller->createWeatherPage(ptr_newlyCreatedWeatherSensor);
-        ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.sensorType, tempSensor.reading, tempSensor.unit);
-//        if (C != nullptr)
-//            store_weathersensor_data_in_database(ptr_newlyCreatedWeatherSensor);
-
+        ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.sensorType, tempSensor.reading, tempSensor.unit, *C);
         return true;
     }
     return false;
@@ -73,20 +71,6 @@ bool RetrieveSenData::check_incoming_data(SensorData& sensor)
     return true;
 }
 
-void RetrieveSenData::store_weathersensor_data_in_database(WeatherSensor *ws)
-{
-    try {
-        pqxx::work worker(*C);
-        for (auto &reading: ws->getAvailableReadings()) {
-            worker.exec_prepared("sensor_readings", ws->get_sensorID(), reading->readingId, reading->reading);
-        }
-        worker.commit();
-    } catch (const std::exception &e)
-    {
-        LOG(ERROR) << e.what() << std::endl;
-    }
-}
-
 void RetrieveSenData::prepare_insert_statements(pqxx::connection &c)
 {
     c.prepare(
@@ -95,18 +79,4 @@ void RetrieveSenData::prepare_insert_statements(pqxx::connection &c)
     c.prepare(
             "sensor_readings",
             "insert into readings (time, sensor_id, reading_id, reading) VALUES (now(), $1, $2, $3)");
-}
-
-void RetrieveSenData::store_weathersensormetadata_data_in_database(WeatherSensor *ws)
-{
-    try {
-        pqxx::work worker(*C);
-        for (auto &reading: ws->getAvailableReadings()) {
-            worker.exec_prepared("sensor_metadata", reading->readingId, reading->type, reading->unit);
-        }
-        worker.commit();
-    } catch (const std::exception &e)
-    {
-        LOG(ERROR) << e.what() << std::endl;
-    }
 }

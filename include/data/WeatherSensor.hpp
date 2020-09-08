@@ -6,6 +6,7 @@
 #include "../easylogging++.hpp"
 #include <string>
 #include "vector"
+#include <pqxx/pqxx>
 
 using namespace std;
 
@@ -35,6 +36,11 @@ public:
     WeatherSensor::Data *createNewSensorReading_obj(string readingID);
     vector<Data *> getAvailableReadings();
 
+    //Database
+    void store_weathersensor_data_in_database(Data *reading, pqxx::connection &C);
+    void store_weathersensormetadata_data_in_database(Data *sensor, pqxx::connection &C);
+
+
     //Sensor Values
     string get_temperature();
     string get_humidity();
@@ -43,7 +49,7 @@ public:
     float get_humidity_float() { return this->humidity/100; }
 
     //Sensor Values
-    void set_reading(string readingId, string type, float reading, string unit);
+    void set_reading(string readingId, string type, float reading, string unit, pqxx::connection &C);
 
     //Sensor Units
     void set_tempUnit_to_C();

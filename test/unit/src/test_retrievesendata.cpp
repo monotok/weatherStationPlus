@@ -103,12 +103,10 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
     strcpy(sen1.sensorID, "1.0"); strcpy(sen1.sensorType, "tmp"); sen1.reading = 23.5; strcpy(sen1.unit, "cel");
     strcpy(sen2.sensorID, "1.1"); strcpy(sen2.sensorType, "hum"); sen2.reading = 55.0; strcpy(sen2.unit, "per");
 
-    mySen->set_reading(sen1.sensorID, sen1.sensorType, sen1.reading, sen1.unit);
-    mySen->set_reading(sen2.sensorID, sen2.sensorType, sen2.reading, sen2.unit);
+    mySen->set_reading(sen1.sensorID, sen1.sensorType, sen1.reading, sen1.unit, REAL_C);
+    mySen->set_reading(sen2.sensorID, sen2.sensorType, sen2.reading, sen2.unit, REAL_C);
 
     pqxx::work w(C);
-    rsd.store_weathersensormetadata_data_in_database(mySen);
-    rsd.store_weathersensor_data_in_database(mySen);
 
     pqxx::result r = w.exec("select time,sensor_id,readings.reading_id,reading,type,unit from readings JOIN sensor_metadata on readings.reading_id = sensor_metadata.reading_id where sensor_id = 1;");
 

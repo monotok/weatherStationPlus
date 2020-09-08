@@ -26,8 +26,6 @@ private:
   pqxx::connection* C = nullptr;
   int temporaryStructSize = sizeof(tempSensor);
   int get_temporaryStructSize()  { return this->temporaryStructSize; }
-  void store_weathersensor_data_in_database(WeatherSensor *ws);
-  void store_weathersensormetadata_data_in_database(WeatherSensor *ws);
   bool process_ReceivedSensor(DynamicSensorFactory *ptr_dsf);
   void prepare_insert_statements(pqxx::connection &c);
 
