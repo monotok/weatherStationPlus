@@ -24,18 +24,10 @@ using namespace std;
         RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C);
         while(true)
         {
-            rsd.get_LocalWeatherData(dynamsensors_ptr);
-            WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
-            LOG(DEBUG) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
-                       << "Local Temp: " << here->get_temperature_float() << "\n"
-                       << "Local Humidity: " << here->get_humidity_float() << endl;
-
-            usleep(3000000);
-
-            rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
-            WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
+            rsd.get_WeatherSenData(dynamsensors_ptr);
+            WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed", std::__cxx11::string());
             LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
-                       << "Remote Temp: " << remote->get_temperature_float() << "\n"
+                       << "Remote Temp: " << remote->get_reading_float() << "\n"
                        << "Remote Humidity: " << remote->get_humidity_float() << endl;
 
             usleep(3000000);
@@ -61,7 +53,7 @@ using namespace std;
             usleep(500000);
         } else
         {
-            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), *lcd);
+            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage, std::__cxx11::string()), *lcd);
             usleep(5000000);
         }
     }
@@ -102,7 +94,7 @@ using namespace std;
         } else if(bs_2.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
-            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage);
+            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
             weather_ptr->switch_tempUnit();
             lcdc->updatePageValues(weather_ptr, *lcd);
         } else if(bs_3.debounceBtn())

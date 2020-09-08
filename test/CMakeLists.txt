@@ -103,6 +103,14 @@ add_executable(test_retrievesendata
         unit/src/myGtestMain.cpp
         )
 
+add_executable(test_weathersensor
+        unit/src/test_weathersensor.cpp
+        ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        ${MAIN_PROJECT_DIR}/src/tools/Utilities.cpp
+        unit/src/myGtestMain.cpp
+        )
+
 add_executable(test_lcdcontroller
         unit/src/test_lcdcontroller.cpp
         ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
@@ -127,7 +135,8 @@ target_link_libraries(test_configparser gtest ${LIBCONFIGPP})
 target_link_libraries(test_dynamsensorfact gtest ${LIBCONFIGPP})
 target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP}) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt)
-target_link_libraries(test_retrievesendata gtest pqxx pq)
+target_link_libraries(test_weathersensor gtest)
+target_link_libraries(test_retrievesendata gtest pqxx pq ${LIBCONFIGPP})
 
 set_target_properties(test_btncontrol PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
@@ -140,6 +149,8 @@ set_target_properties(test_all_unit PROPERTIES
 set_target_properties(test_lcdcontroller PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
 set_target_properties(test_retrievesendata PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_weathersensor PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
 
 set(COVERAGE_DIR ${MAIN_PROJECT_DIR}/coverage)

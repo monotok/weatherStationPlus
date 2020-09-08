@@ -36,4 +36,47 @@ char WeatherSensor::getTempUnit()
     return this->tempUnit;
 }
 
+WeatherSensor::Data *WeatherSensor::getReading_ptr(string readingID)
+{
+    for(readingsIterator = readings_vector.begin(); readingsIterator != readings_vector.end(); ++readingsIterator)
+    {
+        if ((*readingsIterator)->readingId == readingID)
+        {
+            return (*readingsIterator);
+        }
+    }
+    return nullptr;
+}
 
+WeatherSensor::Data *WeatherSensor::createNewSensorReading_obj(string readingID)
+{
+    LOG(INFO) << "Creating new sensor reading object. Reading ID: " << readingID << endl;
+    Data *reading_ptr = new Data(readingID);
+    addNewReadingArray(reading_ptr);
+    return reading_ptr;
+}
+
+void WeatherSensor::addNewReadingArray(WeatherSensor::Data *newReading)
+{
+    if (readings_vector.size() == 6) {
+        delete(*(readings_vector.end() -1));
+        readings_vector.erase(readings_vector.end() -1);
+    }
+    readings_vector.push_back(newReading);
+}
+
+void WeatherSensor::set_reading(string readingId, string type, float reading, string unit)
+{
+    Data *sensor = getReading_ptr(readingId);
+    if (sensor == nullptr) {
+        sensor = createNewSensorReading_obj(readingId);
+        sensor->type = type;
+        sensor->unit = unit;
+    }
+    sensor->reading = reading;
+}
+
+vector<WeatherSensor::Data *> WeatherSensor::getAvailableReadings()
+{
+    return readings_vector;
+}

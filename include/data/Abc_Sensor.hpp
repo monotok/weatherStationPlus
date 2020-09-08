@@ -22,7 +22,13 @@ class Sensor
     void set_sensorID(string sid) { this->sensorID = sid; }
     void set_sensorName(string sname) { this->sensorName = sname; }
     void set_sensorType(string sensorType) { this->sensorType = sensorType; }
-    string get_sensorID() { return this->sensorID; }
+    string get_sensorID() {
+        string::size_type pos = this->sensorID.find(".");
+        if (pos != string::npos) {
+            return this->sensorID.substr(0, pos);
+        }
+        return this->sensorID;
+    }
     string get_sensorName(){
         if(this->sensorName.compare("NotSet") == 0) {
             return this->sensorID;
