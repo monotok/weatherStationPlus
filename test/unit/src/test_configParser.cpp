@@ -1,13 +1,12 @@
 #include "gtest/gtest.h"
 #include "../../../include/configParser.hpp"
-#include "../../../include/settings.hpp"
 
 TEST(ConfigParser, read_version_number)
 {
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
     conf.ParseConfiguration();
-    EXPECT_EQ(weatherStationSettings.version, 1.0);
+    EXPECT_EQ(weatherStationSettings.version, 2.0);
 }
 
 TEST(ConfigParser, get_database_details)
@@ -38,5 +37,45 @@ TEST(ConfigParser, get_sensor2_details)
 {
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
-    EXPECT_EQ(conf.getSensorsName("s1"), "Shed");
+    EXPECT_EQ(conf.getSensorsName("1"), "Backbed");
+    EXPECT_EQ(conf.getSensorsName("2"), "Shed");
+}
+
+TEST(ConfigParser, get_invalid_sensor_name)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    EXPECT_EQ(conf.getSensorsName("5"), "NotSet");
+}
+
+TEST(ConfigParser, get_sensor_reading_position)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    conf.ParseConfiguration();
+    Position topleft = {2, 5};
+    Position middleleft = {3, 5};
+    EXPECT_EQ(conf.getSensorReadingPosition("1", "1.0"), topleft);
+    EXPECT_EQ(conf.getSensorReadingPosition("1", "1.1"), middleleft);
+}
+
+TEST(ConfigParser, get_sensor_reading_position_non_existent)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    conf.ParseConfiguration();
+    Position topleft_default = {2, 5};
+    Position middleright = {3, 15};
+    EXPECT_EQ(conf.getSensorReadingPosition("1", "1.4"), topleft_default);
+    EXPECT_EQ(conf.getSensorReadingPosition("2", "1.1"), middleright);
+}
+
+TEST(ConfigParser, get_position_information)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    conf.ParseConfiguration();
+    EXPECT_EQ(weatherStationSettings.topleft_Name.row_start, 2);
+    EXPECT_EQ(weatherStationSettings.topleft_Val.row_start, 2);
+    EXPECT_EQ(weatherStationSettings.middleright_Val.col_start, 15);
 }

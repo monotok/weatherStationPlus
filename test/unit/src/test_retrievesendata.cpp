@@ -7,18 +7,41 @@
 
 #define I2C_ADDR 0x04
 
+TEST(RetrieveSensorData, get_overall_sensor_id)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    conf.ParseConfiguration();
+
+    I2cControl *i2c = new I2cControl(3);
+    LcdController lcdc;
+    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR, conf);
+
+    char sensorId[4] = "1.0";
+    char sensorIdCopy[4] = {};
+    strcpy(sensorIdCopy, sensorId);
+    string result = {};
+    rsd.get_retrievedGroupSensorID(sensorIdCopy);
+
+    EXPECT_STREQ((char*)sensorIdCopy, "1");
+    EXPECT_STREQ(sensorId, "1.0");
+}
+
 //TODO: Fix this test case. Does not test anything.
 TEST(RetrieveSensorData, Get_sensor_data_from_arduino_module)
 {
-    I2cControl *i2c = new I2cControl(3);
-    LcdController lcdc;
-    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR);
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    conf.ParseConfiguration();
+
+    I2cControl *i2c = new I2cControl(3);
+    LcdController lcdc;
+    RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR, conf);
     DynamicSensorFactory dsf(conf);
     rsd.get_WeatherSenData(&dsf);
 
     EXPECT_STREQ("1", dsf.getWeatherSensor_ptr("1")->get_sensorID().c_str());
+    EXPECT_EQ(2, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
 
     delete (i2c);
 }
@@ -82,13 +105,18 @@ TEST(RetrieveSensorData, Get_data_from_atmega_manually_i2c)
 
 TEST(RetrieveSensorData, store_incoming_data_in_database)
 {
-    pqxx::connection C("dbname = postgres user = postgres password = password \
-      hostaddr = 127.0.0.1 port = 9432");
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    conf.ParseConfiguration();
 
-    pqxx::connection REAL_C("dbname = postgres user = postgres password = password \
-      hostaddr = 127.0.0.1 port = 9432");
+    string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
+    password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
+                         +" port = " + to_string(weatherStationSettings.db.port);
 
-    RetrieveSenData rsd = RetrieveSenData(nullptr, nullptr, I2C_ADDR, &REAL_C);
+    pqxx::connection C(db_conn_str);
+    pqxx::connection REAL_C(db_conn_str);
+
+    RetrieveSenData rsd = RetrieveSenData(nullptr, nullptr, I2C_ADDR, &REAL_C, conf);
     rsd.prepare_insert_statements(REAL_C);
     WeatherSensor* mySen = new WeatherSensor("1", "here", "weather");
 
@@ -103,8 +131,8 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
     strcpy(sen1.sensorID, "1.0"); strcpy(sen1.sensorType, "tmp"); sen1.reading = 23.5; strcpy(sen1.unit, "cel");
     strcpy(sen2.sensorID, "1.1"); strcpy(sen2.sensorType, "hum"); sen2.reading = 55.0; strcpy(sen2.unit, "per");
 
-    mySen->set_reading(sen1.sensorID, sen1.sensorType, sen1.reading, sen1.unit, REAL_C);
-    mySen->set_reading(sen2.sensorID, sen2.sensorType, sen2.reading, sen2.unit, REAL_C);
+    mySen->set_reading(sen1.sensorID, sen1.sensorType, sen1.reading, sen1.unit, &REAL_C, &conf);
+    mySen->set_reading(sen2.sensorID, sen2.sensorType, sen2.reading, sen2.unit, &REAL_C, &conf);
 
     pqxx::work w(C);
 
@@ -124,8 +152,18 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
     EXPECT_STREQ(r[1][4].c_str(), "hum");
     EXPECT_STREQ(r[1][5].c_str(), "per");
 
-    w.commit();
+    // Check that the meta data table can handle duplicate keys and not throw an exception. This
+    // will occur when the program restarts.
+    delete (mySen->getReading_ptr("1.0"));
+    delete (mySen->getReading_ptr("1.1"));
+    delete (mySen);
 
+    WeatherSensor* mySen2 = new WeatherSensor("1", "here", "weather");
+    mySen2->set_reading(sen1.sensorID, "pre", sen1.reading, sen1.unit, &REAL_C, &conf);
+    pqxx::result r2 = w.exec("select reading_id,type,unit from sensor_metadata where reading_id = 1;");
+    EXPECT_STREQ(r2[0][1].c_str(), "pre");
+
+    w.commit();
     //Clean up DB
     pqxx::work w1(C);
     w1.exec(
