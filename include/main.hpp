@@ -18,6 +18,7 @@
 #include <thread>
 
 Settings weatherStationSettings {};
-string currentPage = "Here";
+ConfigParser wss(weatherStationSettings);
+string currentPage = "date";
 
 #endif //WEATHERSTATIONPLUS_MAIN_H

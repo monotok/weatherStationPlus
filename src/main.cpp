@@ -21,7 +21,7 @@ using namespace std;
     pqxx::connection C(db_conn_str);
     if (C.is_open()) {
         LOG(INFO) << "Opened database successfully: " << C.dbname() << endl;
-        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C);
+        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C, wss);
         while(true)
         {
             rsd.get_WeatherSenData(dynamsensors_ptr);
@@ -48,7 +48,7 @@ using namespace std;
             usleep(500000);
         } else
         {
-            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage, std::__cxx11::string()), *lcd);
+            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), *lcd);
             usleep(5000000);
         }
     }
@@ -86,12 +86,12 @@ using namespace std;
             currentPage = lcdc->getNextPage(currentPage);
             lcd->clearDisplayClearMem();
             lcdc->drawPage(currentPage, *lcd);
-        } else if(bs_2.debounceBtn())
-        {
-            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
-            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
-            weather_ptr->switch_tempUnit();
-            lcdc->updatePageValues(weather_ptr, *lcd);
+//        } else if(bs_2.debounceBtn())
+//        {
+//            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
+//            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
+//            weather_ptr->switch_tempUnit();
+//            lcdc->updatePageValues(weather_ptr, *lcd);
         } else if(bs_3.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio3 << " Pressed";
@@ -119,7 +119,6 @@ using namespace std;
 int main(int argc, char** argv)
 {
     START_EASYLOGGINGPP(argc, argv);
-    ConfigParser wss(weatherStationSettings);
     wss.ParseConfiguration();
     el::Configurations conf(weatherStationSettings.logg.configFile);
     el::Loggers::reconfigureAllLoggers(conf);
