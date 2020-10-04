@@ -1,40 +1,16 @@
 #include "../../include/data/WeatherSensor.hpp"
 
 
-string WeatherSensor::get_temperature()
-{
-    if(getTempUnit() == 'c')
-        return Utilities::to_string_with_precision<float>(this->temperature/100, 1)+"C";
-    return Utilities::to_string_with_precision<float>(((this->temperature/100)*9/5)+32, 1)+"F";
-}
-string WeatherSensor::get_humidity()
-{
-    return Utilities::to_string_with_precision<float>(this->humidity/100, 1)+"%";
-}
-
-void WeatherSensor::set_tempUnit_to_C()
-{
-    this->tempUnit = 'c';
-}
-
-void WeatherSensor::set_tempUnit_to_F()
-{
-    this->tempUnit = 'f';
-}
-
-void WeatherSensor::switch_tempUnit()
-{
-    if(this->tempUnit == 'f')
-        this->tempUnit = 'c';
-
-    else if(this->tempUnit == 'c')
-        this->tempUnit = 'f';
-}
-
-char WeatherSensor::getTempUnit()
-{
-    return this->tempUnit;
-}
+//string WeatherSensor::get_temperature()
+//{
+//    if(getTempUnit() == 'c')
+//        return Utilities::to_string_with_precision<float>(this->temperature/100, 1)+"C";
+//    return Utilities::to_string_with_precision<float>(((this->temperature/100)*9/5)+32, 1)+"F";
+//}
+//string WeatherSensor::get_humidity()
+//{
+//    return Utilities::to_string_with_precision<float>(this->humidity/100, 1)+"%";
+//}
 
 WeatherSensor::Data *WeatherSensor::getReading_ptr(string readingID)
 {
@@ -65,17 +41,19 @@ void WeatherSensor::addNewReadingArray(WeatherSensor::Data *newReading)
     readings_vector.push_back(newReading);
 }
 
-void WeatherSensor::set_reading(string readingId, string type, float reading, string unit, pqxx::connection &C)
+WeatherSensor::Data* WeatherSensor::set_reading(string readingId, string type, float reading, string unit, pqxx::connection* C, ConfigParser* wss)
 {
     Data *sensor = getReading_ptr(readingId);
     if (sensor == nullptr) {
         sensor = createNewSensorReading_obj(readingId);
         sensor->type = type;
         sensor->unit = unit;
-        store_weathersensormetadata_data_in_database(sensor, C);
+        setLcdReadingPosition(*sensor, get_sensorID(), readingId, wss);
+        if (C != nullptr) { store_weathersensormetadata_data_in_database(sensor, *C); }
     }
     sensor->reading = reading;
-    store_weathersensor_data_in_database(sensor, C);
+    if (C != nullptr) { store_weathersensor_data_in_database(sensor, *C); }
+    return sensor;
 }
 
 vector<WeatherSensor::Data *> WeatherSensor::getAvailableReadings()
@@ -105,4 +83,22 @@ void WeatherSensor::store_weathersensormetadata_data_in_database(WeatherSensor::
     {
         LOG(ERROR) << e.what() << std::endl;
     }
+}
+
+void WeatherSensor::setLcdReadingPosition(Data& data, string sensorId, string readingId, ConfigParser* wss)
+{
+    Position pos = wss->getSensorReadingPosition(sensorId, readingId);
+    data.posVal = pos;
+    data.posName = wss->matchNamePositionToValuePosition(pos);
+    data.name = wss->getSensorReadingName(sensorId, readingId);
+}
+
+string WeatherSensor::get_Reading(WeatherSensor::Data *reading)
+{
+    return Utilities::to_string_with_precision<float>(reading->reading, 1);
+}
+
+string WeatherSensor::get_Reading(string reading)
+{
+    return Utilities::to_string_with_precision<float>(getReading_ptr(reading)->reading, 1);
 }

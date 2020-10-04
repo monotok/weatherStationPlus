@@ -4,6 +4,7 @@
 #include "Abc_Sensor.hpp"
 #include "../Utilities.hpp"
 #include "../easylogging++.hpp"
+#include "../configParser.hpp"
 #include <string>
 #include "vector"
 #include <pqxx/pqxx>
@@ -19,15 +20,13 @@ public:
         float reading = {};
         string type = {};
         string unit = {};
+        string name = {};
+        Position posName = {0, 0};
+        Position posVal = {0, 0};
         Data(string readingId) {
             this->readingId = readingId;
         }
     };
-
-    //TODO: Delete these
-    float temperature;
-    float humidity;
-    char tempUnit = 'c';
 
     WeatherSensor(string sensorID, string sensorName, string sensorType) : Sensor(sensorID, sensorName, sensorType) {};
     ~WeatherSensor(){};
@@ -42,20 +41,11 @@ public:
 
 
     //Sensor Values
-    string get_temperature();
-    string get_humidity();
-
-    float get_temperature_float() { return this->temperature/100; }
-    float get_humidity_float() { return this->humidity/100; }
+    string get_Reading(Data* reading);
+    string get_Reading(string reading);
 
     //Sensor Values
-    void set_reading(string readingId, string type, float reading, string unit, pqxx::connection &C);
-
-    //Sensor Units
-    void set_tempUnit_to_C();
-    void set_tempUnit_to_F();
-    void switch_tempUnit();
-    char getTempUnit();
+    Data* set_reading(string readingId, string type, float reading, string unit, pqxx::connection* C, ConfigParser* wss);
 
 private:
 
@@ -63,6 +53,7 @@ private:
     vector<Data *> readings_vector = {};
     vector<Data *>::iterator readingsIterator;
     void addNewReadingArray(Data *newReading);
+    void setLcdReadingPosition(Data& data, string sensorId, string readingId, ConfigParser* wss);
 };
 
 #endif // TEMP_SENSOR_H
