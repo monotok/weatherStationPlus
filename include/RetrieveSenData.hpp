@@ -15,8 +15,8 @@
 class RetrieveSenData
 {
 public:
-  RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char);
-  RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char, pqxx::connection* conn);
+  RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char, ConfigParser& wss);
+  RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char, pqxx::connection* conn, ConfigParser& wss);
   void get_WeatherSenData(DynamicSensorFactory *ptr_dsf);
 
 private:
@@ -24,7 +24,8 @@ private:
   LcdController *lcd_controller;
   unsigned char I2C_ADDR;
   pqxx::connection* C = nullptr;
-  int temporaryStructSize = sizeof(tempSensor);
+  ConfigParser* wss = nullptr;
+  int temporaryStructSize = sizeof(packet);
   int get_temporaryStructSize()  { return this->temporaryStructSize; }
   bool process_ReceivedSensor(DynamicSensorFactory *ptr_dsf);
   void prepare_insert_statements(pqxx::connection &c);
@@ -34,6 +35,7 @@ private:
   FRIEND_TEST(RetrieveSensorData, check_incoming_data_invalid);
   FRIEND_TEST(RetrieveSensorData, store_incoming_data_in_database);
   FRIEND_TEST(RetrieveSensorData, store_battery_correctly_for_non_here_sensors);
+  FRIEND_TEST(RetrieveSensorData, get_overall_sensor_id);
 
     struct SensorData
     {
@@ -46,13 +48,9 @@ private:
 
     //Need to declare this after the struct otherwise they would be in different scopes and therefore not the same type
     bool check_incoming_data(SensorData& sensor);
-    string get_retrievedGroupSensorID(SensorData& sensor) {
-        char *overallSensorID = {};
-        overallSensorID = strtok(sensor.sensorID, ".");
-        if(overallSensorID) {
-            return overallSensorID;
-        }
-        return sensor.sensorID;
+
+    void get_retrievedGroupSensorID(char* sensorId) {
+        strtok(sensorId, ".");
     }
     string get_retrievedSensorType(SensorData& sensor) { return sensor.sensorType; }
 
