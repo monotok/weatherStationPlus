@@ -6,27 +6,39 @@
 
 //TODO: Add check to only create page when there is no page with sensor id or type
 //TODO: Set the values to blank string or zero
-void LcdController::createWeatherPage(WeatherSensor* ws)
+// Get the unit and type from the settings file?
+void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading)
 {
     lock_guard<mutex> guard(lcdcMu);
     if( ! existingWeatherPage(ws->get_sensorID()))
     {
-        Pageitem sensorID = {"sensorID", 1, 0, FIXED, "SensorID:"};
-        Pageitem sensorID_val = {"sensorID",1, 10, VAR, ws->get_sensorName()};
-        Pageitem temp = {"temp", 2,0,FIXED, "Temp"};
-        Pageitem temp_val = {"temp", 2,5,VAR, ws->get_temperature()};
-        Pageitem hum;
-        if(strcmp(ws->get_sensorID().c_str(), "Here") == 0)
-            hum = {"hum", 2,11,FIXED, "Hum"};
-        else
-            hum = {"hum", 2,11,FIXED, "Bat"};
-        Pageitem hum_val = {"hum", 2,15,VAR, ws->get_humidity()};
+        Pageitem sensorID = {"sensorID", ws->get_Position_Name(), FIXED, "SensorID:"};
+        Pageitem sensorID_val = {"sensorID", ws->get_Position_Val(), FIXED, ws->get_sensorName()};
+        vector<Pageitem> items{sensorID, sensorID_val};
 
-        vector<Pageitem> items{sensorID, sensorID_val, temp, temp_val, hum, hum_val};
+        Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};
+        Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
+        items.push_back(item);
+        items.push_back(item_val);
 
         pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
         LOG(INFO) << "Created a new weather page for SensorID: " << ws->get_sensorID() << " SensorName: "
                   << ws->get_sensorName() << endl;
+    } else
+    {
+//        Previous call to existing page and following call to existing page reading sets pm_iter to current page
+        createNewReading(ws, reading);
+    }
+}
+
+void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* reading)
+{
+    if (!existingWeatherPageReading(ws->get_sensorID(), reading->readingId))
+    {
+        Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};
+        Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
+        pm_iter->second.push_back(item);
+        pm_iter->second.push_back(item_val);
     }
 }
 
@@ -60,37 +72,62 @@ bool LcdController::existingWeatherPage(string SensorName)
     return pm_iter != pages_map.end();
 }
 
+bool LcdController::existingWeatherPageReading(string SensorName, string readingid)
+{
+    pm_iter = pages_map.find(SensorName);
+    if (pm_iter != pages_map.end())
+    {
+        for (auto &pageItem: pm_iter->second)
+        {
+            if (strcmp(readingid.c_str(), pageItem.id.c_str()) == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void LcdController::drawElementToLCD(LcdDriver &lcd)
 {
-    lcd.setCursorPositionRowCol(pi_iter->row_start, pi_iter->col_start);
+    lcd.setCursorPositionRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start);
     lcd.lcdString(pi_iter->value.c_str());
 }
 
 void LcdController::checkValuesFitLcd()
 {
-    if(pi_iter->type == VAR && ((strcmp(pi_iter->id.c_str(), "temp") == 0) || (strcmp(pi_iter->id.c_str(), "hum") == 0)))
-    {
-        float valFloat = stof(pi_iter->value);
-        if(valFloat > 99.99){
-            pi_iter->value = Utilities::to_string_with_precision<float>(valFloat, 0);
+    if(pi_iter->type == VAR) {
+        try {
+            float valFloat = stof(pi_iter->value);
+            if(valFloat > 99.99){
+                pi_iter->value = Utilities::to_string_with_precision<float>(valFloat, 0);
+            }
+        }
+        catch (invalid_argument& ia) {
+            LOG(ERROR) << "Error occurred converting value '" << pi_iter->value << "' " << endl;
         }
     }
 }
 
-void LcdController::checkValuesFitLcd(float newValue, LcdDriver &lcd)
+void LcdController::checkValuesFitLcd(string newValue, LcdDriver &lcd)
 {
-    float valFloat = stof(pi_iter->value);
-    if(valFloat > 9.99 && newValue < 10.0)
-    {
-        lcd.clearColumnsRowCol(pi_iter->row_start, pi_iter->col_start+5, pi_iter->col_start);
+    if(pi_iter->type == VAR) {
+        try {
+            float currentVal = stof(pi_iter->value);
+            if (currentVal > 9.99 && stof(newValue) < 10.0) {
+                lcd.clearColumnsRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start + 5, pi_iter->pos.col_start);
+            }
+        }
+        catch (invalid_argument& ia) {
+            LOG(ERROR) << "Error occurred converting value '" << pi_iter->value << "' " << endl;
+        }
     }
 }
 
 // TODO: Need to prevent left over chars on display when writing a new smaller value
-void LcdController::drawPage(string SensorName, LcdDriver &lcd)
+void LcdController::drawPage(string sensorId, LcdDriver &lcd)
 {
     lock_guard<mutex> guard(lcdcMu);
-    pm_iter = pages_map.find(SensorName);
+    pm_iter = pages_map.find(sensorId);
     if(pm_iter != pages_map.end())
     {
         for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
@@ -100,7 +137,8 @@ void LcdController::drawPage(string SensorName, LcdDriver &lcd)
         }
     } else
     {
-        string msg = "No such sensor " + SensorName;
+        string msg = "No such sensor " + sensorId;
+        LOG(WARNING) << msg << endl;
         lcd.lcdString(msg.c_str());
     }
 }
@@ -115,26 +153,14 @@ void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver &lcd)
         {
             if(pi_iter->type == VAR)
             {
-                if(pi_iter->id == "temp")
+                checkValuesFitLcd();
+                auto newReadingValue = ws->get_Reading(pi_iter->id);
+                if (pi_iter->value != newReadingValue)
                 {
+                    checkValuesFitLcd(newReadingValue, lcd);
+                    pi_iter->value = newReadingValue;
                     checkValuesFitLcd();
-                    if (pi_iter->value != ws->get_temperature())
-                    {
-                        checkValuesFitLcd(ws->get_temperature_float(), lcd);
-                        pi_iter->value = ws->get_temperature();
-                        checkValuesFitLcd();
-                        drawElementToLCD(lcd);
-                    }
-                }
-                if(pi_iter->id == "hum")
-                {
-                    if (pi_iter->value != ws->get_humidity())
-                    {
-                        checkValuesFitLcd(ws->get_humidity_float(), lcd);
-                        pi_iter->value = ws->get_humidity();
-                        checkValuesFitLcd();
-                        drawElementToLCD(lcd);
-                    }
+                    drawElementToLCD(lcd);
                 }
             }
         }
@@ -152,19 +178,19 @@ void LcdController::createDateTimePage()
 
     Utilities::split_string(date_str, dateelements, '-');
 
-    Pageitem date = {"date", 1, 0, FIXED, "Date: "};
-    Pageitem date_day = {"day",1, 6, VAR, dateelements[0]};
-    Pageitem date_delimiter_1 = {"delimiter",1, 8, FIXED, "-"};
-    Pageitem date_month = {"month",1, 9, VAR, dateelements[1]};
-    Pageitem date_delimiter_2 = {"delimiter",1, 11, FIXED, "-"};
-    Pageitem date_year = {"year",1, 12, VAR, dateelements[2]};
+    Pageitem date = {"date", Position(1, 0), FIXED, "Date: "};
+    Pageitem date_day = {"day", Position(1, 6), VAR, dateelements[0]};
+    Pageitem date_delimiter_1 = {"delimiter", Position(1, 8), FIXED, "-"};
+    Pageitem date_month = {"month", Position(1, 9), VAR, dateelements[1]};
+    Pageitem date_delimiter_2 = {"delimiter", Position(1, 11), FIXED, "-"};
+    Pageitem date_year = {"year", Position(1, 12), VAR, dateelements[2]};
 
-    Pageitem time = {"time", 2,0,FIXED, "Time: "};
-    Pageitem time_hour = {"hour", 2,6,VAR, dateelements[3]};
-    Pageitem time_delimiter_1 = {"delimiter",2, 8, FIXED, ":"};
-    Pageitem time_min = {"min", 2,9,VAR, dateelements[4]};
-    Pageitem time_delimiter_2 = {"delimiter",2, 11, FIXED, ":"};
-    Pageitem time_sec = {"sec", 2,12,VAR, dateelements[5]};
+    Pageitem time = {"time", Position(2,0), FIXED, "Time: "};
+    Pageitem time_hour = {"hour", Position(2,6), VAR, dateelements[3]};
+    Pageitem time_delimiter_1 = {"delimiter", Position(2, 8), FIXED, ":"};
+    Pageitem time_min = {"min", Position(2,9), VAR, dateelements[4]};
+    Pageitem time_delimiter_2 = {"delimiter", Position(2, 11), FIXED, ":"};
+    Pageitem time_sec = {"sec", Position(2,12), VAR, dateelements[5]};
 
     vector<Pageitem> items{date, date_day, date_delimiter_1, date_month, date_delimiter_2,
                            date_year, time, time_delimiter_1, time_hour, time_delimiter_2, time_min, time_sec};
