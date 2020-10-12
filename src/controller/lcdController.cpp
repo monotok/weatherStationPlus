@@ -12,8 +12,8 @@ void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* re
     lock_guard<mutex> guard(lcdcMu);
     if( ! existingWeatherPage(ws->get_sensorID()))
     {
-        Pageitem sensorID = {"sensorID", ws->get_Position_Name(), FIXED, "SensorID:"};
-        Pageitem sensorID_val = {"sensorID", ws->get_Position_Val(), FIXED, ws->get_sensorName()};
+        Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), FIXED, ws->get_sensorName().append(":")};
+        Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), FIXED, "Current"};
         vector<Pageitem> items{sensorID, sensorID_val};
 
         Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};

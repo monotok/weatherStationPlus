@@ -15,7 +15,7 @@ class Sensor
     string sensorName;
     string sensorType;
     Position posName = {1, 0};
-    Position posVal = {1, 10};
+    Position posTitle = {1, 9};
 
   public:
     Sensor(string sensorID, string sensorName, string sensorType)
@@ -25,8 +25,8 @@ class Sensor
     void set_sensorID(string sid) { this->sensorID = sid; }
     void set_sensorName(string sname) { this->sensorName = sname; }
     void set_sensorType(string sensorType) { this->sensorType = sensorType; }
-    Position& get_Position_Name() { return posName; };
-    Position& get_Position_Val() { return posVal; };
+    Position& get_Position_SensorName() { return posName; };
+    Position& get_Position_Title() { return posTitle; };
 
     string get_sensorID() {
         string::size_type pos = this->sensorID.find(".");
