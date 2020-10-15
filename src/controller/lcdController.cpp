@@ -39,6 +39,11 @@ void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* rea
         Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
         pm_iter->second.push_back(item);
         pm_iter->second.push_back(item_val);
+
+        if (strcmp(currentPage.c_str(), ws->get_sensorID().c_str()) == 0) {
+            clearDisplay();
+            drawPage_NonLocking();
+        }
     }
 }
 
@@ -87,7 +92,7 @@ bool LcdController::existingWeatherPageReading(string SensorName, string reading
     return false;
 }
 
-void LcdController::drawElementToLCD(LcdDriver &lcd)
+void LcdController::drawElementToLCD()
 {
     lcd.setCursorPositionRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start);
     lcd.lcdString(pi_iter->value.c_str());
@@ -108,7 +113,7 @@ void LcdController::checkValuesFitLcd()
     }
 }
 
-void LcdController::checkValuesFitLcd(string newValue, LcdDriver &lcd)
+void LcdController::checkValuesFitLcd(string newValue)
 {
     if(pi_iter->type == VAR) {
         try {
@@ -124,7 +129,7 @@ void LcdController::checkValuesFitLcd(string newValue, LcdDriver &lcd)
 }
 
 // TODO: Need to prevent left over chars on display when writing a new smaller value
-void LcdController::drawPage(string sensorId, LcdDriver &lcd)
+void LcdController::drawPage_Locking()
 {
     lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(sensorId);
@@ -143,7 +148,7 @@ void LcdController::drawPage(string sensorId, LcdDriver &lcd)
     }
 }
 
-void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver &lcd)
+void LcdController::updatePageValues(WeatherSensor *ws)
 {
     lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find(ws->get_sensorID());
@@ -157,10 +162,10 @@ void LcdController::updatePageValues(WeatherSensor* ws, LcdDriver &lcd)
                 auto newReadingValue = ws->get_Reading(pi_iter->id);
                 if (pi_iter->value != newReadingValue)
                 {
-                    checkValuesFitLcd(newReadingValue, lcd);
+                    checkValuesFitLcd(newReadingValue);
                     pi_iter->value = newReadingValue;
                     checkValuesFitLcd();
-                    drawElementToLCD(lcd);
+                    drawElementToLCD();
                 }
             }
         }
@@ -200,7 +205,7 @@ void LcdController::createDateTimePage()
     LOG(INFO) << "Created a new page " << "date" << endl;
 }
 
-void LcdController::updateDateTimePage(LcdDriver &lcd)
+void LcdController::updateDateTimePage()
 {
     auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string date_str(30, '\0');
@@ -224,7 +229,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
                     if (pi_iter->value != dateelements[5])
                     {
                         pi_iter->value = dateelements[5];
-                        drawElementToLCD(lcd);
+                        drawElementToLCD();
                     }
                 }
                 if(pi_iter->id == "min")
@@ -232,7 +237,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
                     if (pi_iter->value != dateelements[4])
                     {
                         pi_iter->value = dateelements[4];
-                        drawElementToLCD(lcd);
+                        drawElementToLCD();
                     }
                 }
                 if(pi_iter->id == "hour")
@@ -240,7 +245,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
                     if (pi_iter->value != dateelements[3])
                     {
                         pi_iter->value = dateelements[3];
-                        drawElementToLCD(lcd);
+                        drawElementToLCD();
                     }
                 }
                 if(pi_iter->id == "day")
@@ -248,7 +253,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
                     if (pi_iter->value != dateelements[2])
                     {
                         pi_iter->value = dateelements[2];
-                        drawElementToLCD(lcd);
+                        drawElementToLCD();
                     }
                 }
                 if(pi_iter->id == "month")
@@ -256,7 +261,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
                     if (pi_iter->value != dateelements[1])
                     {
                         pi_iter->value = dateelements[1];
-                        drawElementToLCD(lcd);
+                        drawElementToLCD();
                     }
                 }
                 if(pi_iter->id == "year")
@@ -264,7 +269,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
                     if (pi_iter->value != dateelements[0])
                     {
                         pi_iter->value = dateelements[0];
-                        drawElementToLCD(lcd);
+                        drawElementToLCD();
                     }
                 }
             }
@@ -272,7 +277,7 @@ void LcdController::updateDateTimePage(LcdDriver &lcd)
     }
 }
 
-void LcdController::drawDateTimePage(LcdDriver &lcd)
+void LcdController::drawDateTimePage()
 {
     lock_guard<mutex> guard(lcdcMu);
     pm_iter = pages_map.find("date");
@@ -280,7 +285,22 @@ void LcdController::drawDateTimePage(LcdDriver &lcd)
     {
         for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
         {
-            drawElementToLCD(lcd);
+            drawElementToLCD();
         }
     }
+}
+
+void LcdController::clearDisplay()
+{
+    lcd.clearDisplayClearMem();
+}
+
+void LcdController::setCurrentPage(string pageName)
+{
+    currentPage = pageName;
+}
+
+string LcdController::getCurrentPage()
+{
+    return currentPage;
 }

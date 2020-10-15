@@ -86,7 +86,7 @@ TEST(LcdController, draw_basic_page_to_lcd)
     LcdController lcdc;
     lcdc.createWeatherPage(ws1, reading);
 
-    lcdc.drawPage("mysensor", lcd);
+    lcdc.drawPage_Locking("mysensor");
 }
 
 TEST(LcdController, update_values_only_on_existing_page)
@@ -106,7 +106,7 @@ TEST(LcdController, update_values_only_on_existing_page)
     lcdc.createWeatherPage(ws1, reading);
     lcdc.createWeatherPage(ws1, reading_hum);
 
-    lcdc.drawPage("1", lcd);
+    lcdc.drawPage_Locking("1");
 
     auto found1 = lcdc.pages_map.find("1");
     EXPECT_EQ(found1->second[3].value, "36.0");
@@ -118,7 +118,7 @@ TEST(LcdController, update_values_only_on_existing_page)
     //Sleep for 4 seconds so we can observe the display
     std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
-    lcdc.updatePageValues(ws1, lcd);
+    lcdc.updatePageValues(ws1);
     EXPECT_EQ(found1->second[3].value, "24.0");
     EXPECT_EQ(found1->second[5].value, "56.0");
 }
@@ -152,7 +152,7 @@ TEST(LcdController, update_only_changed_values_datetime)
     EXPECT_NE(founddate, lcdc.pages_map.end());
     auto oldSecond = founddate->second[11].value;
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-    lcdc.updateDateTimePage(lcd);
+    lcdc.updateDateTimePage();
     auto newSecond = founddate->second[11].value;
     EXPECT_NE(oldSecond, newSecond);
 }

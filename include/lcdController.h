@@ -27,15 +27,23 @@ using namespace std;
 class LcdController
 {
 public:
+    LcdController(LcdDriver& lcd): lcd(lcd) {};
     void createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading);
-    void drawPage(string sensorId, LcdDriver &lcd);
-    void updatePageValues(WeatherSensor* ws, LcdDriver &lcd);
-    string getNextPage(string CurrentPage);
+    void drawPage_Locking();
+    void drawPage_NonLocking();
+    void drawPage();
+    void updatePageValues(WeatherSensor *ws);
+    void getNextPage();
     void createDateTimePage();
-    void drawDateTimePage(LcdDriver &lcd);
-    void updateDateTimePage(LcdDriver &lcd);
+    void drawDateTimePage();
+    void updateDateTimePage();
+    void clearDisplay();
+    void setCurrentPage(string pageName);
+    string getCurrentPage();
 
 private:
+    LcdDriver lcd;
+
     struct Pageitem {
         string id;
         Position pos;
@@ -43,6 +51,7 @@ private:
         string value;
     };
 
+    string currentPage = {};
 
     FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
     FRIEND_TEST(LcdController, create_new_datetime_page_struct_independant);
@@ -52,9 +61,9 @@ private:
 
     bool existingWeatherPage(string SensorName);
     bool existingWeatherPageReading(string SensorName, string reading);
-    void drawElementToLCD(LcdDriver &lcd);
+    void drawElementToLCD();
     void checkValuesFitLcd();
-    void checkValuesFitLcd(string newValue, LcdDriver &lcd);
+    void checkValuesFitLcd(string newValue);
     void createNewReading(WeatherSensor* ws, WeatherSensor::Data* reading);
 
     map<string, vector<Pageitem>> pages_map;
