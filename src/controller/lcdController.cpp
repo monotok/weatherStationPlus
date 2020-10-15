@@ -48,10 +48,10 @@ void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* rea
 }
 
 //TODO: Need to find a better solution for ignoring non weather pages.
-string LcdController::getNextPage(string CurrentPage)
+void LcdController::getNextPage()
 {
     lock_guard<mutex> guard(lcdcMu);
-    pm_iter = pages_map.find(CurrentPage);
+    pm_iter = pages_map.find(currentPage);
     if(pm_iter != pages_map.end())
     {
         pm_iter = next(pm_iter, 1);
@@ -66,9 +66,11 @@ string LcdController::getNextPage(string CurrentPage)
                 pm_iter = pages_map.begin();
             }
         }
-        return pm_iter->first;
+        currentPage = pm_iter->first;
     }
-    return "No Pages";
+    else {
+        currentPage = "No Pages";
+    }
 }
 
 bool LcdController::existingWeatherPage(string SensorName)
@@ -132,17 +134,27 @@ void LcdController::checkValuesFitLcd(string newValue)
 void LcdController::drawPage_Locking()
 {
     lock_guard<mutex> guard(lcdcMu);
-    pm_iter = pages_map.find(sensorId);
+    drawPage();
+}
+
+void LcdController::drawPage_NonLocking()
+{
+    drawPage();
+}
+
+void LcdController::drawPage()
+{
+    pm_iter = pages_map.find(currentPage);
     if(pm_iter != pages_map.end())
     {
         for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
         {
             checkValuesFitLcd();
-            drawElementToLCD(lcd);
+            drawElementToLCD();
         }
     } else
     {
-        string msg = "No such sensor " + sensorId;
+        string msg = "No such sensor " + currentPage;
         LOG(WARNING) << msg << endl;
         lcd.lcdString(msg.c_str());
     }
