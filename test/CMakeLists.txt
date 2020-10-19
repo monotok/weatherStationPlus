@@ -133,7 +133,7 @@ add_executable(test_configparser
 
 target_link_libraries(test_btncontrol gtest rt)
 target_link_libraries(test_configparser gtest ${LIBCONFIGPP})
-target_link_libraries(test_dynamsensorfact gtest ${LIBCONFIGPP})
+target_link_libraries(test_dynamsensorfact gtest pqxx ${LIBCONFIGPP})
 target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP}) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt pqxx ${LIBCONFIGPP})
 target_link_libraries(test_weathersensor gtest pqxx ${LIBCONFIGPP})

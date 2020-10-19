@@ -25,7 +25,9 @@ TEST(LcdController, create_new_weather_page_struct_independant)
     WeatherSensor* ws2 = new WeatherSensor("2.0", "weather2","weather");
     auto reading_2 = ws2->set_reading("2.1", "tmp", 25.46, "c", nullptr, &conf);
 
-    LcdController lcdc;
+    I2cControl *i2c = new I2cControl(3);
+    LcdDriver lcd(63, i2c);
+    LcdController lcdc(lcd);
     lcdc.createWeatherPage(ws1, reading_1);
     lcdc.createWeatherPage(ws2, reading_2);
 
@@ -42,21 +44,26 @@ TEST(LcdController, create_new_weather_page_struct_independant)
 
 TEST(LcdController, iterate_over_pages_onebyone)
 {
-    WeatherSensor* ws1 = new WeatherSensor("weather1", "weather1","weather");
-    WeatherSensor* ws2 = new WeatherSensor("weather2", "weather2","weather");
-    WeatherSensor* ws3 = new WeatherSensor("weather3", "weather3","weather");
-    WeatherSensor* ws4 = new WeatherSensor("weather4", "weather4","weather");
+    WeatherSensor* ws1 = new WeatherSensor("1", "weather1","weather");
+    WeatherSensor* ws2 = new WeatherSensor("2", "weather2","weather");
+    WeatherSensor* ws3 = new WeatherSensor("3", "weather3","weather");
+    WeatherSensor* ws4 = new WeatherSensor("4", "weather4","weather");
     WeatherSensor::Data reading("1");
 
-
-    LcdController lcdc;
+    I2cControl *i2c = new I2cControl(3);
+    LcdDriver lcd(63, i2c);
+    LcdController lcdc(lcd);
     lcdc.createWeatherPage(ws1, &reading);
     lcdc.createWeatherPage(ws2, &reading);
     lcdc.createWeatherPage(ws3, &reading);
     lcdc.createWeatherPage(ws4, &reading);
+    lcdc.createDateTimePage();
 
-    EXPECT_EQ(lcdc.getNextPage("weather1"), "weather2");
-    EXPECT_EQ(lcdc.getNextPage("weather4"), "weather1");
+    lcdc.setCurrentPage("date");
+    lcdc.getNextPage();
+    EXPECT_EQ(lcdc.getCurrentPage(), "1");
+    lcdc.getNextPage();
+    EXPECT_EQ(lcdc.getCurrentPage(), "2");
 
 }
 
@@ -65,7 +72,9 @@ TEST(LcdController, check_for_existing_weather_sensor)
     WeatherSensor* ws1 = new WeatherSensor("1.0", "weather1","weather");
     WeatherSensor::Data reading("1.8");
 
-    LcdController lcdc;
+    I2cControl *i2c = new I2cControl(3);
+    LcdDriver lcd(63, i2c);
+    LcdController lcdc(lcd);
     lcdc.createWeatherPage(ws1, &reading);
 
     EXPECT_EQ(lcdc.existingWeatherPage("1"), true);
@@ -83,10 +92,12 @@ TEST(LcdController, draw_basic_page_to_lcd)
 
     WeatherSensor* ws1 = new WeatherSensor("1.0", "mysensor","weather");
     auto reading = ws1->set_reading("1.1", "tmp", 34.4, "c", nullptr, &conf);
-    LcdController lcdc;
+
+    LcdController lcdc(lcd);
     lcdc.createWeatherPage(ws1, reading);
 
-    lcdc.drawPage_Locking("mysensor");
+    lcdc.setCurrentPage("mysensor");
+    lcdc.drawPage_Locking();
 }
 
 TEST(LcdController, update_values_only_on_existing_page)
@@ -102,11 +113,12 @@ TEST(LcdController, update_values_only_on_existing_page)
     auto reading = ws1->set_reading("1.0", "tmp", 36.0, "c", nullptr, &conf);
     auto reading_hum = ws1->set_reading("1.1", "hum", 79.0, "%", nullptr, &conf);
 
-    LcdController lcdc;
+    LcdController lcdc(lcd);
     lcdc.createWeatherPage(ws1, reading);
     lcdc.createWeatherPage(ws1, reading_hum);
 
-    lcdc.drawPage_Locking("1");
+    lcdc.setCurrentPage("1");
+    lcdc.drawPage_Locking();
 
     auto found1 = lcdc.pages_map.find("1");
     EXPECT_EQ(found1->second[3].value, "36.0");
@@ -125,7 +137,9 @@ TEST(LcdController, update_values_only_on_existing_page)
 
 TEST(LcdController, create_new_datetime_page_struct_independant)
 {
-    LcdController lcdc;
+    I2cControl *i2c = new I2cControl(3);
+    LcdDriver lcd(63, i2c);
+    LcdController lcdc(lcd);
     lcdc.createDateTimePage();
 
     auto founddate = lcdc.pages_map.find("date");
@@ -144,7 +158,7 @@ TEST(LcdController, update_only_changed_values_datetime)
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
 
-    LcdController lcdc;
+    LcdController lcdc(lcd);
     lcdc.createDateTimePage();
 
     auto founddate = lcdc.pages_map.find("date");

@@ -54,9 +54,9 @@ TEST(ConfigParser, get_sensor_reading_position)
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
     conf.ParseConfiguration();
     Position topleft = {2, 5};
-    Position middleleft = {3, 5};
+    Position middleright= {3, 15};
     EXPECT_EQ(conf.getSensorReadingPosition("1", "1.0"), topleft);
-    EXPECT_EQ(conf.getSensorReadingPosition("1", "1.1"), middleleft);
+    EXPECT_EQ(conf.getSensorReadingPosition("2", "2.1"), middleright);
 }
 
 TEST(ConfigParser, get_sensor_reading_position_non_existent)
@@ -67,7 +67,7 @@ TEST(ConfigParser, get_sensor_reading_position_non_existent)
     Position topleft_default = {2, 5};
     Position middleright = {3, 15};
     EXPECT_EQ(conf.getSensorReadingPosition("1", "1.4"), topleft_default);
-    EXPECT_EQ(conf.getSensorReadingPosition("2", "1.1"), middleright);
+    EXPECT_EQ(conf.getSensorReadingPosition("2", "2.1"), middleright);
 }
 
 TEST(ConfigParser, get_position_information)

@@ -14,7 +14,8 @@ TEST(RetrieveSensorData, get_overall_sensor_id)
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(3);
-    LcdController lcdc;
+    LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);
+    LcdController lcdc(lcd);
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR, conf);
 
     char sensorId[4] = "1.0";
@@ -35,13 +36,14 @@ TEST(RetrieveSensorData, Get_sensor_data_from_arduino_module)
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(3);
-    LcdController lcdc;
+    LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);
+    LcdController lcdc(lcd);
     RetrieveSenData rsd = RetrieveSenData(i2c, &lcdc,I2C_ADDR, conf);
     DynamicSensorFactory dsf(conf);
     rsd.get_WeatherSenData(&dsf);
 
     EXPECT_STREQ("1", dsf.getWeatherSensor_ptr("1")->get_sensorID().c_str());
-    EXPECT_EQ(2, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
+    EXPECT_EQ(6, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
 
     delete (i2c);
 }
