@@ -21,23 +21,10 @@ using namespace std;
     pqxx::connection C(db_conn_str);
     if (C.is_open()) {
         LOG(INFO) << "Opened database successfully: " << C.dbname() << endl;
-        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C);
+        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C, wss);
         while(true)
         {
-            rsd.get_LocalWeatherData(dynamsensors_ptr);
-            WeatherSensor* here = dynamsensors_ptr->getWeatherSensor_ptr("Here");
-            LOG(DEBUG) << "\n\nLocal ID: " << here->get_sensorID() << "\n"
-                       << "Local Temp: " << here->get_temperature_float() << "\n"
-                       << "Local Humidity: " << here->get_humidity_float() << endl;
-
-            usleep(3000000);
-
-            rsd.get_RemoteWeatherSenData(dynamsensors_ptr);
-            WeatherSensor* remote = dynamsensors_ptr->getWeatherSensor_ptr("BackBed");
-            LOG(DEBUG) << "\n\nRemote ID: " << remote->get_sensorID() << "\n"
-                       << "Remote Temp: " << remote->get_temperature_float() << "\n"
-                       << "Remote Humidity: " << remote->get_humidity_float() << endl;
-
+            rsd.get_WeatherSenData(dynamsensors_ptr);
             usleep(3000000);
         }
     }
@@ -52,16 +39,16 @@ using namespace std;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-[[noreturn]] void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr, LcdDriver *lcd)
+[[noreturn]] void updateLcdCurrentPage(DynamicSensorFactory* dynamsensors_ptr, LcdController* lcdc_ptr)
 {
     while(true)
     {
-        if(currentPage == "date") {
-            lcdc_ptr->updateDateTimePage(*lcd);
+        if(lcdc_ptr->getCurrentPage() == "date") {
+            lcdc_ptr->updateDateTimePage();
             usleep(500000);
         } else
         {
-            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(currentPage), *lcd);
+            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(lcdc_ptr->getCurrentPage()));
             usleep(5000000);
         }
     }
@@ -72,7 +59,7 @@ using namespace std;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-[[noreturn]] void detectbtnpress(LcdController *lcdc, LcdDriver *lcd, DynamicSensorFactory *dsf)
+[[noreturn]] void detectbtnpress(LcdController *lcdc, DynamicSensorFactory *dsf)
 {
     GPIOControl gpio1 = GPIOControl(weatherStationSettings.gpio.gpio1);
     gpio1.g_setdir("in");
@@ -96,26 +83,26 @@ using namespace std;
         if(bs_1.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio1 << " Pressed";
-            currentPage = lcdc->getNextPage(currentPage);
-            lcd->clearDisplayClearMem();
-            lcdc->drawPage(currentPage, *lcd);
-        } else if(bs_2.debounceBtn())
-        {
-            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
-            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage);
-            weather_ptr->switch_tempUnit();
-            lcdc->updatePageValues(weather_ptr, *lcd);
+            lcdc->getNextPage();
+            lcdc->clearDisplay();
+            lcdc->drawPage_Locking();
+//        } else if(bs_2.debounceBtn())
+//        {
+//            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
+//            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
+//            weather_ptr->switch_tempUnit();
+//            lcdc->updatePageValues(weather_ptr, *lcd);
         } else if(bs_3.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio3 << " Pressed";
-            lcd->clearDisplayClearMem();
-            lcdc->drawDateTimePage(*lcd);
-            currentPage = "date";
+            lcdc->clearDisplay();
+            lcdc->drawDateTimePage();
+            lcdc->setCurrentPage("date");
         } else if(bs_4.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio4 << " Pressed";
-            lcd->changeBacklight();
-            lcdc->drawPage(currentPage, *lcd);
+            lcdc->clearDisplay();
+            lcdc->drawPage_Locking();
         }
 
 
@@ -132,33 +119,34 @@ using namespace std;
 int main(int argc, char** argv)
 {
     START_EASYLOGGINGPP(argc, argv);
-    ConfigParser wss(weatherStationSettings);
     wss.ParseConfiguration();
     el::Configurations conf(weatherStationSettings.logg.configFile);
     el::Loggers::reconfigureAllLoggers(conf);
 
     DynamicSensorFactory dsf(wss);
     auto* i2c = new I2cControl(weatherStationSettings.i2c.busno);
-    LcdController lcdc;
     LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);
+    LcdController lcdc(lcd);
 
     //Create the date time page
     lcdc.createDateTimePage();
+    lcdc.setCurrentPage("date");
+    usleep(5000000);
+    lcdc.drawPage_Locking();
 
     //Start a new thread getting new sensors
     std::thread gettingSensorData (getNewSensorData, &dsf, i2c, &lcdc);
     LOG(INFO) << "Starting the getting sensor data thread. ID: "
          << gettingSensorData.get_id() << endl;
-    usleep(5000000);
-    lcdc.drawPage(currentPage, lcd);
+
     //Create a thread for the buttons
-    std::thread listenForBtns (detectbtnpress, &lcdc, &lcd, &dsf);
+    std::thread listenForBtns (detectbtnpress, &lcdc, &dsf);
     LOG(INFO) << "Starting the button listener thread. ID: "
               << listenForBtns.get_id() << endl;
 
 
     // Create another thread to draw to the LCD display
-    std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc, &lcd);
+    std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
     //Join the threads

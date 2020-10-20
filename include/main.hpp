@@ -18,6 +18,6 @@
 #include <thread>
 
 Settings weatherStationSettings {};
-string currentPage = "Here";
+ConfigParser wss(weatherStationSettings);
 
 #endif //WEATHERSTATIONPLUS_MAIN_H

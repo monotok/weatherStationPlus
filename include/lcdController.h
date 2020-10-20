@@ -17,6 +17,7 @@
 #include "../include/i2cControl.hpp"
 #include "../include/lcdDriver.hpp"
 #include "../include/Utilities.hpp"
+#include "../include/settings.hpp"
 
 #define FIXED 0
 #define VAR 1
@@ -26,22 +27,31 @@ using namespace std;
 class LcdController
 {
 public:
-    void createWeatherPage(WeatherSensor* ws);
-    void drawPage(string SensorName, LcdDriver &lcd);
-    void updatePageValues(WeatherSensor* ws, LcdDriver &lcd);
-    string getNextPage(string CurrentPage);
+    LcdController(LcdDriver& lcd): lcd(lcd) {};
+    void createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading);
+    void drawPage_Locking();
+    void drawPage_NonLocking();
+    void drawPage();
+    void updatePageValues(WeatherSensor *ws);
+    void getNextPage();
     void createDateTimePage();
-    void drawDateTimePage(LcdDriver &lcd);
-    void updateDateTimePage(LcdDriver &lcd);
+    void drawDateTimePage();
+    void updateDateTimePage();
+    void clearDisplay();
+    void setCurrentPage(string pageName);
+    string getCurrentPage();
 
 private:
+    LcdDriver lcd;
+
     struct Pageitem {
         string id;
-        int row_start;
-        int col_start;
+        Position pos;
         int type;
         string value;
     };
+
+    string currentPage = {};
 
     FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
     FRIEND_TEST(LcdController, create_new_datetime_page_struct_independant);
@@ -50,9 +60,11 @@ private:
     FRIEND_TEST(LcdController, check_for_existing_weather_sensor);
 
     bool existingWeatherPage(string SensorName);
-    void drawElementToLCD(LcdDriver &lcd);
+    bool existingWeatherPageReading(string SensorName, string reading);
+    void drawElementToLCD();
     void checkValuesFitLcd();
-    void checkValuesFitLcd(float newValue, LcdDriver &lcd);
+    void checkValuesFitLcd(string newValue);
+    void createNewReading(WeatherSensor* ws, WeatherSensor::Data* reading);
 
     map<string, vector<Pageitem>> pages_map;
     map<string, vector<Pageitem>>::iterator pm_iter;

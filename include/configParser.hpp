@@ -24,11 +24,16 @@ private:
     void getGPIODetails(const libconfig::Setting& root);
     void getLogDetails(const libconfig::Setting& root);
     void getI2cDetails(const libconfig::Setting& root);
+    void getPositionInformation(const libconfig::Setting& root);
+    Position& validatePosition(const string& position);
 
 public:
     ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");
     void ParseConfiguration();
     string getSensorsName(string sensorID);
+    string getSensorReadingName(const string &sensorId, const string &readingId);
+    Position& getSensorReadingPosition(const string& sensorId, const string& readingId);
+    Position& matchNamePositionToValuePosition(Position& position);
 
 };
 

@@ -12,9 +12,6 @@ TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector)
     DynamicSensorFactory dsf(conf);
     WeatherSensor *tempSensor = dynamic_cast<WeatherSensor*>(dsf.CreateNewSensor_obj("myName", "weather"));
 
-    tempSensor->set_temperature(23);
-    tempSensor->set_humidity(60);
-
     std::vector<WeatherSensor*>::iterator found;
     found = std::find(dsf.weatherSensors_vector.begin(), dsf.weatherSensors_vector.end(), tempSensor);
 

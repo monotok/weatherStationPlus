@@ -3,37 +3,57 @@
 
 #include "Abc_Sensor.hpp"
 #include "../Utilities.hpp"
+#include "../easylogging++.hpp"
+#include "../configParser.hpp"
 #include <string>
+#include "vector"
+#include <pqxx/pqxx>
 
 using namespace std;
 
 class WeatherSensor : public Sensor
 {
-private:
-  float temperature = 0.0;
-  float humidity = 0.0;
-  char tempUnit = 'c';
-
 public:
+
+    struct Data {
+        string readingId = {};
+        float reading = {};
+        string type = {};
+        string unit = {};
+        string name = {};
+        Position posName = {0, 0};
+        Position posVal = {0, 0};
+        Data(string readingId) {
+            this->readingId = readingId;
+        }
+    };
+
     WeatherSensor(string sensorID, string sensorName, string sensorType) : Sensor(sensorID, sensorName, sensorType) {};
     ~WeatherSensor(){};
 
+    Data *getReading_ptr(string readingID);
+    WeatherSensor::Data *createNewSensorReading_obj(string readingID);
+    vector<Data *> getAvailableReadings();
+
+    //Database
+    void store_weathersensor_data_in_database(Data *reading, pqxx::connection &C);
+    void store_weathersensormetadata_data_in_database(Data *sensor, pqxx::connection &C);
+
+
     //Sensor Values
-    string get_temperature();
-    string get_humidity();
-
-    float get_temperature_float() { return this->temperature/100; }
-    float get_humidity_float() { return this->humidity/100; }
+    string get_Reading(Data* reading);
+    string get_Reading(string reading);
 
     //Sensor Values
-    void set_humidity(float humidity) { this->humidity = humidity; }
-    void set_temperature(float temperature) { this->temperature = temperature; }
+    Data* set_reading(string readingId, string type, float reading, string unit, pqxx::connection* C, ConfigParser* wss);
 
-    //Sensor Units
-    void set_tempUnit_to_C();
-    void set_tempUnit_to_F();
-    void switch_tempUnit();
-    char getTempUnit();
+private:
+
+    // We only support 6 sensor readings per sensor as this fits on a 20x4 display
+    vector<Data *> readings_vector = {};
+    vector<Data *>::iterator readingsIterator;
+    void addNewReadingArray(Data *newReading);
+    void setLcdReadingPosition(Data& data, string sensorId, string readingId, ConfigParser* wss);
 };
 
 #endif // TEMP_SENSOR_H
