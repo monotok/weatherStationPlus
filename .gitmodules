@@ -1,3 +1,6 @@
 [submodule "ReceiveModule"]
 	path = ReceiveModule
-	url = git@github.com:monotok/WS_Rec_Module.git
+	url = https://github.com/monotok/WS_Rec_Module.git
+[submodule "RemoteSensors"]
+	path = RemoteSensors
+	url = https://github.com/monotok/RemoteSensors.git
