@@ -23,7 +23,7 @@ Sensor* DynamicSensorFactory::CreateNewSensor_obj(string sensorID, string sensor
     string sensorName = wss.getSensorsName(sensorID);
     LOG(INFO) << "Creating new weather sensor. SensorID: " << sensorID << " SensorName: "
               << sensorName << endl;
-    WeatherSensor *newWeather_ptr = new WeatherSensor(sensorID, sensorName, sensorType);
+    WeatherSensor *newWeather_ptr = new WeatherSensor(sensorID, sensorName);
     weatherSensors_vector.push_back(newWeather_ptr);
     return newWeather_ptr;
 }

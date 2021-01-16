@@ -33,7 +33,6 @@ void RetrieveSenData::get_WeatherSenData(DynamicSensorFactory *ptr_dsf)
         memcpy(&tempSensor, packet, sizeof(packet));
         VLOG(8) << "Retrieved Remote Data ID: " << tempSensor.sensorID << endl;
         VLOG(8) << "Retrieved Remote Data Reading: " << Utilities::to_string_with_precision<float>(tempSensor.reading, 1) << endl;
-        VLOG(8) << "Retrieved Remote Data Sensor Type: " << tempSensor.sensorType << endl;
         i2c_controller->writeByte(I2C_ADDR, GET_NEXT_SENSOR_READING);
 
     } while (process_ReceivedSensor(ptr_dsf));
@@ -47,7 +46,7 @@ bool RetrieveSenData::process_ReceivedSensor(DynamicSensorFactory *ptr_dsf)
         get_retrievedGroupSensorID(sensorId);
         WeatherSensor *ptr_newlyCreatedWeatherSensor = ptr_dsf->getWeatherSensor_ptr(sensorId);
         //TODO: When storing data do we want to store all changed readings for a given sensor the same timestamp?
-        auto reading = ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.sensorType, tempSensor.reading, tempSensor.unit, C, wss);
+        auto reading = ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.reading, C, wss);
         this->lcd_controller->createWeatherPage(ptr_newlyCreatedWeatherSensor, reading);
         return true;
     }

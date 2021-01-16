@@ -41,13 +41,11 @@ void WeatherSensor::addNewReadingArray(WeatherSensor::Data *newReading)
     readings_vector.push_back(newReading);
 }
 
-WeatherSensor::Data* WeatherSensor::set_reading(string readingId, string type, float reading, string unit, pqxx::connection* C, ConfigParser* wss)
+WeatherSensor::Data* WeatherSensor::set_reading(string readingId, float reading, pqxx::connection* C, ConfigParser* wss)
 {
     Data *sensor = getReading_ptr(readingId);
     if (sensor == nullptr) {
         sensor = createNewSensorReading_obj(readingId);
-        sensor->type = type;
-        sensor->unit = unit;
         setLcdReadingPosition(*sensor, get_sensorID(), readingId, wss);
         if (C != nullptr) { store_weathersensormetadata_data_in_database(sensor, *C); }
     }
@@ -77,7 +75,7 @@ void WeatherSensor::store_weathersensormetadata_data_in_database(WeatherSensor::
 {
     try {
         pqxx::work worker(C);
-        worker.exec_prepared("sensor_metadata", reading->readingId, reading->type, reading->unit);
+        worker.exec_prepared("sensor_metadata", reading->readingId, "t", "u");
         worker.commit();
     } catch (const std::exception &e)
     {

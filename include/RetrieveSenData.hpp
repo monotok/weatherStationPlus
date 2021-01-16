@@ -40,9 +40,7 @@ private:
     struct SensorData
     {
         char sensorID[4];
-        char sensorType[4];
         float reading;
-        char unit[4];
     } tempSensor = {};
     char packet[sizeof(tempSensor)] = {};
 
@@ -52,7 +50,7 @@ private:
     void get_retrievedGroupSensorID(char* sensorId) {
         strtok(sensorId, ".");
     }
-    string get_retrievedSensorType(SensorData& sensor) { return sensor.sensorType; }
+//    string get_retrievedSensorType(SensorData& sensor) { return sensor.sensorType; }
 
 
 };
