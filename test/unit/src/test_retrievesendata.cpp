@@ -43,7 +43,7 @@ TEST(RetrieveSensorData, Get_sensor_data_from_arduino_module)
     rsd.get_WeatherSenData(&dsf);
 
     EXPECT_STREQ("1", dsf.getWeatherSensor_ptr("1")->get_sensorID().c_str());
-    EXPECT_EQ(6, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
+    EXPECT_EQ(3, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
 
     delete (i2c);
 }
@@ -120,7 +120,7 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
 
     RetrieveSenData rsd = RetrieveSenData(nullptr, nullptr, I2C_ADDR, &REAL_C, conf);
     rsd.prepare_insert_statements(REAL_C);
-    WeatherSensor* mySen = new WeatherSensor("1", "here", "weather");
+    WeatherSensor* mySen = new WeatherSensor("1", "here");
 
     struct tempSensorData
     {
@@ -133,8 +133,8 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
     strcpy(sen1.sensorID, "1.0"); strcpy(sen1.sensorType, "tmp"); sen1.reading = 23.5; strcpy(sen1.unit, "cel");
     strcpy(sen2.sensorID, "1.1"); strcpy(sen2.sensorType, "hum"); sen2.reading = 55.0; strcpy(sen2.unit, "per");
 
-    mySen->set_reading(sen1.sensorID, sen1.sensorType, sen1.reading, sen1.unit, &REAL_C, &conf);
-    mySen->set_reading(sen2.sensorID, sen2.sensorType, sen2.reading, sen2.unit, &REAL_C, &conf);
+    mySen->set_reading(sen1.sensorID, sen1.reading, &REAL_C, &conf);
+    mySen->set_reading(sen2.sensorID, sen2.reading, &REAL_C, &conf);
 
     pqxx::work w(C);
 
@@ -160,8 +160,8 @@ TEST(RetrieveSensorData, store_incoming_data_in_database)
     delete (mySen->getReading_ptr("1.1"));
     delete (mySen);
 
-    WeatherSensor* mySen2 = new WeatherSensor("1", "here", "weather");
-    mySen2->set_reading(sen1.sensorID, "pre", sen1.reading, sen1.unit, &REAL_C, &conf);
+    WeatherSensor* mySen2 = new WeatherSensor("1", "here");
+    mySen2->set_reading(sen1.sensorID, sen1.reading, &REAL_C, &conf);
     pqxx::result r2 = w.exec("select reading_id,type,unit from sensor_metadata where reading_id = 1;");
     EXPECT_STREQ(r2[0][1].c_str(), "pre");
 

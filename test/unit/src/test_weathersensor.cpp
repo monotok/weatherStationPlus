@@ -4,7 +4,7 @@
 
 TEST(WeatherSensor, get_existing_reading)
 {
-    WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor", "weather");
+    WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor");
     ws1.createNewSensorReading_obj("1.0");
     ws1.createNewSensorReading_obj("1.1");
     ws1.createNewSensorReading_obj("1.2");
@@ -18,7 +18,7 @@ TEST(WeatherSensor, get_existing_reading)
 
 TEST(WeatherSensor, create_max_6_readings_on_sensor)
 {
-    WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor", "weather");
+    WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor");
     ws1.createNewSensorReading_obj("1.0");
     ws1.createNewSensorReading_obj("1.1");
     ws1.createNewSensorReading_obj("1.2");
@@ -41,22 +41,19 @@ TEST(WeatherSensor, set_reading_values_correctly)
     ConfigParser* conf_ptr = &conf;
 
     //Create a reading sensor
-    WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor", "weather");
+    WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor");
 
     //Set the reading for the first time. We should set all the values of the reading struct
-    ws1.set_reading("1.0", "tmp", 24.5, "cel", nullptr, conf_ptr);
+    ws1.set_reading("1.0", 24.5, nullptr, conf_ptr);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->readingId, "1.0");
     EXPECT_FLOAT_EQ(ws1.getReading_ptr("1.0")->reading, 24.5);
-    EXPECT_EQ(ws1.getReading_ptr("1.0")->type, "tmp");
-    EXPECT_EQ(ws1.getReading_ptr("1.0")->unit, "cel");
     EXPECT_EQ(ws1.getReading_ptr("1.0")->posVal.row_start, 2);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->posVal.col_start, 5);
 
     //Update the value and it should only change the reading
-    ws1.set_reading("1.0", "hum", 40.3, "far", nullptr, conf_ptr);
+    ws1.set_reading("1.0", 40.3, nullptr, conf_ptr);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->readingId, "1.0");
     EXPECT_FLOAT_EQ(ws1.getReading_ptr("1.0")->reading, 40.3);
-    EXPECT_EQ(ws1.getReading_ptr("1.0")->type, "tmp");
-    EXPECT_EQ(ws1.getReading_ptr("1.0")->unit, "cel");
+
 
 }
