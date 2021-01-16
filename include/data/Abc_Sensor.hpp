@@ -18,13 +18,13 @@ class Sensor
     Position posTitle = {1, 9};
 
   public:
-    Sensor(string sensorID, string sensorName, string sensorType)
-                { set_sensorID(sensorID); set_sensorName(sensorName); set_sensorType(sensorType); };
+    Sensor(string sensorID, string sensorName)
+                { set_sensorID(sensorID); set_sensorName(sensorName); };
     virtual ~Sensor(){};
 
     void set_sensorID(string sid) { this->sensorID = sid; }
     void set_sensorName(string sname) { this->sensorName = sname; }
-    void set_sensorType(string sensorType) { this->sensorType = sensorType; }
+//    void set_sensorType(string sensorType) { this->sensorType = sensorType; }
     Position& get_Position_SensorName() { return posName; };
     Position& get_Position_Title() { return posTitle; };
 
@@ -43,7 +43,7 @@ class Sensor
             return this->sensorName;
         }
     }
-    string get_sensorType() { return this->sensorType; }
+//    string get_sensorType() { return this->sensorType; }
 };
 
 #endif //SENSOR_H

@@ -69,10 +69,13 @@ using namespace std;
     gpio3.g_setdir("in");
     GPIOControl gpio4 = GPIOControl(weatherStationSettings.gpio.gpio4);
     gpio4.g_setdir("in");
+    GPIOControl gpio5 = GPIOControl(weatherStationSettings.gpio.gpio5);
+    gpio5.g_setdir("in");
     BtnState bs_1;
     BtnState bs_2;
     BtnState bs_3;
     BtnState bs_4;
+    BtnState bs_5;
 
     while(true)
     {
@@ -80,15 +83,16 @@ using namespace std;
         bs_2.initBtnState(&gpio2);
         bs_3.initBtnState(&gpio3);
         bs_4.initBtnState(&gpio4);
+        bs_5.initBtnState(&gpio5);
         if(bs_1.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio1 << " Pressed";
             lcdc->getNextPage();
             lcdc->clearDisplay();
             lcdc->drawPage_Locking();
-//        } else if(bs_2.debounceBtn())
-//        {
-//            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
+        } else if(bs_2.debounceBtn())
+        {
+            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
 //            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
 //            weather_ptr->switch_tempUnit();
 //            lcdc->updatePageValues(weather_ptr, *lcd);
@@ -101,8 +105,9 @@ using namespace std;
         } else if(bs_4.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio4 << " Pressed";
-            lcdc->clearDisplay();
-            lcdc->drawPage_Locking();
+        } else if(bs_5.debounceBtn())
+        {
+            LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio5 << " Pressed";
         }
 
 
@@ -110,6 +115,7 @@ using namespace std;
         bs_2.reInitBtnState();
         bs_3.reInitBtnState();
         bs_4.reInitBtnState();
+        bs_5.reInitBtnState();
         usleep(50000);
     }
 

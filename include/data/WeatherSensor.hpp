@@ -18,8 +18,8 @@ public:
     struct Data {
         string readingId = {};
         float reading = {};
-        string type = {};
-        string unit = {};
+//        string type = {};
+//        string unit = {};
         string name = {};
         Position posName = {0, 0};
         Position posVal = {0, 0};
@@ -28,7 +28,7 @@ public:
         }
     };
 
-    WeatherSensor(string sensorID, string sensorName, string sensorType) : Sensor(sensorID, sensorName, sensorType) {};
+    WeatherSensor(string sensorID, string sensorName) : Sensor(sensorID, sensorName) {};
     ~WeatherSensor(){};
 
     Data *getReading_ptr(string readingID);
@@ -45,7 +45,7 @@ public:
     string get_Reading(string reading);
 
     //Sensor Values
-    Data* set_reading(string readingId, string type, float reading, string unit, pqxx::connection* C, ConfigParser* wss);
+    Data* set_reading(string readingId, float reading, pqxx::connection* C, ConfigParser* wss);
 
 private:
 
