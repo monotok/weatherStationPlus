@@ -71,5 +71,17 @@ class LcdDriver
         void scroll1CharLeftAllLines();
         void clearLine(int lineNo);
         void changeBacklight();
+
+        //Custom Chars
+        void lcdSendChar(char singleChar);
+        void lcdSendCustomChar(char cgramAddress);
+        void createCustomChar(uint8_t location, uint8_t charMap[]);
+
+        //Predefined Chars from datasheet
+        void drawLeftArrow();
+        void drawRightArrow();
+        void drawDegreeSymbol();
+        void drawFullChar();
+
 };
 #endif //LCD_DRIVER_H

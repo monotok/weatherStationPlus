@@ -7,6 +7,11 @@
 //TODO: Add check to only create page when there is no page with sensor id or type
 //TODO: Set the values to blank string or zero
 // Get the unit and type from the settings file?
+LcdController::LcdController(LcdDriver& lcd): lcd(lcd)
+{
+    buildAllCustomChars();
+}
+
 void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading)
 {
     lock_guard<mutex> guard(lcdcMu);
@@ -315,4 +320,77 @@ void LcdController::setCurrentPage(string pageName)
 string LcdController::getCurrentPage()
 {
     return currentPage;
+}
+
+//Custom Char Functions
+
+void LcdController::drawBatteryFullSymbol()
+{
+    lcd.lcdSendCustomChar(0);
+}
+
+void LcdController::drawBatteryHalfSymbol()
+{
+    lcd.lcdSendCustomChar(1);
+}
+
+void LcdController::drawBatteryEmptySymbol()
+{
+    lcd.lcdSendCustomChar(2);
+}
+
+void LcdController::buildAllCustomChars()
+{
+    createFullBattery();
+    createHalfBattery();
+    createEmptyBattery();
+    usleep(10000);
+}
+
+void LcdController::createFullBattery()
+{
+    uint8_t customChar[8] = {
+            0x0E,
+            0x1F,
+            0x1F,
+            0x1F,
+            0x1F,
+            0x1F,
+            0x1F,
+            0x1F
+    };
+    lcd.createCustomChar(0, customChar);
+//    usleep(10000);
+}
+
+void LcdController::createHalfBattery()
+{
+    uint8_t customChar[8] = {
+            0x0E,
+            0x11,
+            0x11,
+            0x11,
+            0x1F,
+            0x1F,
+            0x1F,
+            0x1F
+    };
+    lcd.createCustomChar(1, customChar);
+//    usleep(10000);
+}
+
+void LcdController::createEmptyBattery()
+{
+    uint8_t customChar[8] = {
+            0x0E,
+            0x11,
+            0x11,
+            0x11,
+            0x11,
+            0x11,
+            0x1F,
+            0x1F
+    };
+    lcd.createCustomChar(2, customChar);
+//    usleep(10000);
 }
