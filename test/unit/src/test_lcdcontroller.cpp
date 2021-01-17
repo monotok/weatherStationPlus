@@ -170,3 +170,34 @@ TEST(LcdController, update_only_changed_values_datetime)
     auto newSecond = founddate->second[11].value;
     EXPECT_NE(oldSecond, newSecond);
 }
+
+TEST(LcdController, draw_custom_character_battery_symbols)
+{
+    I2cControl *i2c = new I2cControl(i2cbusno);
+    LcdDriver lcd(lcdAdd, i2c);
+
+
+    LcdController lcdc(lcd);
+    lcd.setCursorPositionRowCol(1,1);
+    lcdc.drawBatteryFullSymbol();
+    lcd.setCursorPositionRowCol(1,2);
+    lcdc.drawBatteryHalfSymbol();
+    lcd.setCursorPositionRowCol(1,3);
+    lcdc.drawBatteryEmptySymbol();
+}
+
+TEST(LcdController, draw_custom_characters)
+{
+    I2cControl *i2c = new I2cControl(i2cbusno);
+    LcdDriver lcd(lcdAdd, i2c);
+
+    LcdController lcdc(lcd);
+    lcd.setCursorPositionRowCol(1,4);
+    lcd.drawLeftArrow();
+    lcd.setCursorPositionRowCol(1,5);
+    lcd.drawRightArrow();
+    lcd.setCursorPositionRowCol(1,6);
+    lcd.drawDegreeSymbol();
+    lcd.setCursorPositionRowCol(1,7);
+    lcd.drawFullChar();
+}

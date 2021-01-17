@@ -27,7 +27,7 @@ using namespace std;
 class LcdController
 {
 public:
-    LcdController(LcdDriver& lcd): lcd(lcd) {};
+    LcdController(LcdDriver& lcd);
     void createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading);
     void drawPage_Locking();
     void drawPage_NonLocking();
@@ -58,13 +58,24 @@ private:
     FRIEND_TEST(LcdController, update_only_changed_values_datetime);
     FRIEND_TEST(LcdController, update_values_only_on_existing_page);
     FRIEND_TEST(LcdController, check_for_existing_weather_sensor);
+    FRIEND_TEST(LcdController, draw_custom_character_battery_symbols);
 
     bool existingWeatherPage(string SensorName);
     bool existingWeatherPageReading(string SensorName, string reading);
     void drawElementToLCD();
+    void drawBatteryFullSymbol();
+    void drawBatteryHalfSymbol();
+    void drawBatteryEmptySymbol();
     void checkValuesFitLcd();
     void checkValuesFitLcd(string newValue);
     void createNewReading(WeatherSensor* ws, WeatherSensor::Data* reading);
+
+    //Custom Chars
+    void createFullBattery();
+    void createHalfBattery();
+    void createEmptyBattery();
+
+    void buildAllCustomChars();
 
     map<string, vector<Pageitem>> pages_map;
     map<string, vector<Pageitem>>::iterator pm_iter;

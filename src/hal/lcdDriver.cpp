@@ -48,6 +48,13 @@
 #define ENABLE 0b00000100 // Enable bit
 #define READWRITE 0b00000010  // Read/Write bit
 #define REGISTERSELECT 0b00000001  // Register select bit
+#define LCD_SETCGRAMADDR 0x40 // Used for setting the custom chars
+
+// Predefined Custom Char Addresses - Upper 4 bits come first from datasheet
+#define LEFT_ARROW 0x7F
+#define RIGHT_ARROW 0x7E
+#define DEGREE_SYMBOL 0xDF
+#define FULL_CHAR 0xFF
 
 // Timing constants
 #define E_PULSE 500 //micro Seconds
@@ -201,6 +208,16 @@ void LcdDriver::lcdSendCommand(unsigned char command)
   lcdByte(command, LCD_CMD);
 }
 
+void LcdDriver::lcdSendCustomChar(char cgramAddress)
+{
+    lcdSendChar(cgramAddress);
+}
+
+void LcdDriver::lcdSendChar(char singleChar)
+{
+    lcdByte(singleChar, LCD_CHR);
+}
+
 void LcdDriver::lcdString(const char * message)
 {
   for(int i = 0; i<strlen(message); i++)
@@ -263,4 +280,33 @@ void LcdDriver::changeBacklight()
         backlight = BACKLIGHT_OFF;
     else if(backlight == BACKLIGHT_OFF)
         backlight = BACKLIGHT_ON;
+}
+
+void LcdDriver::createCustomChar(uint8_t location, uint8_t charMap[])
+{
+    location &= 0x7; // we only have 8 locations 0-7. location = location & 0x7
+    lcdSendCommand(LCD_SETCGRAMADDR | (location << 3));
+    for (int i=0; i<8; i++) {
+        lcdByte(charMap[i], 0b00000001);
+    }
+}
+
+void LcdDriver::drawLeftArrow()
+{
+    lcdSendChar(LEFT_ARROW);
+}
+
+void LcdDriver::drawRightArrow()
+{
+    lcdSendChar(RIGHT_ARROW);
+}
+
+void LcdDriver::drawDegreeSymbol()
+{
+    lcdSendChar(DEGREE_SYMBOL);
+}
+
+void LcdDriver::drawFullChar()
+{
+    lcdSendChar(FULL_CHAR);
 }
