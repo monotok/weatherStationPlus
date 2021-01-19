@@ -18,14 +18,19 @@ vector<WeatherSensor *> DynamicSensorFactory::getAllWeatherSensors_ptr()
     return weatherSensors_vector;
 }
 
-Sensor* DynamicSensorFactory::CreateNewSensor_obj(string sensorID, string sensorType)
+Sensor * DynamicSensorFactory::CreateNewSensor_obj(string sensorID)
 {
     string sensorName = wss.getSensorsName(sensorID);
-    LOG(INFO) << "Creating new weather sensor. SensorID: " << sensorID << " SensorName: "
-              << sensorName << endl;
-    WeatherSensor *newWeather_ptr = new WeatherSensor(sensorID, sensorName);
-    weatherSensors_vector.push_back(newWeather_ptr);
-    return newWeather_ptr;
+    if (!sensorName.empty() || strcmp(sensorID.c_str(), "tempWeatherSensor") == 0) {
+        LOG(INFO) << "Creating new weather sensor. SensorID: " << sensorID << " SensorName: "
+                  << sensorName << endl;
+        WeatherSensor *newWeather_ptr = new WeatherSensor(sensorID, sensorName);
+        weatherSensors_vector.push_back(newWeather_ptr);
+        return newWeather_ptr;
+    }
+    LOG(WARNING) << "No matching sensor found. Please add sensorid " << sensorID << " to the config file." << endl;
+    WeatherSensor *invalidSensor = nullptr;
+    return invalidSensor;
 }
 
 WeatherSensor* DynamicSensorFactory::getWeatherSensor_ptr(string sensorID)
@@ -38,7 +43,7 @@ WeatherSensor* DynamicSensorFactory::getWeatherSensor_ptr(string sensorID)
             return (*weatherSensorIterator);
         }
     }
-    return dynamic_cast<WeatherSensor*>(CreateNewSensor_obj(sensorID, "weather"));
+    return dynamic_cast<WeatherSensor*>(CreateNewSensor_obj(sensorID));
 }
 
 //TODO: Can be removed

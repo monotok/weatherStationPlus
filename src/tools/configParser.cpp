@@ -84,7 +84,7 @@ void ConfigParser::getI2cDetails(const libconfig::Setting &root)
 
 string ConfigParser::getSensorsName(string sensorId)
 {
-    string sensorName = {"NotSet"};
+    string sensorName = {};
     const libconfig::Setting& root = confsettings.getRoot();
     const libconfig::Setting &sen = root["sensors"];
     for (const auto & sen_iter : sen)
