@@ -45,7 +45,7 @@ TEST(ConfigParser, get_invalid_sensor_name)
 {
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
-    EXPECT_EQ(conf.getSensorsName("5"), "NotSet");
+    EXPECT_TRUE(conf.getSensorsName("5").empty());
 }
 
 TEST(ConfigParser, get_sensor_reading_position)

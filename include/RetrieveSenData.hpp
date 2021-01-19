@@ -46,6 +46,7 @@ private:
 
     //Need to declare this after the struct otherwise they would be in different scopes and therefore not the same type
     bool check_incoming_data(SensorData& sensor);
+    bool check_valid_sensor(WeatherSensor *ptr_WeatherSensor);
 
     void get_retrievedGroupSensorID(char* sensorId) {
         strtok(sensorId, ".");

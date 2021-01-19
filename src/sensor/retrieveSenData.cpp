@@ -45,31 +45,30 @@ bool RetrieveSenData::process_ReceivedSensor(DynamicSensorFactory *ptr_dsf)
         strcpy(sensorId, tempSensor.sensorID);
         get_retrievedGroupSensorID(sensorId);
         WeatherSensor *ptr_newlyCreatedWeatherSensor = ptr_dsf->getWeatherSensor_ptr(sensorId);
-        //TODO: When storing data do we want to store all changed readings for a given sensor the same timestamp?
-        auto reading = ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.reading, C, wss);
-        this->lcd_controller->createWeatherPage(ptr_newlyCreatedWeatherSensor, reading);
-        return true;
+        if (check_valid_sensor(ptr_newlyCreatedWeatherSensor))
+        {
+            //TODO: When storing data do we want to store all changed readings for a given sensor the same timestamp?
+            auto reading = ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.reading, C, wss);
+            this->lcd_controller->createWeatherPage(ptr_newlyCreatedWeatherSensor, reading);
+            return true;
+        }
+        LOG(WARNING) << "Sensor returned nullptr." << endl;
     }
     return false;
+}
+
+bool RetrieveSenData::check_valid_sensor(WeatherSensor *ptr_WeatherSensor)
+{
+    if (ptr_WeatherSensor == nullptr) {
+        return false;
+    }
+    return true;
 }
 
 //TODO: Fix this because it is checking the value of I and not the sensorID
 //TODO: Need to rewrite this func as assuming the reading is temperature
 bool RetrieveSenData::check_incoming_data(SensorData& sensor)
 {
-//    for(int i = 0; i <= sizeof(sensor.sensorID); i++)
-//    {
-//        if(!isascii(i))
-//        {
-//            LOG(ERROR) << "Invalid Sensor ID Char detected! Not ACSII: " << i << endl;
-//            return false;
-//        }
-//    }
-//    if(sensor.reading < -10000 || sensor.reading > 15000)
-//    {
-//        LOG(ERROR) << "Out of range Temperature detected. " << sensor.reading << endl;
-//        return false;
-//    }
     if (strcmp(tempSensor.sensorID, "\0") == 0) {
         return false;
     }

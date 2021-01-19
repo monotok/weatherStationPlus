@@ -18,7 +18,7 @@ class DynamicSensorFactory
     vector<WeatherSensor *> getAllWeatherSensors_ptr();
 
 private:
-    Sensor* CreateNewSensor_obj(string sensorID, string sensorType);
+    Sensor *CreateNewSensor_obj(string sensorID);
     vector<WeatherSensor *> weatherSensors_vector;
     vector<WeatherSensor *>::iterator weatherSensorIterator;
 
