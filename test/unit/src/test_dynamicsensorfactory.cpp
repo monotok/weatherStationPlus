@@ -10,7 +10,7 @@ TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector)
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
     DynamicSensorFactory dsf(conf);
-    WeatherSensor *tempSensor = dynamic_cast<WeatherSensor*>(dsf.CreateNewSensor_obj("myName", "weather"));
+    WeatherSensor *tempSensor = dynamic_cast<WeatherSensor*>(dsf.CreateNewSensor_obj("myName"));
 
     std::vector<WeatherSensor*>::iterator found;
     found = std::find(dsf.weatherSensors_vector.begin(), dsf.weatherSensors_vector.end(), tempSensor);
@@ -25,21 +25,21 @@ TEST(DynamicSensorFactory, Find_existing_sensor) {
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
     DynamicSensorFactory dsf(conf);
 
-    dsf.CreateNewSensor_obj("bob", "weather");
-    dsf.CreateNewSensor_obj("ant", "weather");
-    dsf.CreateNewSensor_obj("gar", "weather");
+    dsf.CreateNewSensor_obj("bob");
+    dsf.CreateNewSensor_obj("ant");
+    dsf.CreateNewSensor_obj("gar");
 
     WeatherSensor* returnValAnt = dsf.getWeatherSensor_ptr("ant");
     WeatherSensor* returnValBob = dsf.getWeatherSensor_ptr("bob");
     WeatherSensor* unknown = dsf.getWeatherSensor_ptr("who");
 
     std::vector<WeatherSensor*>::iterator found;
-    found = std::find(dsf.weatherSensors_vector.begin(), dsf.weatherSensors_vector.end(), unknown);
+    found = std::find(dsf.weatherSensors_vector.begin(), dsf.weatherSensors_vector.end(), returnValBob);
 
     EXPECT_EQ("ant", returnValAnt->get_sensorID());
     EXPECT_EQ("bob", returnValBob->get_sensorID());
-    EXPECT_EQ("who", unknown->get_sensorID());
-    EXPECT_EQ((*found)->get_sensorID(), "who");
+    EXPECT_EQ(nullptr, unknown);
+    EXPECT_EQ((*found)->get_sensorID(), "bob");
 }
 
 TEST(DynamicSensorFactory, Get_temp_weathersensor) {
@@ -57,9 +57,9 @@ TEST(DynamicSensorFactory, get_all_weathersensors) {
     ConfigParser conf(weatherStationSettings, "../../settings.conf");
     DynamicSensorFactory dsf(conf);
 
-    dsf.CreateNewSensor_obj("bob", "weather");
-    dsf.CreateNewSensor_obj("ant", "weather");
-    dsf.CreateNewSensor_obj("gar", "weather");
+    dsf.CreateNewSensor_obj("bob");
+    dsf.CreateNewSensor_obj("ant");
+    dsf.CreateNewSensor_obj("gar");
 
     vector<WeatherSensor *> returnVals = dsf.getAllWeatherSensors_ptr();
 
