@@ -16,7 +16,6 @@ class RetrieveSenData
 {
 public:
   RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char, ConfigParser& wss);
-  RetrieveSenData(I2cControl *, LcdController* lcdc, unsigned char, pqxx::connection* conn, ConfigParser& wss);
   void get_WeatherSenData(DynamicSensorFactory *ptr_dsf);
 
 private:
@@ -28,13 +27,10 @@ private:
   int temporaryStructSize = sizeof(packet);
   int get_temporaryStructSize()  { return this->temporaryStructSize; }
   bool process_ReceivedSensor(DynamicSensorFactory *ptr_dsf);
-  void prepare_insert_statements(pqxx::connection &c);
 
   FRIEND_TEST(RetrieveSensorData, Get_specified_data_from_atmega_over_i2c);
   FRIEND_TEST(RetrieveSensorData, check_incoming_data_valid);
   FRIEND_TEST(RetrieveSensorData, check_incoming_data_invalid);
-  FRIEND_TEST(RetrieveSensorData, store_incoming_data_in_database);
-  FRIEND_TEST(RetrieveSensorData, store_battery_correctly_for_non_here_sensors);
   FRIEND_TEST(RetrieveSensorData, get_overall_sensor_id);
 
     struct SensorData

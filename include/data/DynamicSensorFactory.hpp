@@ -13,6 +13,7 @@ class DynamicSensorFactory
   public:
     DynamicSensorFactory(ConfigParser& wss);
     ~DynamicSensorFactory();
+    void establish_database_connection(Settings& settings);
     WeatherSensor* getWeatherSensor_ptr(string sensorID);
     WeatherSensor* getTempWeatherSensor_ptr();
     vector<WeatherSensor *> getAllWeatherSensors_ptr();
@@ -25,9 +26,15 @@ private:
     FRIEND_TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector);
     FRIEND_TEST(DynamicSensorFactory, Find_existing_sensor);
     FRIEND_TEST(DynamicSensorFactory, get_all_weathersensors);
+    FRIEND_TEST(DynamicSensorFactory, store_incoming_data_in_database);
+    FRIEND_TEST(DynamicSensorFactory, get_average_hour_for_reading);
 
     mutex dyfMu;
     ConfigParser& wss;
+    pqxx::connection* db_conn_ptr = nullptr;
+
+    void prepare_select_statements();
+    void prepare_insert_statements();
 };
 
 #endif //ifndef DYNAMIC_SEN_FACTORY_H

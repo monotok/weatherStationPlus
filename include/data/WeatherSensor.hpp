@@ -18,8 +18,6 @@ public:
     struct Data {
         string readingId = {};
         float reading = {};
-//        string type = {};
-//        string unit = {};
         string name = {};
         Position posName = {0, 0};
         Position posVal = {0, 0};
@@ -29,6 +27,9 @@ public:
     };
 
     WeatherSensor(string sensorID, string sensorName) : Sensor(sensorID, sensorName) {};
+    WeatherSensor(string sensorID, string sensorName, pqxx::connection* db_conn_ptr) : Sensor(sensorID, sensorName) {
+        this->C = db_conn_ptr;
+    };
     ~WeatherSensor(){};
 
     Data *getReading_ptr(string readingID);
@@ -36,16 +37,19 @@ public:
     vector<Data *> getAvailableReadings();
 
     //Database
-    void store_weathersensor_data_in_database(Data *reading, pqxx::connection &C);
-    void store_weathersensormetadata_data_in_database(Data *sensor, pqxx::connection &C);
+    void store_weathersensor_data_in_database(WeatherSensor::Data *reading);
+    void store_weathersensormetadata_data_in_database(WeatherSensor::Data *reading);
 
 
     //Sensor Values
     string get_Reading(Data* reading);
-    string get_Reading(string reading);
+    string get_Reading(string readingid);
+    string get_AvgReading(string readingid, string timeperiod);
+    string get_MinReading(string readingid, string timeperiod);
+    string get_MaxReading(string readingid, string timeperiod);
 
     //Sensor Values
-    Data* set_reading(string readingId, float reading, pqxx::connection* C, ConfigParser* wss);
+    WeatherSensor::Data *set_reading(string readingId, float reading, ConfigParser *wss);
 
 private:
 
@@ -54,6 +58,17 @@ private:
     vector<Data *>::iterator readingsIterator;
     void addNewReadingArray(Data *newReading);
     void setLcdReadingPosition(Data& data, string sensorId, string readingId, ConfigParser* wss);
+
+    // Database stuff
+    pqxx::connection* C = nullptr;
+
+    // Function pointer to be able to call correct db request from just name
+    typedef string (WeatherSensor::*FnPtr)(string, string);
+    std::map<std::string, FnPtr> db_func_map = {
+            {"avg", &WeatherSensor::get_AvgReading},
+            {"min", &WeatherSensor::get_MinReading},
+            {"max", &WeatherSensor::get_MaxReading}
+    };
 };
 
 #endif // TEMP_SENSOR_H

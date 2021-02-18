@@ -11,17 +11,6 @@ RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, LcdController* lcdc
     this->wss = &wss;
 }
 
-RetrieveSenData::RetrieveSenData(I2cControl *i2c_controller, LcdController* lcdc, unsigned char I2C_ADDR,
-        pqxx::connection* conn, ConfigParser& wss)
-{
-    this->i2c_controller = i2c_controller;
-    this->lcd_controller = lcdc;
-    this->I2C_ADDR = I2C_ADDR;
-    this->C = conn;
-    prepare_insert_statements(*C);
-    this->wss = &wss;
-}
-
 void RetrieveSenData::get_WeatherSenData(DynamicSensorFactory *ptr_dsf)
 {
     i2c_controller->writeByte(I2C_ADDR, GET_FIRST_SENSOR_READING);
@@ -48,7 +37,7 @@ bool RetrieveSenData::process_ReceivedSensor(DynamicSensorFactory *ptr_dsf)
         if (check_valid_sensor(ptr_newlyCreatedWeatherSensor))
         {
             //TODO: When storing data do we want to store all changed readings for a given sensor the same timestamp?
-            auto reading = ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.reading, C, wss);
+            auto reading = ptr_newlyCreatedWeatherSensor->set_reading(tempSensor.sensorID, tempSensor.reading, wss);
             this->lcd_controller->createWeatherPage(ptr_newlyCreatedWeatherSensor, reading);
             return true;
         }
@@ -75,14 +64,4 @@ bool RetrieveSenData::check_incoming_data(SensorData& sensor)
     return true;
 }
 
-void RetrieveSenData::prepare_insert_statements(pqxx::connection &c)
-{
-    c.prepare(
-            "sensor_metadata",
-            "insert into sensor_metadata (reading_id, type, unit) VALUES ($1, $2, $3) "
-            "ON CONFLICT (reading_id) DO UPDATE "
-            "SET type = excluded.type, unit = excluded.unit;");
-    c.prepare(
-            "sensor_readings",
-            "insert into readings (time, sensor_id, reading_id, reading) VALUES (now(), $1, $2, $3)");
-}
+

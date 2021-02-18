@@ -7,7 +7,7 @@
 //TODO: Add check to only create page when there is no page with sensor id or type
 //TODO: Set the values to blank string or zero
 // Get the unit and type from the settings file?
-LcdController::LcdController(LcdDriver& lcd): lcd(lcd)
+LcdController::LcdController(LcdDriver& lcd, const Settings& weatherStationSettings): lcd(lcd), weatherStationSettings(weatherStationSettings)
 {
     buildAllCustomChars();
 }
@@ -20,19 +20,24 @@ void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* re
         Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), FIXED, ws->get_sensorName().append(":")};
         Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), FIXED, "Current"};
         vector<Pageitem> items{sensorID, sensorID_val};
+        map<string, vector<Pageitem>> sub_pages_map;
 
         Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};
         Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
         items.push_back(item);
         items.push_back(item_val);
 
-        pages_map.insert(std::pair<string,vector<Pageitem>>(ws->get_sensorID(),items));
+        sub_pages_map.insert(std::pair<string, vector<Pageitem>>("current", items));
+
+        pages_map.insert(std::pair<string, map<string, vector<Pageitem>>>(ws->get_sensorID(),sub_pages_map));
         LOG(INFO) << "Created a new weather page for SensorID: " << ws->get_sensorID() << " SensorName: "
                   << ws->get_sensorName() << endl;
+        createWeatherAvgPage(ws, reading);
     } else
     {
 //        Previous call to existing page and following call to existing page reading sets pm_iter to current page
         createNewReading(ws, reading);
+        createWeatherAvgPage(ws, reading);
     }
 }
 
@@ -42,13 +47,43 @@ void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* rea
     {
         Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};
         Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
-        pm_iter->second.push_back(item);
-        pm_iter->second.push_back(item_val);
+        auto current = pm_iter->second.find("current");
+        current->second.push_back(item);
+        current->second.push_back(item_val);
 
         if (strcmp(currentPage.c_str(), ws->get_sensorID().c_str()) == 0) {
             clearDisplay();
             drawPage_NonLocking();
         }
+    }
+}
+
+void LcdController::createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data* reading)
+{
+    if (!existingWeatherAvgPage(ws->get_sensorID(), reading->readingId))
+    {
+        Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), FIXED, ws->get_sensorName().append(":")};
+        Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), FIXED, reading->name};
+        vector<Pageitem> items{sensorID, sensorID_val};
+        string id_avg = "avg_" + reading->readingId;
+        string id_min = "min_" + reading->readingId;
+        string id_max = "max_" + reading->readingId;
+        Pageitem pi_max = {id_max, weatherStationSettings.topleft_Name, FIXED, "Max"};
+        Pageitem pi_min = {id_min, weatherStationSettings.topright_Name, FIXED, "Min"};
+        Pageitem pi_avg = {id_avg, weatherStationSettings.middleleft_Name, FIXED, "Avg"};
+
+        Pageitem pi_max_val = {id_max, weatherStationSettings.topleft_Val, VAR, "0.0"};
+        Pageitem pi_min_val = {id_min, weatherStationSettings.topright_Val, VAR, "0.0"};
+        Pageitem pi_avg_val = {id_avg, weatherStationSettings.middleleft_Val, VAR, "0.0"};
+
+        items.push_back(pi_max); items.push_back(pi_min); items.push_back(pi_avg);
+        items.push_back(pi_max_val); items.push_back(pi_min_val); items.push_back(pi_avg_val);
+
+        pm_iter = pages_map.find(ws->get_sensorID());
+        pm_iter->second.insert(std::pair<string, vector<Pageitem>>(reading->readingId, items));
+
+        LOG(INFO) << "Created a new weather average subpage for SensorID: " << ws->get_sensorID() << " Reading Name: "
+                  << reading->name << endl;
     }
 }
 
@@ -72,10 +107,29 @@ void LcdController::getNextPage()
             }
         }
         currentPage = pm_iter->first;
+        currentSubPage = "current";
     }
     else {
         currentPage = "No Pages";
     }
+}
+
+void LcdController::getNextSubPage()
+{
+    lock_guard<mutex> guard(lcdcMu);
+    pm_iter = pages_map.find(currentPage);
+    if (pm_iter != pages_map.end()) {
+        spm_iter = pm_iter->second.find(currentSubPage);
+        if (spm_iter != pm_iter->second.end()) {
+            spm_iter = next(spm_iter, 1);
+            if(spm_iter == pm_iter->second.end())
+            {
+                spm_iter = pm_iter->second.begin();
+            }
+            currentSubPage = spm_iter->first;
+        }
+    }
+
 }
 
 bool LcdController::existingWeatherPage(string SensorName)
@@ -89,9 +143,29 @@ bool LcdController::existingWeatherPageReading(string SensorName, string reading
     pm_iter = pages_map.find(SensorName);
     if (pm_iter != pages_map.end())
     {
-        for (auto &pageItem: pm_iter->second)
+        for (auto &subPage: pm_iter->second)
         {
-            if (strcmp(readingid.c_str(), pageItem.id.c_str()) == 0) {
+            if (strcmp(subPage.first.c_str(), "current") == 0) {
+                for (auto &pageItem: subPage.second)
+                {
+                    if (strcmp(readingid.c_str(), pageItem.id.c_str()) == 0) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool LcdController::existingWeatherAvgPage(string SensorName, string readingId)
+{
+    pm_iter = pages_map.find(SensorName);
+    if (pm_iter != pages_map.end())
+    {
+        for (auto &subPage: pm_iter->second)
+        {
+            if (strcmp(subPage.first.c_str(), readingId.c_str()) == 0) {
                 return true;
             }
         }
@@ -152,10 +226,16 @@ void LcdController::drawPage()
     pm_iter = pages_map.find(currentPage);
     if(pm_iter != pages_map.end())
     {
-        for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
+        for (auto &subPage: pm_iter->second)
         {
-            checkValuesFitLcd();
-            drawElementToLCD();
+            if (strcmp(subPage.first.c_str(), currentSubPage.c_str()) == 0) {
+                for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
+                {
+                    checkValuesFitLcd();
+                    drawElementToLCD();
+                }
+                break;
+            }
         }
     } else
     {
@@ -171,19 +251,25 @@ void LcdController::updatePageValues(WeatherSensor *ws)
     pm_iter = pages_map.find(ws->get_sensorID());
     if(pm_iter != pages_map.end())
     {
-        for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
+        for (auto &subPage: pm_iter->second)
         {
-            if(pi_iter->type == VAR)
-            {
-                checkValuesFitLcd();
-                auto newReadingValue = ws->get_Reading(pi_iter->id);
-                if (pi_iter->value != newReadingValue)
+            if (strcmp(subPage.first.c_str(), currentSubPage.c_str()) == 0) {
+                for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
-                    checkValuesFitLcd(newReadingValue);
-                    pi_iter->value = newReadingValue;
-                    checkValuesFitLcd();
-                    drawElementToLCD();
+                    if(pi_iter->type == VAR)
+                    {
+                        checkValuesFitLcd();
+                        auto newReadingValue = ws->get_Reading(pi_iter->id); //Need to get Database values instead.
+                        if (pi_iter->value != newReadingValue)
+                        {
+                            checkValuesFitLcd(newReadingValue);
+                            pi_iter->value = newReadingValue;
+                            checkValuesFitLcd();
+                            drawElementToLCD();
+                        }
+                    }
                 }
+                break;
             }
         }
     }
@@ -216,9 +302,11 @@ void LcdController::createDateTimePage()
 
     vector<Pageitem> items{date, date_day, date_delimiter_1, date_month, date_delimiter_2,
                            date_year, time, time_delimiter_1, time_hour, time_delimiter_2, time_min, time_sec};
+    map<string, vector<Pageitem>> sub_pages_map;
+    sub_pages_map.insert(std::pair<string, vector<Pageitem>>("homepage", items));
 
     lock_guard<mutex> guard(lcdcMu);
-    pages_map.insert(std::pair<string,vector<Pageitem>>("date",items));
+    pages_map.insert(std::pair<string, map<string, vector<Pageitem>>>("date",sub_pages_map));
     LOG(INFO) << "Created a new page " << "date" << endl;
 }
 
@@ -237,58 +325,64 @@ void LcdController::updateDateTimePage()
     pm_iter = pages_map.find("date");
     if(pm_iter != pages_map.end())
     {
-        for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
+        for (auto &subPage: pm_iter->second)
         {
-            if(pi_iter->type == VAR)
-            {
-                if(pi_iter->id == "sec")
+            if (strcmp(subPage.first.c_str(), "homepage") == 0) {
+                for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
-                    if (pi_iter->value != dateelements[5])
+                    if(pi_iter->type == VAR)
                     {
-                        pi_iter->value = dateelements[5];
-                        drawElementToLCD();
+                        if(pi_iter->id == "sec")
+                        {
+                            if (pi_iter->value != dateelements[5])
+                            {
+                                pi_iter->value = dateelements[5];
+                                drawElementToLCD();
+                            }
+                        }
+                        if(pi_iter->id == "min")
+                        {
+                            if (pi_iter->value != dateelements[4])
+                            {
+                                pi_iter->value = dateelements[4];
+                                drawElementToLCD();
+                            }
+                        }
+                        if(pi_iter->id == "hour")
+                        {
+                            if (pi_iter->value != dateelements[3])
+                            {
+                                pi_iter->value = dateelements[3];
+                                drawElementToLCD();
+                            }
+                        }
+                        if(pi_iter->id == "day")
+                        {
+                            if (pi_iter->value != dateelements[2])
+                            {
+                                pi_iter->value = dateelements[2];
+                                drawElementToLCD();
+                            }
+                        }
+                        if(pi_iter->id == "month")
+                        {
+                            if (pi_iter->value != dateelements[1])
+                            {
+                                pi_iter->value = dateelements[1];
+                                drawElementToLCD();
+                            }
+                        }
+                        if(pi_iter->id == "year")
+                        {
+                            if (pi_iter->value != dateelements[0])
+                            {
+                                pi_iter->value = dateelements[0];
+                                drawElementToLCD();
+                            }
+                        }
                     }
                 }
-                if(pi_iter->id == "min")
-                {
-                    if (pi_iter->value != dateelements[4])
-                    {
-                        pi_iter->value = dateelements[4];
-                        drawElementToLCD();
-                    }
-                }
-                if(pi_iter->id == "hour")
-                {
-                    if (pi_iter->value != dateelements[3])
-                    {
-                        pi_iter->value = dateelements[3];
-                        drawElementToLCD();
-                    }
-                }
-                if(pi_iter->id == "day")
-                {
-                    if (pi_iter->value != dateelements[2])
-                    {
-                        pi_iter->value = dateelements[2];
-                        drawElementToLCD();
-                    }
-                }
-                if(pi_iter->id == "month")
-                {
-                    if (pi_iter->value != dateelements[1])
-                    {
-                        pi_iter->value = dateelements[1];
-                        drawElementToLCD();
-                    }
-                }
-                if(pi_iter->id == "year")
-                {
-                    if (pi_iter->value != dateelements[0])
-                    {
-                        pi_iter->value = dateelements[0];
-                        drawElementToLCD();
-                    }
-                }
+                break;
             }
         }
     }
@@ -300,9 +394,15 @@ void LcdController::drawDateTimePage()
     pm_iter = pages_map.find("date");
     if(pm_iter != pages_map.end())
     {
-        for(pi_iter = pm_iter->second.begin(); pi_iter != pm_iter->second.end(); pi_iter++)
+        for (auto &subPage: pm_iter->second)
         {
-            drawElementToLCD();
+            if (strcmp(subPage.first.c_str(), "homepage") == 0) {
+                for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
+                {
+                    drawElementToLCD();
+                }
+                break;
+            }
         }
     }
 }
@@ -317,9 +417,19 @@ void LcdController::setCurrentPage(string pageName)
     currentPage = pageName;
 }
 
+void LcdController::setCurrentSubPage(string pageName)
+{
+    currentSubPage = pageName;
+}
+
 string LcdController::getCurrentPage()
 {
     return currentPage;
+}
+
+string LcdController::getCurrentSubPage()
+{
+    return currentSubPage;
 }
 
 //Custom Char Functions
@@ -394,3 +504,4 @@ void LcdController::createEmptyBattery()
     lcd.createCustomChar(2, customChar);
 //    usleep(10000);
 }
+

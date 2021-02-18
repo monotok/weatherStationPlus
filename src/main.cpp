@@ -15,24 +15,12 @@ using namespace std;
 
 [[noreturn]] void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
 {
-    string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
-    password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
-    +" port = " + to_string(weatherStationSettings.db.port);
-    pqxx::connection C(db_conn_str);
-    if (C.is_open()) {
-        LOG(INFO) << "Opened database successfully: " << C.dbname() << endl;
-        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C, wss);
-        while(true)
-        {
-            rsd.get_WeatherSenData(dynamsensors_ptr);
-            usleep(3000000);
-        }
-    }
-    else
+    RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, wss);
+    while(true)
     {
-        LOG(ERROR) << "Can't open database" << endl;
+        rsd.get_WeatherSenData(dynamsensors_ptr);
+        usleep(3000000);
     }
-
 }
 #pragma clang diagnostic pop
 
@@ -46,10 +34,14 @@ using namespace std;
         if(lcdc_ptr->getCurrentPage() == "date") {
             lcdc_ptr->updateDateTimePage();
             usleep(500000);
-        } else
+        } else if (lcdc_ptr->getCurrentSubPage() == "current")
         {
             lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(lcdc_ptr->getCurrentPage()));
             usleep(5000000);
+        } else
+        {
+            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(lcdc_ptr->getCurrentPage()));
+            usleep(300000000); // 5 mins
         }
     }
 
@@ -88,20 +80,22 @@ using namespace std;
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio1 << " Pressed";
             lcdc->getNextPage();
+            lcdc->setCurrentSubPage("current");
             lcdc->clearDisplay();
             lcdc->drawPage_Locking();
         } else if(bs_2.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
-//            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
-//            weather_ptr->switch_tempUnit();
-//            lcdc->updatePageValues(weather_ptr, *lcd);
+            lcdc->getNextSubPage();
+            lcdc->clearDisplay();
+            lcdc->drawPage_Locking();
         } else if(bs_3.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio3 << " Pressed";
             lcdc->clearDisplay();
-            lcdc->drawDateTimePage();
             lcdc->setCurrentPage("date");
+            lcdc->setCurrentSubPage("current");
+            lcdc->drawDateTimePage();
         } else if(bs_4.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio4 << " Pressed";
@@ -130,9 +124,10 @@ int main(int argc, char** argv)
     el::Loggers::reconfigureAllLoggers(conf);
 
     DynamicSensorFactory dsf(wss);
+    dsf.establish_database_connection(weatherStationSettings);
     auto* i2c = new I2cControl(weatherStationSettings.i2c.busno);
     LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);
-    LcdController lcdc(lcd);
+    LcdController lcdc(lcd, weatherStationSettings);
 
     //Create the date time page
     lcdc.createDateTimePage();
