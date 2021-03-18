@@ -17,7 +17,13 @@ public:
 
     struct Data {
         string readingId = {};
+        float prev_reading = {};
         float reading = {};
+        struct readings_from_db {
+            float average = 0.0;
+            float maximum = 0.0;
+            float minimum = 0.0;
+        } day_cr, day_pr, week_cr, week_pr, month_cr, month_pr, year_cr, year_pr;
         string name = {};
         Position posName = {0, 0};
         Position posVal = {0, 0};

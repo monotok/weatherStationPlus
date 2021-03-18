@@ -53,7 +53,10 @@ private:
         string id;
         Position pos;
         int type;
-        string value;
+        string str_val = {};
+        WeatherSensor::Data* data = nullptr;
+        Pageitem(string id, Position pos, int type, string data) : id(id), pos(pos), type(type), str_val(data) {}
+        Pageitem(string id, Position pos, int type, WeatherSensor::Data* data) : id(id), pos(pos), type(type), data(data) {}
     };
 
     string currentPage = {};
@@ -71,11 +74,12 @@ private:
     bool existingWeatherPageReading(string SensorName, string reading);
     bool existingWeatherAvgPage(string SensorName, string readingName);
     void drawElementToLCD();
+    float getCorrectReadingDataValueToDraw();
     void drawBatteryFullSymbol();
     void drawBatteryHalfSymbol();
     void drawBatteryEmptySymbol();
-    void checkValuesFitLcd();
-    void checkValuesFitLcd(string newValue);
+    string checkValuesFitLcd();
+    void clearOldValuesFromLcd();
     void createNewReading(WeatherSensor* ws, WeatherSensor::Data* reading);
 
     //Custom Chars

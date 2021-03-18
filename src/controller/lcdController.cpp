@@ -22,8 +22,8 @@ void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* re
         vector<Pageitem> items{sensorID, sensorID_val};
         map<string, vector<Pageitem>> sub_pages_map;
 
-        Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};
-        Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
+        Pageitem item(reading->readingId, reading->posName, FIXED, reading->name);
+        Pageitem item_val(reading->readingId, reading->posVal, VAR, reading);
         items.push_back(item);
         items.push_back(item_val);
 
@@ -45,8 +45,8 @@ void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* rea
 {
     if (!existingWeatherPageReading(ws->get_sensorID(), reading->readingId))
     {
-        Pageitem item = {reading->readingId, reading->posName, FIXED, reading->name};
-        Pageitem item_val = {reading->readingId, reading->posVal, VAR, ws->get_Reading(reading)};
+        Pageitem item(reading->readingId, reading->posName, FIXED, reading->name);
+        Pageitem item_val(reading->readingId, reading->posVal, VAR, reading);
         auto current = pm_iter->second.find("current");
         current->second.push_back(item);
         current->second.push_back(item_val);
@@ -68,13 +68,13 @@ void LcdController::createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data*
         string id_avg = "avg_" + reading->readingId;
         string id_min = "min_" + reading->readingId;
         string id_max = "max_" + reading->readingId;
-        Pageitem pi_max = {id_max, weatherStationSettings.topleft_Name, FIXED, "Max"};
-        Pageitem pi_min = {id_min, weatherStationSettings.topright_Name, FIXED, "Min"};
-        Pageitem pi_avg = {id_avg, weatherStationSettings.middleleft_Name, FIXED, "Avg"};
+        Pageitem pi_max(id_max, weatherStationSettings.topleft_Name, FIXED, "Max");
+        Pageitem pi_min(id_min, weatherStationSettings.topright_Name, FIXED, "Min");
+        Pageitem pi_avg(id_avg, weatherStationSettings.middleleft_Name, FIXED, "Avg");
 
-        Pageitem pi_max_val = {id_max, weatherStationSettings.topleft_Val, VAR, "0.0"};
-        Pageitem pi_min_val = {id_min, weatherStationSettings.topright_Val, VAR, "0.0"};
-        Pageitem pi_avg_val = {id_avg, weatherStationSettings.middleleft_Val, VAR, "0.0"};
+        Pageitem pi_max_val(id_max, weatherStationSettings.topleft_Val, VAR, reading);
+        Pageitem pi_min_val(id_min, weatherStationSettings.topright_Val, VAR, reading);
+        Pageitem pi_avg_val(id_avg, weatherStationSettings.middleleft_Val, VAR, reading);
 
         items.push_back(pi_max); items.push_back(pi_min); items.push_back(pi_avg);
         items.push_back(pi_max_val); items.push_back(pi_min_val); items.push_back(pi_avg_val);
@@ -176,35 +176,55 @@ bool LcdController::existingWeatherAvgPage(string SensorName, string readingId)
 void LcdController::drawElementToLCD()
 {
     lcd.setCursorPositionRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start);
-    lcd.lcdString(pi_iter->value.c_str());
-}
-
-void LcdController::checkValuesFitLcd()
-{
-    if(pi_iter->type == VAR) {
-        try {
-            float valFloat = stof(pi_iter->value);
-            if(valFloat > 99.99){
-                pi_iter->value = Utilities::to_string_with_precision<float>(valFloat, 0);
-            }
-        }
-        catch (invalid_argument& ia) {
-            LOG(ERROR) << "Error occurred converting value '" << pi_iter->value << "' " << endl;
-        }
+    if (pi_iter->str_val.empty() && pi_iter->data != nullptr) {
+        clearOldValuesFromLcd();
+        lcd.lcdString(checkValuesFitLcd().c_str());
+    } else if ( ! pi_iter->str_val.empty()) {
+        lcd.lcdString(pi_iter->str_val.c_str());
     }
 }
 
-void LcdController::checkValuesFitLcd(string newValue)
+string LcdController::checkValuesFitLcd()
+{
+    if(pi_iter->type == VAR) {
+        float reading = getCorrectReadingDataValueToDraw();
+        try {
+            if(reading > 99.99){
+                return Utilities::to_string_with_precision<float>(reading, 0);
+            }
+            return Utilities::to_string_with_precision<float>(reading, 1);
+        }
+        catch (invalid_argument& ia) {
+            LOG(ERROR) << "Error occurred converting value '" << reading << "' " << endl;
+        }
+    }
+    return "ERR";
+}
+
+float LcdController::getCorrectReadingDataValueToDraw()
+{
+    if (pi_iter->id.find("min_") != string::npos) {
+        return pi_iter->data->day_cr.minimum;
+    }
+    if (pi_iter->id.find("max_") != string::npos) {
+        return pi_iter->data->day_cr.maximum;
+    }
+    if (pi_iter->id.find("avg_") != string::npos) {
+        return pi_iter->data->day_cr.average;
+    }
+    return pi_iter->data->reading;
+}
+
+void LcdController::clearOldValuesFromLcd()
 {
     if(pi_iter->type == VAR) {
         try {
-            float currentVal = stof(pi_iter->value);
-            if (currentVal > 9.99 && stof(newValue) < 10.0) {
+            if (pi_iter->data->prev_reading > 9.99 && pi_iter->data->reading < 10.0) {
                 lcd.clearColumnsRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start + 5, pi_iter->pos.col_start);
             }
         }
         catch (invalid_argument& ia) {
-            LOG(ERROR) << "Error occurred converting value '" << pi_iter->value << "' " << endl;
+            LOG(ERROR) << "Error occurred converting value '" << pi_iter->data->reading << "' " << endl;
         }
     }
 }
@@ -231,7 +251,6 @@ void LcdController::drawPage()
             if (strcmp(subPage.first.c_str(), currentSubPage.c_str()) == 0) {
                 for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
-                    checkValuesFitLcd();
                     drawElementToLCD();
                 }
                 break;
@@ -258,13 +277,8 @@ void LcdController::updatePageValues(WeatherSensor *ws)
                 {
                     if(pi_iter->type == VAR)
                     {
-                        checkValuesFitLcd();
-                        auto newReadingValue = ws->get_Reading(pi_iter->id); //Need to get Database values instead.
-                        if (pi_iter->value != newReadingValue)
+                        if (pi_iter->data->prev_reading != pi_iter->data->reading)
                         {
-                            checkValuesFitLcd(newReadingValue);
-                            pi_iter->value = newReadingValue;
-                            checkValuesFitLcd();
                             drawElementToLCD();
                         }
                     }
@@ -334,49 +348,49 @@ void LcdController::updateDateTimePage()
                     {
                         if(pi_iter->id == "sec")
                         {
-                            if (pi_iter->value != dateelements[5])
+                            if (pi_iter->str_val != dateelements[5])
                             {
-                                pi_iter->value = dateelements[5];
+                                pi_iter->str_val = dateelements[5];
                                 drawElementToLCD();
                             }
                         }
                         if(pi_iter->id == "min")
                         {
-                            if (pi_iter->value != dateelements[4])
+                            if (pi_iter->str_val != dateelements[4])
                             {
-                                pi_iter->value = dateelements[4];
+                                pi_iter->str_val = dateelements[4];
                                 drawElementToLCD();
                             }
                         }
                         if(pi_iter->id == "hour")
                         {
-                            if (pi_iter->value != dateelements[3])
+                            if (pi_iter->str_val != dateelements[3])
                             {
-                                pi_iter->value = dateelements[3];
+                                pi_iter->str_val = dateelements[3];
                                 drawElementToLCD();
                             }
                         }
                         if(pi_iter->id == "day")
                         {
-                            if (pi_iter->value != dateelements[2])
+                            if (pi_iter->str_val != dateelements[2])
                             {
-                                pi_iter->value = dateelements[2];
+                                pi_iter->str_val = dateelements[2];
                                 drawElementToLCD();
                             }
                         }
                         if(pi_iter->id == "month")
                         {
-                            if (pi_iter->value != dateelements[1])
+                            if (pi_iter->str_val != dateelements[1])
                             {
-                                pi_iter->value = dateelements[1];
+                                pi_iter->str_val = dateelements[1];
                                 drawElementToLCD();
                             }
                         }
                         if(pi_iter->id == "year")
                         {
-                            if (pi_iter->value != dateelements[0])
+                            if (pi_iter->str_val != dateelements[0])
                             {
-                                pi_iter->value = dateelements[0];
+                                pi_iter->str_val = dateelements[0];
                                 drawElementToLCD();
                             }
                         }
