@@ -105,6 +105,9 @@ using namespace std;
         } else if(bs_4.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio4 << " Pressed";
+            lcdc->getNextTimeframe();
+            lcdc->clearDisplay();
+            lcdc->drawPage_Locking();
         } else if(bs_5.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio5 << " Pressed";
