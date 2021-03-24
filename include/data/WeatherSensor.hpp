@@ -78,13 +78,6 @@ private:
     // Database stuff
     pqxx::connection* C = nullptr;
 
-//    // Function pointer to be able to call correct db request from just name
-//    typedef string (WeatherSensor::*FnPtr)(string, string);
-//    std::map<std::string, FnPtr> db_func_map = {
-//            {"avg", &WeatherSensor::update_AvgReadings},
-//            {"min", &WeatherSensor::update_MinReadings},
-//            {"max", &WeatherSensor::update_MaxReadings}
-//    };
 };
 
 #endif // TEMP_SENSOR_H

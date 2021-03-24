@@ -98,16 +98,7 @@ string WeatherSensor::get_Reading(WeatherSensor::Data *reading)
 
 string WeatherSensor::get_Reading(string readingid)
 {
-    if (readingid.find('_') == string::npos) {
-        return Utilities::to_string_with_precision<float>(getReading_ptr(readingid)->reading, 1);
-    }
-    vector<string> readingid_extracted;
-    Utilities::split_string(readingid, readingid_extracted, '_');
-    if (std::isdigit(readingid_extracted[1][0])) {
-        FnPtr fp = db_func_map[readingid_extracted[0].c_str()];
-        return (this->*fp)(readingid_extracted[1], "1 day");
-    }
-    return "N/A";
+    return Utilities::to_string_with_precision<float>(getReading_ptr(readingid)->reading, 1);
 }
 
 void WeatherSensor::update_AvgReadings()
