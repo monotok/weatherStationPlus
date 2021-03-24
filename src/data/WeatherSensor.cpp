@@ -110,41 +110,57 @@ string WeatherSensor::get_Reading(string readingid)
     return "N/A";
 }
 
-string WeatherSensor::get_AvgReading(string readingid, string timeperiod)
+void WeatherSensor::update_AvgReadings()
 {
-    try {
-        pqxx::work worker(*this->C);
-        auto result = worker.exec_prepared("select_past_avg_reading", timeperiod, readingid);
-        return result[0][1].c_str();
-    } catch (const std::exception &e)
-    {
-        LOG(ERROR) << e.what() << std::endl;
-        return "N/A";
+    for (auto &reading : readings_vector) {
+        try {
+            pqxx::work worker(*this->C);
+            for (auto &db_reading : reading->readings_from_db_instances) {
+                auto result = worker.exec_prepared("select_past_avg_reading", db_reading->time_period,
+                                                   reading->readingId);
+                db_reading->average = stof(result[0][1].c_str());
+                VLOG(6) << "Setting Avg for reading " << reading->name << " with time period of "
+                        << db_reading->time_period << " to " << db_reading->average;
+            }
+        } catch (const std::exception &e)
+        {
+            LOG(ERROR) << e.what() << std::endl;
+        }
     }
 }
 
-string WeatherSensor::get_MinReading(string readingid, string timeperiod)
+void WeatherSensor::update_MinReadings()
 {
-    try {
-        pqxx::work worker(*this->C);
-        auto result = worker.exec_prepared("select_past_min_reading", timeperiod, readingid);
-        return result[0][1].c_str();
-    } catch (const std::exception &e)
-    {
-        LOG(ERROR) << e.what() << std::endl;
-        return "N/A";
+    for (auto &reading : readings_vector) {
+        try {
+            pqxx::work worker(*this->C);
+            for (auto& db_reading : reading->readings_from_db_instances) {
+                auto result = worker.exec_prepared("select_past_min_reading", db_reading->time_period,
+                                                   reading->readingId);
+                db_reading->minimum = stof(result[0][1].c_str());
+                VLOG(6) << "Setting Min for reading " << reading->name << " with time period of "
+                        << db_reading->time_period << " to " << db_reading->minimum;
+            }
+        } catch (const std::exception &e) {
+            LOG(ERROR) << e.what() << std::endl;
+        }
     }
 }
 
-string WeatherSensor::get_MaxReading(string readingid, string timeperiod)
+void WeatherSensor::update_MaxReadings()
 {
-    try {
-        pqxx::work worker(*this->C);
-        auto result = worker.exec_prepared("select_past_max_reading", timeperiod, readingid);
-        return result[0][1].c_str();
-    } catch (const std::exception &e)
-    {
-        LOG(ERROR) << e.what() << std::endl;
-        return "N/A";
+    for (auto &reading : readings_vector) {
+        try {
+            pqxx::work worker(*this->C);
+            for (auto& db_reading : reading->readings_from_db_instances) {
+                auto result = worker.exec_prepared("select_past_max_reading", db_reading->time_period,
+                                                   reading->readingId);
+                db_reading->maximum = stof(result[0][1].c_str());
+                VLOG(6) << "Setting Max for reading " << reading->name << " with time period of "
+                        << db_reading->time_period << " to " << db_reading->maximum;
+            }
+        } catch (const std::exception &e) {
+            LOG(ERROR) << e.what() << std::endl;
+        }
     }
 }

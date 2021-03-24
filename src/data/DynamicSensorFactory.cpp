@@ -5,7 +5,7 @@ using namespace std;
 DynamicSensorFactory::DynamicSensorFactory(ConfigParser& wss): wss(wss) {}
 
 
-void DynamicSensorFactory::establish_database_connection(Settings &settings)
+bool DynamicSensorFactory::establish_database_connection(Settings &settings)
 {
     string db_conn_str = "dbname = "+ settings.db.database +" user = "+ settings.db.user +" \
     password = "+ settings.db.password +" hostaddr = "+ settings.db.host
@@ -15,11 +15,10 @@ void DynamicSensorFactory::establish_database_connection(Settings &settings)
         LOG(INFO) << "Opened database successfully: " << db_conn_ptr->dbname() << endl;
         prepare_insert_statements();
         prepare_select_statements();
+        return true;
     }
-    else
-    {
-        LOG(ERROR) << "Can't open database" << endl;
-    }
+    LOG(ERROR) << "Can't open database" << endl;
+    return false;
 }
 
 DynamicSensorFactory::~DynamicSensorFactory()
@@ -36,6 +35,17 @@ vector<WeatherSensor *> DynamicSensorFactory::getAllWeatherSensors_ptr()
 {
     lock_guard<mutex> guard(dyfMu);
     return weatherSensors_vector;
+}
+
+void DynamicSensorFactory::updateAllWeatherSensorsDatabaseValues()
+{
+    lock_guard<mutex> guard(dyfMu);
+    for (auto &weathersensors : weatherSensors_vector) {
+        LOG(DEBUG) << "Retrieving readings from DB for weather sensor " << weathersensors->get_sensorName();
+        weathersensors->update_AvgReadings();
+        weathersensors->update_MaxReadings();
+        weathersensors->update_MinReadings();
+    }
 }
 
 Sensor * DynamicSensorFactory::CreateNewSensor_obj(string sensorID)

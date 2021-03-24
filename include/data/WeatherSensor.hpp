@@ -5,6 +5,7 @@
 #include "../Utilities.hpp"
 #include "../easylogging++.hpp"
 #include "../configParser.hpp"
+#include "../Constants.hpp"
 #include <string>
 #include "vector"
 #include <pqxx/pqxx>
@@ -23,13 +24,22 @@ public:
             float average = 0.0;
             float maximum = 0.0;
             float minimum = 0.0;
-        } day_cr, day_pr, week_cr, week_pr, month_cr, month_pr, year_cr, year_pr;
+            string time_period = {};
+            readings_from_db(string time_period) : time_period(time_period) {};
+        };
+        readings_from_db day_cr, day_pr, week_cr, week_pr, month_cr, month_pr, year_cr, year_pr;
+        vector<readings_from_db*> readings_from_db_instances = {&day_cr, &week_cr, &month_cr, &year_cr};
+        std::map<short, readings_from_db*> timeframeConstMapping = {make_pair(LcdConstants::ONE_DAY, &day_cr),
+                                                                    make_pair(LcdConstants::ONE_WEEK, &week_cr),
+                                                                    make_pair(LcdConstants::ONE_MONTH, &month_cr),
+                                                                    make_pair(LcdConstants::ONE_YEAR, &year_cr),
+                                                                    };
         string name = {};
         Position posName = {0, 0};
         Position posVal = {0, 0};
-        Data(string readingId) {
-            this->readingId = readingId;
-        }
+        Data(string readingId) : readingId(readingId), day_cr("1 day"), day_pr("1 day"),
+        week_cr("1 week"), week_pr("1 week"), month_cr("4 week"), month_pr("4 week"),
+        year_cr("52 week"), year_pr("52 week") {}
     };
 
     WeatherSensor(string sensorID, string sensorName) : Sensor(sensorID, sensorName) {};
@@ -50,9 +60,9 @@ public:
     //Sensor Values
     string get_Reading(Data* reading);
     string get_Reading(string readingid);
-    string get_AvgReading(string readingid, string timeperiod);
-    string get_MinReading(string readingid, string timeperiod);
-    string get_MaxReading(string readingid, string timeperiod);
+    void update_AvgReadings();
+    void update_MinReadings();
+    void update_MaxReadings();
 
     //Sensor Values
     WeatherSensor::Data *set_reading(string readingId, float reading, ConfigParser *wss);
@@ -68,13 +78,13 @@ private:
     // Database stuff
     pqxx::connection* C = nullptr;
 
-    // Function pointer to be able to call correct db request from just name
-    typedef string (WeatherSensor::*FnPtr)(string, string);
-    std::map<std::string, FnPtr> db_func_map = {
-            {"avg", &WeatherSensor::get_AvgReading},
-            {"min", &WeatherSensor::get_MinReading},
-            {"max", &WeatherSensor::get_MaxReading}
-    };
+//    // Function pointer to be able to call correct db request from just name
+//    typedef string (WeatherSensor::*FnPtr)(string, string);
+//    std::map<std::string, FnPtr> db_func_map = {
+//            {"avg", &WeatherSensor::update_AvgReadings},
+//            {"min", &WeatherSensor::update_MinReadings},
+//            {"max", &WeatherSensor::update_MaxReadings}
+//    };
 };
 
 #endif // TEMP_SENSOR_H

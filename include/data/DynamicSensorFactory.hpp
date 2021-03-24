@@ -13,10 +13,11 @@ class DynamicSensorFactory
   public:
     DynamicSensorFactory(ConfigParser& wss);
     ~DynamicSensorFactory();
-    void establish_database_connection(Settings& settings);
+    bool establish_database_connection(Settings& settings);
     WeatherSensor* getWeatherSensor_ptr(string sensorID);
     WeatherSensor* getTempWeatherSensor_ptr();
     vector<WeatherSensor *> getAllWeatherSensors_ptr();
+    void updateAllWeatherSensorsDatabaseValues();
 
 private:
     Sensor *CreateNewSensor_obj(string sensorID);

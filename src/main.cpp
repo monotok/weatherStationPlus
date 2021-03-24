@@ -22,6 +22,16 @@ using namespace std;
         usleep(3000000);
     }
 }
+
+[[noreturn]] void getNewSensorDataViaDatabase(DynamicSensorFactory* dynamsensors_ptr)
+{
+    while(true)
+    {
+        usleep(30000000); // 5 mins
+        dynamsensors_ptr->updateAllWeatherSensorsDatabaseValues();
+    }
+}
+
 #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
@@ -34,14 +44,10 @@ using namespace std;
         if(lcdc_ptr->getCurrentPage() == "date") {
             lcdc_ptr->updateDateTimePage();
             usleep(500000);
-        } else if (lcdc_ptr->getCurrentSubPage() == "current")
-        {
-            lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(lcdc_ptr->getCurrentPage()));
-            usleep(5000000);
         } else
         {
             lcdc_ptr->updatePageValues(dynamsensors_ptr->getWeatherSensor_ptr(lcdc_ptr->getCurrentPage()));
-            usleep(300000000); // 5 mins
+            usleep(5000000);
         }
     }
 
@@ -124,7 +130,7 @@ int main(int argc, char** argv)
     el::Loggers::reconfigureAllLoggers(conf);
 
     DynamicSensorFactory dsf(wss);
-    dsf.establish_database_connection(weatherStationSettings);
+    auto db_established = dsf.establish_database_connection(weatherStationSettings);
     auto* i2c = new I2cControl(weatherStationSettings.i2c.busno);
     LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);
     LcdController lcdc(lcd, weatherStationSettings);
@@ -150,7 +156,15 @@ int main(int argc, char** argv)
     std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
+
     //Join the threads
+    //Start a new thread getting database sensors
+    if (db_established) {
+        std::thread gettingDBData (getNewSensorDataViaDatabase, &dsf);
+        LOG(INFO) << "Starting the getting database data thread. ID: "
+                  << gettingDBData.get_id() << endl;
+        gettingDBData.join();
+    }
     gettingSensorData.join();
     updatingLcd.join();
     listenForBtns.join();
