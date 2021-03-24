@@ -18,9 +18,7 @@
 #include "../include/lcdDriver.hpp"
 #include "../include/Utilities.hpp"
 #include "../include/settings.hpp"
-
-#define FIXED 0
-#define VAR 1
+#include "../include/Constants.hpp"
 
 using namespace std;
 
@@ -42,6 +40,7 @@ public:
     void clearDisplay();
     void setCurrentPage(string pageName);
     void setCurrentSubPage(string pageName);
+    void getNextTimeframe();
     string getCurrentPage();
     string getCurrentSubPage();
 
@@ -61,6 +60,7 @@ private:
 
     string currentPage = {};
     string currentSubPage = {"current"};
+    short currentDBTimeframe = LcdConstants::ONE_DAY;
 
     FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
     FRIEND_TEST(LcdController, create_new_datetime_page_struct_independant);
@@ -69,6 +69,7 @@ private:
     FRIEND_TEST(LcdController, update_values_only_on_existing_avg_page);
     FRIEND_TEST(LcdController, check_for_existing_weather_sensor);
     FRIEND_TEST(LcdController, draw_custom_character_battery_symbols);
+    FRIEND_TEST(LcdController, get_next_timeframe);
 
     bool existingWeatherPage(string SensorName);
     bool existingWeatherPageReading(string SensorName, string reading);
@@ -93,6 +94,9 @@ private:
     map<string, map<string, vector<Pageitem>>>::iterator pm_iter;
     map<string, vector<Pageitem>>::iterator spm_iter;
     vector<Pageitem>::iterator pi_iter;
+
+    vector<short> timeframes = {LcdConstants::ONE_DAY, LcdConstants::ONE_WEEK, LcdConstants::ONE_MONTH, LcdConstants::ONE_YEAR};
+    vector<short>::iterator tf_iter = timeframes.begin();
 
     mutex lcdcMu;
 

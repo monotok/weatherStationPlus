@@ -17,13 +17,13 @@ void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* re
     lock_guard<mutex> guard(lcdcMu);
     if( ! existingWeatherPage(ws->get_sensorID()))
     {
-        Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), FIXED, ws->get_sensorName().append(":")};
-        Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), FIXED, "Current"};
+        Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), LcdConstants::FIXED, ws->get_sensorName().append(":")};
+        Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), LcdConstants::FIXED, "Current"};
         vector<Pageitem> items{sensorID, sensorID_val};
         map<string, vector<Pageitem>> sub_pages_map;
 
-        Pageitem item(reading->readingId, reading->posName, FIXED, reading->name);
-        Pageitem item_val(reading->readingId, reading->posVal, VAR, reading);
+        Pageitem item(reading->readingId, reading->posName, LcdConstants::FIXED, reading->name);
+        Pageitem item_val(reading->readingId, reading->posVal, LcdConstants::VAR, reading);
         items.push_back(item);
         items.push_back(item_val);
 
@@ -45,8 +45,8 @@ void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* rea
 {
     if (!existingWeatherPageReading(ws->get_sensorID(), reading->readingId))
     {
-        Pageitem item(reading->readingId, reading->posName, FIXED, reading->name);
-        Pageitem item_val(reading->readingId, reading->posVal, VAR, reading);
+        Pageitem item(reading->readingId, reading->posName, LcdConstants::FIXED, reading->name);
+        Pageitem item_val(reading->readingId, reading->posVal, LcdConstants::VAR, reading);
         auto current = pm_iter->second.find("current");
         current->second.push_back(item);
         current->second.push_back(item_val);
@@ -62,22 +62,28 @@ void LcdController::createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data*
 {
     if (!existingWeatherAvgPage(ws->get_sensorID(), reading->readingId))
     {
-        Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), FIXED, ws->get_sensorName().append(":")};
-        Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), FIXED, reading->name};
+        Pageitem sensorID = {"sensorID", ws->get_Position_SensorName(), LcdConstants::FIXED, ws->get_sensorName().append(":")};
+        Pageitem sensorID_val = {"pageTitle", ws->get_Position_Title(), LcdConstants::FIXED, reading->name};
         vector<Pageitem> items{sensorID, sensorID_val};
         string id_avg = "avg_" + reading->readingId;
         string id_min = "min_" + reading->readingId;
         string id_max = "max_" + reading->readingId;
-        Pageitem pi_max(id_max, weatherStationSettings.topleft_Name, FIXED, "Max");
-        Pageitem pi_min(id_min, weatherStationSettings.topright_Name, FIXED, "Min");
-        Pageitem pi_avg(id_avg, weatherStationSettings.middleleft_Name, FIXED, "Avg");
+        Pageitem pi_now(reading->readingId, weatherStationSettings.topleft_Name, LcdConstants::FIXED, "Now");
+        Pageitem pi_avg(id_avg, weatherStationSettings.topright_Name, LcdConstants::FIXED, "Avg");
+        Pageitem pi_max(id_max, weatherStationSettings.middleleft_Name, LcdConstants::FIXED, "Max");
+        Pageitem pi_min(id_min, weatherStationSettings.middleright_Name, LcdConstants::FIXED, "Min");
 
-        Pageitem pi_max_val(id_max, weatherStationSettings.topleft_Val, VAR, reading);
-        Pageitem pi_min_val(id_min, weatherStationSettings.topright_Val, VAR, reading);
-        Pageitem pi_avg_val(id_avg, weatherStationSettings.middleleft_Val, VAR, reading);
+        Pageitem pi_now_val(reading->readingId, weatherStationSettings.topleft_Val, LcdConstants::VAR, reading);
+        Pageitem pi_avg_val(id_avg, weatherStationSettings.topright_Val, LcdConstants::VAR, reading);
+        Pageitem pi_max_val(id_max, weatherStationSettings.middleleft_Val, LcdConstants::VAR, reading);
+        Pageitem pi_min_val(id_min, weatherStationSettings.middleright_Val, LcdConstants::VAR, reading);
 
-        items.push_back(pi_max); items.push_back(pi_min); items.push_back(pi_avg);
-        items.push_back(pi_max_val); items.push_back(pi_min_val); items.push_back(pi_avg_val);
+        Pageitem timeframe("tf", weatherStationSettings.bottomleft_Name, LcdConstants::FIXED, "Period: ");
+        Pageitem timeframe_val("tf", weatherStationSettings.bottomright_Name, LcdConstants::VAR, reading);
+
+        items.push_back(pi_now); items.push_back(pi_max); items.push_back(pi_min); items.push_back(pi_avg);
+        items.push_back(pi_now_val); items.push_back(pi_max_val); items.push_back(pi_min_val); items.push_back(pi_avg_val);
+        items.push_back(timeframe); items.push_back(timeframe_val);
 
         pm_iter = pages_map.find(ws->get_sensorID());
         pm_iter->second.insert(std::pair<string, vector<Pageitem>>(reading->readingId, items));
@@ -177,8 +183,12 @@ void LcdController::drawElementToLCD()
 {
     lcd.setCursorPositionRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start);
     if (pi_iter->str_val.empty() && pi_iter->data != nullptr) {
-        clearOldValuesFromLcd();
-        lcd.lcdString(checkValuesFitLcd().c_str());
+        if (strcmp(pi_iter->id.c_str(), "tf") == 0) {
+            lcd.lcdString(LcdConstants::timeframeText.find(currentDBTimeframe)->second.c_str());
+        } else {
+            clearOldValuesFromLcd();
+            lcd.lcdString(checkValuesFitLcd().c_str());
+        }
     } else if ( ! pi_iter->str_val.empty()) {
         lcd.lcdString(pi_iter->str_val.c_str());
     }
@@ -186,7 +196,7 @@ void LcdController::drawElementToLCD()
 
 string LcdController::checkValuesFitLcd()
 {
-    if(pi_iter->type == VAR) {
+    if(pi_iter->type == LcdConstants::VAR) {
         float reading = getCorrectReadingDataValueToDraw();
         try {
             if(reading > 99.99){
@@ -204,20 +214,26 @@ string LcdController::checkValuesFitLcd()
 float LcdController::getCorrectReadingDataValueToDraw()
 {
     if (pi_iter->id.find("min_") != string::npos) {
-        return pi_iter->data->day_cr.minimum;
+        float minimum = pi_iter->data->timeframeConstMapping.find(currentDBTimeframe)->second->minimum;
+        LOG(DEBUG) << "Getting reading to draw. Minimum with timeframe of one day " << minimum;
+        return minimum;
     }
     if (pi_iter->id.find("max_") != string::npos) {
-        return pi_iter->data->day_cr.maximum;
+        float maximum = pi_iter->data->timeframeConstMapping.find(currentDBTimeframe)->second->maximum;
+        LOG(DEBUG) << "Getting reading to draw. Minimum with timeframe of one day " << maximum;
+        return maximum;
     }
     if (pi_iter->id.find("avg_") != string::npos) {
-        return pi_iter->data->day_cr.average;
+        float average = pi_iter->data->timeframeConstMapping.find(currentDBTimeframe)->second->average;
+        LOG(DEBUG) << "Getting reading to draw. Minimum with timeframe of one day " << average;
+        return average;
     }
     return pi_iter->data->reading;
 }
 
 void LcdController::clearOldValuesFromLcd()
 {
-    if(pi_iter->type == VAR) {
+    if(pi_iter->type == LcdConstants::VAR) {
         try {
             if (pi_iter->data->prev_reading > 9.99 && pi_iter->data->reading < 10.0) {
                 lcd.clearColumnsRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start + 5, pi_iter->pos.col_start);
@@ -275,12 +291,12 @@ void LcdController::updatePageValues(WeatherSensor *ws)
             if (strcmp(subPage.first.c_str(), currentSubPage.c_str()) == 0) {
                 for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
-                    if(pi_iter->type == VAR)
+                    if(pi_iter->type == LcdConstants::VAR)
                     {
-                        if (pi_iter->data->prev_reading != pi_iter->data->reading)
-                        {
+//                        if (pi_iter->data->prev_reading != pi_iter->data->reading)
+//                        {
                             drawElementToLCD();
-                        }
+//                        }
                     }
                 }
                 break;
@@ -300,19 +316,19 @@ void LcdController::createDateTimePage()
 
     Utilities::split_string(date_str, dateelements, '-');
 
-    Pageitem date = {"date", Position(1, 0), FIXED, "Date: "};
-    Pageitem date_day = {"day", Position(1, 6), VAR, dateelements[0]};
-    Pageitem date_delimiter_1 = {"delimiter", Position(1, 8), FIXED, "-"};
-    Pageitem date_month = {"month", Position(1, 9), VAR, dateelements[1]};
-    Pageitem date_delimiter_2 = {"delimiter", Position(1, 11), FIXED, "-"};
-    Pageitem date_year = {"year", Position(1, 12), VAR, dateelements[2]};
+    Pageitem date = {"date", Position(1, 0), LcdConstants::FIXED, "Date: "};
+    Pageitem date_day = {"day", Position(1, 6), LcdConstants::VAR, dateelements[0]};
+    Pageitem date_delimiter_1 = {"delimiter", Position(1, 8), LcdConstants::FIXED, "-"};
+    Pageitem date_month = {"month", Position(1, 9), LcdConstants::VAR, dateelements[1]};
+    Pageitem date_delimiter_2 = {"delimiter", Position(1, 11), LcdConstants::FIXED, "-"};
+    Pageitem date_year = {"year", Position(1, 12), LcdConstants::VAR, dateelements[2]};
 
-    Pageitem time = {"time", Position(2,0), FIXED, "Time: "};
-    Pageitem time_hour = {"hour", Position(2,6), VAR, dateelements[3]};
-    Pageitem time_delimiter_1 = {"delimiter", Position(2, 8), FIXED, ":"};
-    Pageitem time_min = {"min", Position(2,9), VAR, dateelements[4]};
-    Pageitem time_delimiter_2 = {"delimiter", Position(2, 11), FIXED, ":"};
-    Pageitem time_sec = {"sec", Position(2,12), VAR, dateelements[5]};
+    Pageitem time = {"time", Position(2,0), LcdConstants::FIXED, "Time: "};
+    Pageitem time_hour = {"hour", Position(2,6), LcdConstants::VAR, dateelements[3]};
+    Pageitem time_delimiter_1 = {"delimiter", Position(2, 8), LcdConstants::FIXED, ":"};
+    Pageitem time_min = {"min", Position(2,9), LcdConstants::VAR, dateelements[4]};
+    Pageitem time_delimiter_2 = {"delimiter", Position(2, 11), LcdConstants::FIXED, ":"};
+    Pageitem time_sec = {"sec", Position(2,12), LcdConstants::VAR, dateelements[5]};
 
     vector<Pageitem> items{date, date_day, date_delimiter_1, date_month, date_delimiter_2,
                            date_year, time, time_delimiter_1, time_hour, time_delimiter_2, time_min, time_sec};
@@ -344,7 +360,7 @@ void LcdController::updateDateTimePage()
             if (strcmp(subPage.first.c_str(), "homepage") == 0) {
                 for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
-                    if(pi_iter->type == VAR)
+                    if(pi_iter->type == LcdConstants::VAR)
                     {
                         if(pi_iter->id == "sec")
                         {
@@ -517,5 +533,16 @@ void LcdController::createEmptyBattery()
     };
     lcd.createCustomChar(2, customChar);
 //    usleep(10000);
+}
+
+void LcdController::getNextTimeframe()
+{
+    lock_guard<mutex> guard(lcdcMu);
+    tf_iter = next(tf_iter);
+    if (tf_iter == timeframes.end())
+    {
+        tf_iter = timeframes.begin();
+    }
+    currentDBTimeframe = *tf_iter;
 }
 
