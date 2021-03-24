@@ -27,7 +27,7 @@ using namespace std;
 {
     while(true)
     {
-        usleep(30000000); // 5 mins
+        usleep(300000000); // 5 mins
         dynamsensors_ptr->updateAllWeatherSensorsDatabaseValues();
     }
 }
@@ -41,7 +41,7 @@ using namespace std;
 {
     while(true)
     {
-        if(lcdc_ptr->getCurrentPage() == "date") {
+        if(lcdc_ptr->getCurrentPage() == LcdConstants::HOMEPAGE) {
             lcdc_ptr->updateDateTimePage();
             usleep(500000);
         } else
@@ -86,7 +86,7 @@ using namespace std;
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio1 << " Pressed";
             lcdc->getNextPage();
-            lcdc->setCurrentSubPage("current");
+            lcdc->setCurrentSubPage(LcdConstants::CURRENT);
             lcdc->clearDisplay();
             lcdc->drawPage_Locking();
         } else if(bs_2.debounceBtn())
@@ -99,8 +99,8 @@ using namespace std;
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio3 << " Pressed";
             lcdc->clearDisplay();
-            lcdc->setCurrentPage("date");
-            lcdc->setCurrentSubPage("current");
+            lcdc->setCurrentPage(LcdConstants::HOMEPAGE);
+            lcdc->setCurrentSubPage(LcdConstants::CURRENT);
             lcdc->drawDateTimePage();
         } else if(bs_4.debounceBtn())
         {
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
     //Create the date time page
     lcdc.createDateTimePage();
-    lcdc.setCurrentPage("date");
+    lcdc.setCurrentPage(LcdConstants::HOMEPAGE);
     usleep(5000000);
     lcdc.drawPage_Locking();
 

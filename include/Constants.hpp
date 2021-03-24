@@ -21,6 +21,11 @@ namespace LcdConstants
 
     const short FIXED = 0;
     const short VAR = 1;
+
+    const string CURRENT = "current";
+    const string DATE = "date";
+    const string HOMEPAGE = "homepage";
+    const string TIMEFRAME = "tf";
 }
 
 #endif //WEATHERSTATIONPLUS_CONSTANTS_HPP

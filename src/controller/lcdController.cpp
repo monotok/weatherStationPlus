@@ -27,7 +27,7 @@ void LcdController::createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* re
         items.push_back(item);
         items.push_back(item_val);
 
-        sub_pages_map.insert(std::pair<string, vector<Pageitem>>("current", items));
+        sub_pages_map.insert(std::pair<string, vector<Pageitem>>(LcdConstants::CURRENT, items));
 
         pages_map.insert(std::pair<string, map<string, vector<Pageitem>>>(ws->get_sensorID(),sub_pages_map));
         LOG(INFO) << "Created a new weather page for SensorID: " << ws->get_sensorID() << " SensorName: "
@@ -47,7 +47,7 @@ void LcdController::createNewReading(WeatherSensor* ws, WeatherSensor::Data* rea
     {
         Pageitem item(reading->readingId, reading->posName, LcdConstants::FIXED, reading->name);
         Pageitem item_val(reading->readingId, reading->posVal, LcdConstants::VAR, reading);
-        auto current = pm_iter->second.find("current");
+        auto current = pm_iter->second.find(LcdConstants::CURRENT);
         current->second.push_back(item);
         current->second.push_back(item_val);
 
@@ -78,8 +78,8 @@ void LcdController::createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data*
         Pageitem pi_max_val(id_max, weatherStationSettings.middleleft_Val, LcdConstants::VAR, reading);
         Pageitem pi_min_val(id_min, weatherStationSettings.middleright_Val, LcdConstants::VAR, reading);
 
-        Pageitem timeframe("tf", weatherStationSettings.bottomleft_Name, LcdConstants::FIXED, "Period: ");
-        Pageitem timeframe_val("tf", weatherStationSettings.bottomright_Name, LcdConstants::VAR, reading);
+        Pageitem timeframe(LcdConstants::TIMEFRAME, weatherStationSettings.bottomleft_Name, LcdConstants::FIXED, "Period: ");
+        Pageitem timeframe_val(LcdConstants::TIMEFRAME, weatherStationSettings.bottomright_Name, LcdConstants::VAR, reading);
 
         items.push_back(pi_now); items.push_back(pi_max); items.push_back(pi_min); items.push_back(pi_avg);
         items.push_back(pi_now_val); items.push_back(pi_max_val); items.push_back(pi_min_val); items.push_back(pi_avg_val);
@@ -104,7 +104,7 @@ void LcdController::getNextPage()
         if(pm_iter == pages_map.end())
         {
             pm_iter = pages_map.begin();
-        } else if(pm_iter->first == "date")
+        } else if(pm_iter->first == LcdConstants::HOMEPAGE)
         {
             pm_iter = next(pm_iter, 1);
             if(pm_iter == pages_map.end())
@@ -113,7 +113,7 @@ void LcdController::getNextPage()
             }
         }
         currentPage = pm_iter->first;
-        currentSubPage = "current";
+        currentSubPage = LcdConstants::CURRENT;
     }
     else {
         currentPage = "No Pages";
@@ -151,7 +151,7 @@ bool LcdController::existingWeatherPageReading(string SensorName, string reading
     {
         for (auto &subPage: pm_iter->second)
         {
-            if (strcmp(subPage.first.c_str(), "current") == 0) {
+            if (strcmp(subPage.first.c_str(), LcdConstants::CURRENT.c_str()) == 0) {
                 for (auto &pageItem: subPage.second)
                 {
                     if (strcmp(readingid.c_str(), pageItem.id.c_str()) == 0) {
@@ -183,7 +183,7 @@ void LcdController::drawElementToLCD()
 {
     lcd.setCursorPositionRowCol(pi_iter->pos.row_start, pi_iter->pos.col_start);
     if (pi_iter->str_val.empty() && pi_iter->data != nullptr) {
-        if (strcmp(pi_iter->id.c_str(), "tf") == 0) {
+        if (strcmp(pi_iter->id.c_str(), LcdConstants::TIMEFRAME.c_str()) == 0) {
             lcd.lcdString(LcdConstants::timeframeText.find(currentDBTimeframe)->second.c_str());
         } else {
             clearOldValuesFromLcd();
@@ -333,10 +333,10 @@ void LcdController::createDateTimePage()
     vector<Pageitem> items{date, date_day, date_delimiter_1, date_month, date_delimiter_2,
                            date_year, time, time_delimiter_1, time_hour, time_delimiter_2, time_min, time_sec};
     map<string, vector<Pageitem>> sub_pages_map;
-    sub_pages_map.insert(std::pair<string, vector<Pageitem>>("homepage", items));
+    sub_pages_map.insert(std::pair<string, vector<Pageitem>>(LcdConstants::DATE, items));
 
     lock_guard<mutex> guard(lcdcMu);
-    pages_map.insert(std::pair<string, map<string, vector<Pageitem>>>("date",sub_pages_map));
+    pages_map.insert(std::pair<string, map<string, vector<Pageitem>>>(LcdConstants::HOMEPAGE,sub_pages_map));
     LOG(INFO) << "Created a new page " << "date" << endl;
 }
 
@@ -352,12 +352,12 @@ void LcdController::updateDateTimePage()
     Utilities::split_string(date_str, dateelements, '-');
 
     lock_guard<mutex> guard(lcdcMu);
-    pm_iter = pages_map.find("date");
+    pm_iter = pages_map.find(LcdConstants::HOMEPAGE);
     if(pm_iter != pages_map.end())
     {
         for (auto &subPage: pm_iter->second)
         {
-            if (strcmp(subPage.first.c_str(), "homepage") == 0) {
+            if (strcmp(subPage.first.c_str(), LcdConstants::DATE.c_str()) == 0) {
                 for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
                     if(pi_iter->type == LcdConstants::VAR)
@@ -421,12 +421,12 @@ void LcdController::updateDateTimePage()
 void LcdController::drawDateTimePage()
 {
     lock_guard<mutex> guard(lcdcMu);
-    pm_iter = pages_map.find("date");
+    pm_iter = pages_map.find(LcdConstants::DATE);
     if(pm_iter != pages_map.end())
     {
         for (auto &subPage: pm_iter->second)
         {
-            if (strcmp(subPage.first.c_str(), "homepage") == 0) {
+            if (strcmp(subPage.first.c_str(), LcdConstants::HOMEPAGE.c_str()) == 0) {
                 for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
                     drawElementToLCD();
