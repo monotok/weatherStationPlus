@@ -317,11 +317,11 @@ void LcdController::createDateTimePage()
     Utilities::split_string(date_str, dateelements, '-');
 
     Pageitem date = {"date", Position(1, 0), LcdConstants::FIXED, "Date: "};
-    Pageitem date_day = {"day", Position(1, 6), LcdConstants::VAR, dateelements[0]};
+    Pageitem date_day = {"day", Position(1, 6), LcdConstants::VAR, dateelements[2]};
     Pageitem date_delimiter_1 = {"delimiter", Position(1, 8), LcdConstants::FIXED, "-"};
     Pageitem date_month = {"month", Position(1, 9), LcdConstants::VAR, dateelements[1]};
     Pageitem date_delimiter_2 = {"delimiter", Position(1, 11), LcdConstants::FIXED, "-"};
-    Pageitem date_year = {"year", Position(1, 12), LcdConstants::VAR, dateelements[2]};
+    Pageitem date_year = {"year", Position(1, 12), LcdConstants::VAR, dateelements[0]};
 
     Pageitem time = {"time", Position(2,0), LcdConstants::FIXED, "Time: "};
     Pageitem time_hour = {"hour", Position(2,6), LcdConstants::VAR, dateelements[3]};
@@ -421,12 +421,12 @@ void LcdController::updateDateTimePage()
 void LcdController::drawDateTimePage()
 {
     lock_guard<mutex> guard(lcdcMu);
-    pm_iter = pages_map.find(LcdConstants::DATE);
+    pm_iter = pages_map.find(LcdConstants::HOMEPAGE);
     if(pm_iter != pages_map.end())
     {
         for (auto &subPage: pm_iter->second)
         {
-            if (strcmp(subPage.first.c_str(), LcdConstants::HOMEPAGE.c_str()) == 0) {
+            if (strcmp(subPage.first.c_str(), LcdConstants::DATE.c_str()) == 0) {
                 for(pi_iter = subPage.second.begin(); pi_iter != subPage.second.end(); pi_iter++)
                 {
                     drawElementToLCD();
