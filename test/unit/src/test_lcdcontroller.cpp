@@ -304,15 +304,15 @@ TEST(LcdController, create_new_datetime_page_struct_independant)
     lcdc.createDateTimePage();
     lcdc.drawDateTimePage();
 
-    auto founddate = lcdc.pages_map.find(LcdConstants::HOMEPAGE);
+    auto foundhome = lcdc.pages_map.find(LcdConstants::HOMEPAGE);
 
-    EXPECT_NE(founddate, lcdc.pages_map.end());
+    EXPECT_NE(foundhome, lcdc.pages_map.end());
 
     auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
     string date_str(30, '\0');
     strftime(&date_str[0], date_str.size(), "%d", std::localtime(&timenow));
-    auto found = date_str.find(founddate->second.find(LcdConstants::DATE)->second[1].str_val);
-    EXPECT_NE(found, string::npos);
+    string found = foundhome->second.find(LcdConstants::DATE)->second[1].str_val;
+    EXPECT_STREQ(found.c_str(), date_str.c_str());
 }
 
 TEST(LcdController, update_only_changed_values_datetime)

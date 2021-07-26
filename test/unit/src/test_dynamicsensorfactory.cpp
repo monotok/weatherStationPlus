@@ -170,8 +170,10 @@ TEST(DynamicSensorFactory, get_average_hour_for_reading)
 
     EXPECT_EQ(r.size(), 6);
 
-    string avg_sen1 = mySen->get_AvgReading("1.0", "1 hour");
-    string avg_sen2 = mySen->get_AvgReading("1.1", "1 hour");
+    mySen->update_AvgReadings();
+
+    string avg_sen1 = Utilities::to_string_with_precision<float>(mySen->getReading_ptr("1.0")->day_cr.average, 1);
+    string avg_sen2 = Utilities::to_string_with_precision<float>(mySen->getReading_ptr("1.1")->day_cr.average, 1);
 
     EXPECT_STREQ(avg_sen1.c_str(), "12.6");
     EXPECT_STREQ(avg_sen2.c_str(), "22.3");
