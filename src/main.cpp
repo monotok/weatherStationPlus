@@ -15,25 +15,23 @@ using namespace std;
 
 [[noreturn]] void getNewSensorData(DynamicSensorFactory* dynamsensors_ptr, I2cControl* i2c_ptr, LcdController* lcdc)
 {
-    string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
-    password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
-    +" port = " + to_string(weatherStationSettings.db.port);
-    pqxx::connection C(db_conn_str);
-    if (C.is_open()) {
-        LOG(INFO) << "Opened database successfully: " << C.dbname() << endl;
-        RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, &C, wss);
-        while(true)
-        {
-            rsd.get_WeatherSenData(dynamsensors_ptr);
-            usleep(3000000);
-        }
-    }
-    else
+    RetrieveSenData rsd = RetrieveSenData(i2c_ptr, lcdc, weatherStationSettings.i2c.atmega, wss);
+    while(true)
     {
-        LOG(ERROR) << "Can't open database" << endl;
+        rsd.get_WeatherSenData(dynamsensors_ptr);
+        usleep(3000000);
     }
-
 }
+
+[[noreturn]] void getNewSensorDataViaDatabase(DynamicSensorFactory* dynamsensors_ptr)
+{
+    while(true)
+    {
+        usleep(300000000); // 5 mins
+        dynamsensors_ptr->updateAllWeatherSensorsDatabaseValues();
+    }
+}
+
 #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
@@ -43,7 +41,7 @@ using namespace std;
 {
     while(true)
     {
-        if(lcdc_ptr->getCurrentPage() == "date") {
+        if(lcdc_ptr->getCurrentPage() == LcdConstants::HOMEPAGE) {
             lcdc_ptr->updateDateTimePage();
             usleep(500000);
         } else
@@ -88,23 +86,28 @@ using namespace std;
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio1 << " Pressed";
             lcdc->getNextPage();
+            lcdc->setCurrentSubPage(LcdConstants::CURRENT);
             lcdc->clearDisplay();
             lcdc->drawPage_Locking();
         } else if(bs_2.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio2 << " Pressed";
-//            WeatherSensor* weather_ptr = dsf->getWeatherSensor_ptr(currentPage, std::__cxx11::string());
-//            weather_ptr->switch_tempUnit();
-//            lcdc->updatePageValues(weather_ptr, *lcd);
+            lcdc->getNextSubPage();
+            lcdc->clearDisplay();
+            lcdc->drawPage_Locking();
         } else if(bs_3.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio3 << " Pressed";
             lcdc->clearDisplay();
+            lcdc->setCurrentPage(LcdConstants::HOMEPAGE);
+            lcdc->setCurrentSubPage(LcdConstants::CURRENT);
             lcdc->drawDateTimePage();
-            lcdc->setCurrentPage("date");
         } else if(bs_4.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio4 << " Pressed";
+            lcdc->getNextTimeframe();
+            lcdc->clearDisplay();
+            lcdc->drawPage_Locking();
         } else if(bs_5.debounceBtn())
         {
             LOG(INFO) << "Button " << weatherStationSettings.gpio.gpio5 << " Pressed";
@@ -130,13 +133,14 @@ int main(int argc, char** argv)
     el::Loggers::reconfigureAllLoggers(conf);
 
     DynamicSensorFactory dsf(wss);
+    auto db_established = dsf.establish_database_connection(weatherStationSettings);
     auto* i2c = new I2cControl(weatherStationSettings.i2c.busno);
     LcdDriver lcd(weatherStationSettings.i2c.lcd, i2c);
-    LcdController lcdc(lcd);
+    LcdController lcdc(lcd, weatherStationSettings);
 
     //Create the date time page
     lcdc.createDateTimePage();
-    lcdc.setCurrentPage("date");
+    lcdc.setCurrentPage(LcdConstants::HOMEPAGE);
     usleep(5000000);
     lcdc.drawPage_Locking();
 
@@ -155,7 +159,15 @@ int main(int argc, char** argv)
     std::thread updatingLcd (updateLcdCurrentPage, &dsf, &lcdc);
     LOG(INFO) << "Starting the updating lcd thread. ID: "
          << updatingLcd.get_id() << endl;
+
     //Join the threads
+    //Start a new thread getting database sensors
+    if (db_established) {
+        std::thread gettingDBData (getNewSensorDataViaDatabase, &dsf);
+        LOG(INFO) << "Starting the getting database data thread. ID: "
+                  << gettingDBData.get_id() << endl;
+        gettingDBData.join();
+    }
     gettingSensorData.join();
     updatingLcd.join();
     listenForBtns.join();

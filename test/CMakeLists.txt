@@ -115,6 +115,7 @@ add_executable(test_weathersensor
 add_executable(test_lcdcontroller
         unit/src/test_lcdcontroller.cpp
         ${MAIN_PROJECT_DIR}/src/data/WeatherSensor.cpp
+        ${MAIN_PROJECT_DIR}/src/data/DynamicSensorFactory.cpp
         ${MAIN_PROJECT_DIR}/src/controller/lcdController.cpp
         ${MAIN_PROJECT_DIR}/src/hal/i2cControl.cpp
         ${MAIN_PROJECT_DIR}/src/hal/lcdDriver.cpp

@@ -44,14 +44,14 @@ TEST(WeatherSensor, set_reading_values_correctly)
     WeatherSensor ws1 = WeatherSensor("1", "MyTestSensor");
 
     //Set the reading for the first time. We should set all the values of the reading struct
-    ws1.set_reading("1.0", 24.5, nullptr, conf_ptr);
+    ws1.set_reading("1.0", 24.5, conf_ptr);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->readingId, "1.0");
     EXPECT_FLOAT_EQ(ws1.getReading_ptr("1.0")->reading, 24.5);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->posVal.row_start, 2);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->posVal.col_start, 5);
 
     //Update the value and it should only change the reading
-    ws1.set_reading("1.0", 40.3, nullptr, conf_ptr);
+    ws1.set_reading("1.0", 40.3, conf_ptr);
     EXPECT_EQ(ws1.getReading_ptr("1.0")->readingId, "1.0");
     EXPECT_FLOAT_EQ(ws1.getReading_ptr("1.0")->reading, 40.3);
 

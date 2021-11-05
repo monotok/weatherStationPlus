@@ -18,56 +18,69 @@
 #include "../include/lcdDriver.hpp"
 #include "../include/Utilities.hpp"
 #include "../include/settings.hpp"
-
-#define FIXED 0
-#define VAR 1
+#include "../include/Constants.hpp"
 
 using namespace std;
 
 class LcdController
 {
 public:
-    LcdController(LcdDriver& lcd);
+    LcdController(LcdDriver& lcd, const Settings& weatherStationSettings);
     void createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading);
+    void createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data* reading);
     void drawPage_Locking();
     void drawPage_NonLocking();
     void drawPage();
     void updatePageValues(WeatherSensor *ws);
     void getNextPage();
+    void getNextSubPage();
     void createDateTimePage();
     void drawDateTimePage();
     void updateDateTimePage();
     void clearDisplay();
     void setCurrentPage(string pageName);
+    void setCurrentSubPage(string pageName);
+    void getNextTimeframe();
     string getCurrentPage();
+    string getCurrentSubPage();
 
 private:
     LcdDriver lcd;
+    const Settings& weatherStationSettings;
 
     struct Pageitem {
         string id;
         Position pos;
         int type;
-        string value;
+        string str_val = {};
+        WeatherSensor::Data* data = nullptr;
+        Pageitem(string id, Position pos, int type, string data) : id(id), pos(pos), type(type), str_val(data) {}
+        Pageitem(string id, Position pos, int type, WeatherSensor::Data* data) : id(id), pos(pos), type(type), data(data) {}
     };
 
     string currentPage = {};
+    string currentSubPage = {LcdConstants::CURRENT};
+    short currentDBTimeframe = LcdConstants::ONE_DAY;
 
     FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
     FRIEND_TEST(LcdController, create_new_datetime_page_struct_independant);
     FRIEND_TEST(LcdController, update_only_changed_values_datetime);
     FRIEND_TEST(LcdController, update_values_only_on_existing_page);
+    FRIEND_TEST(LcdController, update_values_only_on_existing_avg_page);
     FRIEND_TEST(LcdController, check_for_existing_weather_sensor);
     FRIEND_TEST(LcdController, draw_custom_character_battery_symbols);
+    FRIEND_TEST(LcdController, get_next_timeframe);
 
     bool existingWeatherPage(string SensorName);
     bool existingWeatherPageReading(string SensorName, string reading);
+    bool existingWeatherAvgPage(string SensorName, string readingName);
     void drawElementToLCD();
+    float getCorrectReadingDataValueToDraw();
     void drawBatteryFullSymbol();
     void drawBatteryHalfSymbol();
     void drawBatteryEmptySymbol();
-    void checkValuesFitLcd();
-    void checkValuesFitLcd(string newValue);
+    string checkValuesFitLcd();
+    void clearOldValuesFromLcd();
     void createNewReading(WeatherSensor* ws, WeatherSensor::Data* reading);
 
     //Custom Chars
@@ -77,11 +90,16 @@ private:
 
     void buildAllCustomChars();
 
-    map<string, vector<Pageitem>> pages_map;
-    map<string, vector<Pageitem>>::iterator pm_iter;
+    map<string, map<string, vector<Pageitem>>> pages_map;
+    map<string, map<string, vector<Pageitem>>>::iterator pm_iter;
+    map<string, vector<Pageitem>>::iterator spm_iter;
     vector<Pageitem>::iterator pi_iter;
 
+    vector<short> timeframes = {LcdConstants::ONE_DAY, LcdConstants::ONE_WEEK, LcdConstants::ONE_MONTH, LcdConstants::ONE_YEAR};
+    vector<short>::iterator tf_iter = timeframes.begin();
+
     mutex lcdcMu;
+
 };
 
 #endif //WEATHERSTATIONPLUS_LCDCONTROLLER_H

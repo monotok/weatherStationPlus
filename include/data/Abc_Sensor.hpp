@@ -35,14 +35,7 @@ class Sensor
         }
         return this->sensorID;
     }
-    string get_sensorName(){
-        if(this->sensorName.compare("NotSet") == 0) {
-            return this->sensorID;
-        }
-        else {
-            return this->sensorName;
-        }
-    }
+    string get_sensorName(){ return this->sensorName; }
 //    string get_sensorType() { return this->sensorType; }
 };
 
