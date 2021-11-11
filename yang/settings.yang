@@ -1,0 +1,33 @@
+module settings {
+  namespace "wsp:settings";
+  prefix settings;
+
+  description "Module that defines the settings of the application such as database config";
+
+  container settings {
+      container sensors {
+        list wsensor {
+            key id;
+            leaf id {
+                type uint8;
+            }
+            leaf name {
+                type string;
+            }
+
+            list readings {
+                key id;
+                leaf id {
+                    type string;
+                }
+                leaf name {
+                    type string;
+                }
+                leaf position {
+                    type string;
+                }
+            }
+        }
+      }
+  }
+}
