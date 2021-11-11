@@ -57,6 +57,7 @@ file(GLOB_RECURSE ALL_SOURCE_FILES
         ${MAIN_PROJECT_DIR}/src/hal/*.cpp
         ${MAIN_PROJECT_DIR}/src/hwcontrol/*.cpp
         ${MAIN_PROJECT_DIR}/src/logging/*.cpp
+        ${MAIN_PROJECT_DIR}/src/model/*.cpp
         ${MAIN_PROJECT_DIR}/src/sensor/*.cpp
         ${MAIN_PROJECT_DIR}/src/tools/*.cpp
         ${MAIN_PROJECT_DIR}/src/controller/*.cpp
@@ -132,8 +133,16 @@ add_executable(test_configparser
         unit/src/myGtestMain.cpp
         )
 
+add_executable(test_yangparser
+        unit/src/test_yangparser.cpp
+        ${MAIN_PROJECT_DIR}/src/model/yang.cpp
+        ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
+        unit/src/myGtestMain.cpp
+        )
+
 target_link_libraries(test_btncontrol gtest rt)
 target_link_libraries(test_configparser gtest ${LIBCONFIGPP})
+target_link_libraries(test_yangparser gtest ${LIBCONFIGPP} yang)
 target_link_libraries(test_dynamsensorfact gtest pqxx ${LIBCONFIGPP})
 target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP}) #Need rt for Utilites get time
 target_link_libraries(test_lcdcontroller gtest rt pqxx ${LIBCONFIGPP})
@@ -143,6 +152,8 @@ target_link_libraries(test_retrievesendata gtest pqxx pq ${LIBCONFIGPP})
 set_target_properties(test_btncontrol PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
 set_target_properties(test_configparser PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
+set_target_properties(test_yangparser PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
 set_target_properties(test_dynamsensorfact PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${MAIN_PROJECT_DIR}/test/unit/bin)
