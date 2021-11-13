@@ -8,6 +8,7 @@
 #include <libconfig.h++>
 #include "easylogging++.hpp"
 #include "settings.hpp"
+#include "yang.hpp"
 #include <stdlib.h>
 #include <string>
 
@@ -18,6 +19,7 @@ class ConfigParser
 private:
     libconfig::Config confsettings;
     Settings& wsettings;
+    YangParser yp_settings = YangParser("settings");
     void readSettingsFile(const char* settingsFileLocation);
     void getVersion();
     void getDatabaseDetails(const libconfig::Setting& root);
@@ -28,7 +30,8 @@ private:
     Position& validatePosition(const string& position);
 
 public:
-    ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");
+    ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf",
+                 const char* datafile = "conf/settings.xml");
     void ParseConfiguration();
     string getSensorsName(string sensorID);
     string getSensorReadingName(const string &sensorId, const string &readingId);

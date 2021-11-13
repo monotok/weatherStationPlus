@@ -129,6 +129,7 @@ add_executable(test_lcdcontroller
 add_executable(test_configparser
         unit/src/test_configParser.cpp
         ${MAIN_PROJECT_DIR}/src/tools/configParser.cpp
+        ${MAIN_PROJECT_DIR}/src/model/yang.cpp
         ${MAIN_PROJECT_DIR}/src/logging/easylogging++.cpp
         unit/src/myGtestMain.cpp
         )
@@ -141,7 +142,7 @@ add_executable(test_yangparser
         )
 
 target_link_libraries(test_btncontrol gtest rt)
-target_link_libraries(test_configparser gtest ${LIBCONFIGPP})
+target_link_libraries(test_configparser gtest ${LIBCONFIGPP} yang)
 target_link_libraries(test_yangparser gtest ${LIBCONFIGPP} yang)
 target_link_libraries(test_dynamsensorfact gtest pqxx ${LIBCONFIGPP})
 target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP}) #Need rt for Utilites get time

@@ -1,8 +1,9 @@
 #include "../../include/configParser.hpp"
 
-ConfigParser::ConfigParser(Settings& wsettings, const char* settingsFileLocation): wsettings(wsettings)
+ConfigParser::ConfigParser(Settings& wsettings, const char* settingsFileLocation, const char* datafile): wsettings(wsettings)
 {
     readSettingsFile(settingsFileLocation);
+    yp_settings.parseData(datafile);
 }
 
 void ConfigParser::readSettingsFile(const char* settingsFileLocation)
@@ -45,113 +46,64 @@ void ConfigParser::ParseConfiguration()
 
 void ConfigParser::getVersion()
 {
-    wsettings.version = confsettings.lookup("version");
+    wsettings.version = stof(yp_settings.getSpecificValue("/settings:settings/version"));
 }
 
 void ConfigParser::getDatabaseDetails(const libconfig::Setting &root)
 {
-    const libconfig::Setting &db = root["database"];
-    db.lookupValue("host", wsettings.db.host);
-    db.lookupValue("port", wsettings.db.port);
-    db.lookupValue("database", wsettings.db.database);
-    db.lookupValue("user", wsettings.db.user);
-    db.lookupValue("password", wsettings.db.password);
+    string base_xpath = "/settings:settings/database";
+    wsettings.db.host = yp_settings.getSpecificValue(base_xpath + "/host");
+    wsettings.db.port = stoi(yp_settings.getSpecificValue(base_xpath + "/port"));
+    wsettings.db.database = yp_settings.getSpecificValue(base_xpath + "/database-name");
+    wsettings.db.user = yp_settings.getSpecificValue(base_xpath + "/user");
+    wsettings.db.password = yp_settings.getSpecificValue(base_xpath + "/password");
 }
 
 void ConfigParser::getGPIODetails(const libconfig::Setting &root)
 {
-    const libconfig::Setting &gpio = root["gpio"];
-    gpio.lookupValue("gpio1", wsettings.gpio.gpio1);
-    gpio.lookupValue("gpio2", wsettings.gpio.gpio2);
-    gpio.lookupValue("gpio3", wsettings.gpio.gpio3);
-    gpio.lookupValue("gpio4", wsettings.gpio.gpio4);
-    gpio.lookupValue("gpio5", wsettings.gpio.gpio5);
+    string base_xpath = "/settings:settings/gpio";
+    wsettings.gpio.gpio1 = yp_settings.getSpecificValue(base_xpath + "/gpio1");
+    wsettings.gpio.gpio2 = yp_settings.getSpecificValue(base_xpath + "/gpio2");
+    wsettings.gpio.gpio3 = yp_settings.getSpecificValue(base_xpath + "/gpio3");
+    wsettings.gpio.gpio4 = yp_settings.getSpecificValue(base_xpath + "/gpio4");
+    wsettings.gpio.gpio5 = yp_settings.getSpecificValue(base_xpath + "/gpio5");
 }
 
 void ConfigParser::getLogDetails(const libconfig::Setting &root)
 {
-    const libconfig::Setting &logg = root["logging"];
-    logg.lookupValue("configFile", wsettings.logg.configFile);
+    string base_xpath = "/settings:settings/logging";
+    wsettings.logg.configFile = yp_settings.getSpecificValue(base_xpath + "/config-file");
 }
 
 void ConfigParser::getI2cDetails(const libconfig::Setting &root)
 {
-    const libconfig::Setting &i2c = root["i2c"];
-    i2c.lookupValue("busno", wsettings.i2c.busno);
-    i2c.lookupValue("atmega", wsettings.i2c.atmega);
-    i2c.lookupValue("lcd", wsettings.i2c.lcd);
+    string base_xpath = "/settings:settings/i2c";
+    wsettings.i2c.busno = stoi(yp_settings.getSpecificValue(base_xpath + "/busno"));
+    wsettings.i2c.atmega = stoi(yp_settings.getSpecificValue(base_xpath + "/atmega"));
+    wsettings.i2c.lcd = stoi(yp_settings.getSpecificValue(base_xpath + "/lcd"));
 }
 
 string ConfigParser::getSensorsName(string sensorId)
 {
-    string sensorName = {};
-    const libconfig::Setting& root = confsettings.getRoot();
-    const libconfig::Setting &sen = root["sensors"];
-    for (const auto & sen_iter : sen)
-    {
-        string foundSensor = {};
-        if (sen_iter.lookupValue("id", foundSensor))
-        {
-            if (strcmp(foundSensor.c_str(), sensorId.c_str()) == 0)
-            {
-                sen_iter.lookupValue("name", sensorName);
-            }
-        }
-    }
-    return sensorName;
+    string xpath_str = "/settings:settings/sensors/wsensor[id='";
+    xpath_str = xpath_str + sensorId + "']/name";
+    return yp_settings.getSpecificValue(xpath_str);
 }
 
 string ConfigParser::getSensorReadingName(const string& sensorId, const string& readingId)
 {
-    const libconfig::Setting& root = confsettings.getRoot();
-    const libconfig::Setting& sen = root["sensors"];
-    for (const auto & sen_iter : sen)
-    {
-        string foundSensor = {};
-        string foundReading = {};
-        if (sen_iter.lookupValue("id", foundSensor))
-        {
-            if (strcmp(foundSensor.c_str(), sensorId.c_str()) == 0)
-            {
-                for (const auto & reading_iter : sen_iter.lookup("readings"))
-                {
-                    if (reading_iter.lookupValue("id", foundReading))
-                    {
-                        if (strcmp(foundReading.c_str(), readingId.c_str()) == 0) {
-                            return reading_iter.lookup("name");
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return ""; //Default return
+    string xpath_str = "/settings:settings/sensors/wsensor[id='";
+    xpath_str = xpath_str + sensorId + "']/readings[id='" + readingId + "']/name";
+    return yp_settings.getSpecificValue(xpath_str);
 }
 
 Position& ConfigParser::getSensorReadingPosition(const string& sensorId, const string& readingId)
 {
-    const libconfig::Setting& root = confsettings.getRoot();
-    const libconfig::Setting& sen = root["sensors"];
-    for (const auto & sen_iter : sen)
-    {
-        string foundSensor = {};
-        string foundReading = {};
-        if (sen_iter.lookupValue("id", foundSensor))
-        {
-            if (strcmp(foundSensor.c_str(), sensorId.c_str()) == 0)
-            {
-                for (const auto & reading_iter : sen_iter.lookup("readings"))
-                {
-                    if (reading_iter.lookupValue("id", foundReading))
-                    {
-                        if (strcmp(foundReading.c_str(), readingId.c_str()) == 0) {
-                            return validatePosition(reading_iter.lookup("position"));
-                        }
-                    }
-                }
-            }
-        }
-    }
+    string xpath_str = "/settings:settings/sensors/wsensor[id='";
+    xpath_str = xpath_str + sensorId + "']/readings[id='" + readingId + "']/position";
+    auto value = yp_settings.getSpecificValue(xpath_str);
+    if (!value.empty())
+        return validatePosition(value);
     return wsettings.topleft_Val; //Default return
 }
 

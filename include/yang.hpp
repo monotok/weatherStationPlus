@@ -15,17 +15,17 @@ using namespace std;
 class YangParser
 {
 public:
-    YangParser(const char *module, const char *datafile);
+    explicit YangParser(const char *module);
     ~YangParser();
-    string getSensorsName(string sensorID);
+    void parseData(const char *datafile);
+    string getSpecificValue(string xpath);
 
 private:
     void loadYangModule(const char *module);
-    void parseData(const char *datafile);
-    struct ly_ctx *context;
-    struct lyd_node *tree;
-    struct lyd_node *node;
 
+    struct ly_ctx *context = nullptr;
+    struct lyd_node *tree = nullptr;
+    struct lyd_node *node = nullptr;
 };
 
 
