@@ -1,4 +1,5 @@
 <settings xmlns="wsp:settings">
+    <version>3.0</version>
     <sensors>
         <wsensor>
             <id>1</id>
@@ -29,4 +30,26 @@
             </readings>
         </wsensor>
     </sensors>
+    <database>
+        <host>172.16.20.5</host>
+        <port>5432</port>
+        <database-name>test_weatherdb</database-name>
+        <user>test_weather</user>
+        <password>testtest</password>
+    </database>
+    <gpio>
+        <gpio1>17</gpio1>
+        <gpio2>27</gpio2>
+        <gpio3>22</gpio3>
+        <gpio4>18</gpio4>
+        <gpio5>17</gpio5>
+    </gpio>
+    <i2c>
+        <busno>3</busno>
+        <atmega>4</atmega>
+        <lcd>39</lcd>
+    </i2c>
+    <logging>
+        <config-file>conf/logging.conf</config-file>
+    </logging>
 </settings>

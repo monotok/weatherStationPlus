@@ -5,6 +5,9 @@ module settings {
   description "Module that defines the settings of the application such as database config";
 
   container settings {
+      leaf version {
+        type string;
+      }
       container sensors {
         list wsensor {
             key id;
@@ -27,6 +30,56 @@ module settings {
                     type string;
                 }
             }
+        }
+      }
+      container database {
+        leaf host {
+            type string;
+        }
+        leaf port {
+            type uint16;
+        }
+        leaf database-name {
+            type string;
+        }
+        leaf user {
+            type string;
+        }
+        leaf password {
+            type string;
+        }
+      }
+      container gpio {
+        leaf gpio1 {
+            type string;
+        }
+        leaf gpio2 {
+            type string;
+        }
+        leaf gpio3 {
+            type string;
+        }
+        leaf gpio4 {
+            type string;
+        }
+        leaf gpio5 {
+            type string;
+        }
+      }
+      container i2c {
+        leaf busno {
+            type uint8;
+        }
+        leaf atmega {
+            type uint8;
+        }
+        leaf lcd {
+            type uint8;
+        }
+      }
+      container logging {
+        leaf config-file {
+            type string;
         }
       }
   }
