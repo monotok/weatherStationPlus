@@ -10,6 +10,7 @@ class Utilities
 {
   public:
     static uint64_t getMicrotime();
+    static void returnStringBetweenChars(string& original_string, string& new_string, string& delimiter);
 
     template <typename T>
     static string to_string_with_precision(const T a_value, int n)
