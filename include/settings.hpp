@@ -7,6 +7,8 @@
 
 #include <string>
 #include <tuple>
+#include "vector"
+#include "cstring"
 
 using namespace std;
 
@@ -37,6 +39,7 @@ struct I2c {
 };
 
 struct Position {
+    string name;
     int row_start = 0;
     int col_start = 0;
     Position() = default;
@@ -61,18 +64,14 @@ struct Settings {
     struct Gpio gpio;
     struct Logging logg;
     struct I2c i2c;
-    Position topleft_Name;
-    Position topleft_Val;
-    Position topright_Name;
-    Position topright_Val;
-    Position middleleft_Name;
-    Position middleleft_Val;
-    Position middleright_Name;
-    Position middleright_Val;
-    Position bottomleft_Name;
-    Position bottomleft_Val;
-    Position bottomright_Name;
-    Position bottomright_Val;
+    vector<Position> lcd_positions;
+
+    Position& getPositionByName(const string& name) {
+        for (auto &position: lcd_positions) {
+            if (strcmp(position.name.c_str(), name.c_str()) == 0)
+                return position;
+        }
+    }
 };
 
 #endif //WEATHERSTATIONPLUS_SETTINGS_HPP

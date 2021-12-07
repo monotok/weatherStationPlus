@@ -7,7 +7,7 @@
 //TODO: Add check to only create page when there is no page with sensor id or type
 //TODO: Set the values to blank string or zero
 // Get the unit and type from the settings file?
-LcdController::LcdController(LcdDriver& lcd, const Settings& weatherStationSettings): lcd(lcd), weatherStationSettings(weatherStationSettings)
+LcdController::LcdController(LcdDriver& lcd, Settings& weatherStationSettings): lcd(lcd), weatherStationSettings(weatherStationSettings)
 {
     buildAllCustomChars();
 }
@@ -68,18 +68,18 @@ void LcdController::createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data*
         string id_avg = "avg_" + reading->readingId;
         string id_min = "min_" + reading->readingId;
         string id_max = "max_" + reading->readingId;
-        Pageitem pi_now(reading->readingId, weatherStationSettings.topleft_Name, LcdConstants::FIXED, "Now");
-        Pageitem pi_avg(id_avg, weatherStationSettings.topright_Name, LcdConstants::FIXED, "Avg");
-        Pageitem pi_max(id_max, weatherStationSettings.middleleft_Name, LcdConstants::FIXED, "Max");
-        Pageitem pi_min(id_min, weatherStationSettings.middleright_Name, LcdConstants::FIXED, "Min");
+        Pageitem pi_now(reading->readingId, weatherStationSettings.getPositionByName("topleft_Name"), LcdConstants::FIXED, "Now");
+        Pageitem pi_avg(id_avg, weatherStationSettings.getPositionByName("topright_Name"), LcdConstants::FIXED, "Avg");
+        Pageitem pi_max(id_max, weatherStationSettings.getPositionByName("middleleft_Name"), LcdConstants::FIXED, "Max");
+        Pageitem pi_min(id_min, weatherStationSettings.getPositionByName("middleright_Name"), LcdConstants::FIXED, "Min");
 
-        Pageitem pi_now_val(reading->readingId, weatherStationSettings.topleft_Val, LcdConstants::VAR, reading);
-        Pageitem pi_avg_val(id_avg, weatherStationSettings.topright_Val, LcdConstants::VAR, reading);
-        Pageitem pi_max_val(id_max, weatherStationSettings.middleleft_Val, LcdConstants::VAR, reading);
-        Pageitem pi_min_val(id_min, weatherStationSettings.middleright_Val, LcdConstants::VAR, reading);
+        Pageitem pi_now_val(reading->readingId, weatherStationSettings.getPositionByName("topleft_Val"), LcdConstants::VAR, reading);
+        Pageitem pi_avg_val(id_avg, weatherStationSettings.getPositionByName("topright_Val"), LcdConstants::VAR, reading);
+        Pageitem pi_max_val(id_max, weatherStationSettings.getPositionByName("middleleft_Val"), LcdConstants::VAR, reading);
+        Pageitem pi_min_val(id_min, weatherStationSettings.getPositionByName("middleright_Val"), LcdConstants::VAR, reading);
 
-        Pageitem timeframe(LcdConstants::TIMEFRAME, weatherStationSettings.bottomleft_Name, LcdConstants::FIXED, "Period: ");
-        Pageitem timeframe_val(LcdConstants::TIMEFRAME, weatherStationSettings.bottomright_Name, LcdConstants::VAR, reading);
+        Pageitem timeframe(LcdConstants::TIMEFRAME, weatherStationSettings.getPositionByName("bottomleft_Name"), LcdConstants::FIXED, "Period: ");
+        Pageitem timeframe_val(LcdConstants::TIMEFRAME, weatherStationSettings.getPositionByName("bottomright_Name"), LcdConstants::VAR, reading);
 
         items.push_back(pi_now); items.push_back(pi_max); items.push_back(pi_min); items.push_back(pi_avg);
         items.push_back(pi_now_val); items.push_back(pi_max_val); items.push_back(pi_min_val); items.push_back(pi_avg_val);
@@ -215,17 +215,17 @@ float LcdController::getCorrectReadingDataValueToDraw()
 {
     if (pi_iter->id.find("min_") != string::npos) {
         float minimum = pi_iter->data->timeframeConstMapping.find(currentDBTimeframe)->second->minimum;
-        LOG(DEBUG) << "Getting reading to draw. Minimum with timeframe of one day " << minimum;
+        VLOG(6) << "Getting reading to draw. Minimum with timeframe of one day " << minimum;
         return minimum;
     }
     if (pi_iter->id.find("max_") != string::npos) {
         float maximum = pi_iter->data->timeframeConstMapping.find(currentDBTimeframe)->second->maximum;
-        LOG(DEBUG) << "Getting reading to draw. Minimum with timeframe of one day " << maximum;
+        VLOG(6) << "Getting reading to draw. Minimum with timeframe of one day " << maximum;
         return maximum;
     }
     if (pi_iter->id.find("avg_") != string::npos) {
         float average = pi_iter->data->timeframeConstMapping.find(currentDBTimeframe)->second->average;
-        LOG(DEBUG) << "Getting reading to draw. Minimum with timeframe of one day " << average;
+        VLOG(6) << "Getting reading to draw. Minimum with timeframe of one day " << average;
         return average;
     }
     return pi_iter->data->reading;

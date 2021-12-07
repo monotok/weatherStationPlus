@@ -15,7 +15,6 @@ class DynamicSensorFactory
     ~DynamicSensorFactory();
     bool establish_database_connection(Settings& settings);
     WeatherSensor* getWeatherSensor_ptr(string sensorID);
-    WeatherSensor* getTempWeatherSensor_ptr();
     vector<WeatherSensor *> getAllWeatherSensors_ptr();
     void updateAllWeatherSensorsDatabaseValues();
 

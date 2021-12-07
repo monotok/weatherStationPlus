@@ -5,9 +5,9 @@
 #include "../../include/yang.hpp"
 #include "../../include/easylogging++.hpp"
 
-YangParser::YangParser(const char *module)
+YangParser::YangParser(const char *module, const char *yangdir)
 {
-    if (ly_ctx_new("yang", 0, &context)) {
+    if (ly_ctx_new(yangdir, 0, &context)) {
         LOG(ERROR) << "Could not create libyang context" << endl;
         throw std::invalid_argument("Failed to create libyang context.");
     }
@@ -51,3 +51,12 @@ string YangParser::getSpecificValue(string xpath)
     return "";
 }
 
+vector<string> YangParser::getPaths(string xpath)
+{
+    vector<string> pathsFound;
+    lyd_find_xpath(tree, xpath.c_str(), &set);
+    for (size_t i = 0; i < set->count; i++) {
+        pathsFound.emplace_back(lyd_path(set->dnodes[i], LYD_PATH_STD, nullptr, 0));
+    }
+    return pathsFound;
+}

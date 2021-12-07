@@ -28,6 +28,22 @@
                 <name>Hum</name>
                 <position>middleright</position>
             </readings>
+            <readings>
+                <id>2.2</id>
+                <name>Hum</name>
+            </readings>
+        </wsensor>
+        <wsensor>
+            <id>100</id>
+            <name>bob</name>
+        </wsensor>
+        <wsensor>
+            <id>200</id>
+            <name>ant</name>
+        </wsensor>
+        <wsensor>
+            <id>300</id>
+            <name>gar</name>
         </wsensor>
     </sensors>
     <database>
@@ -52,4 +68,70 @@
     <logging>
         <config-file>conf/logging.conf</config-file>
     </logging>
+    <lcd-positions>
+        <position>topleft</position>
+        <name>
+            <row>2</row>
+            <col>0</col>
+        </name>
+        <val>
+            <row>2</row>
+            <col>5</col>
+        </val>
+    </lcd-positions>
+    <lcd-positions>
+        <position>topright</position>
+        <name>
+            <row>2</row>
+            <col>11</col>
+        </name>
+        <val>
+            <row>2</row>
+            <col>15</col>
+        </val>
+    </lcd-positions>
+    <lcd-positions>
+        <position>middleleft</position>
+        <name>
+            <row>3</row>
+            <col>0</col>
+        </name>
+        <val>
+            <row>3</row>
+            <col>5</col>
+        </val>
+    </lcd-positions>
+    <lcd-positions>
+        <position>middleright</position>
+        <name>
+            <row>3</row>
+            <col>11</col>
+        </name>
+        <val>
+            <row>3</row>
+            <col>15</col>
+        </val>
+    </lcd-positions>
+    <lcd-positions>
+        <position>bottomleft</position>
+        <name>
+            <row>4</row>
+            <col>0</col>
+        </name>
+        <val>
+            <row>4</row>
+            <col>5</col>
+        </val>
+    </lcd-positions>
+    <lcd-positions>
+        <position>bottomright</position>
+        <name>
+            <row>4</row>
+            <col>11</col>
+        </name>
+        <val>
+            <row>4</row>
+            <col>15</col>
+        </val>
+    </lcd-positions>
 </settings>

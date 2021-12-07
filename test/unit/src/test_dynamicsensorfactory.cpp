@@ -8,60 +8,50 @@
 TEST(DynamicSensorFactory, Add_new_weatherSensor_obj_to_vector)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
     DynamicSensorFactory dsf(conf);
     dsf.establish_database_connection(weatherStationSettings);
-    WeatherSensor *tempSensor = dynamic_cast<WeatherSensor*>(dsf.CreateNewSensor_obj("myName"));
+    WeatherSensor *tempSensor = dynamic_cast<WeatherSensor*>(dsf.CreateNewSensor_obj("200"));
 
     std::vector<WeatherSensor*>::iterator found;
     found = std::find(dsf.weatherSensors_vector.begin(), dsf.weatherSensors_vector.end(), tempSensor);
 
-    EXPECT_EQ("myName", dsf.weatherSensors_vector.at(0)->get_sensorID());
-    EXPECT_EQ((*found)->get_sensorID(), "myName");
+    EXPECT_EQ("200", dsf.weatherSensors_vector.at(0)->get_sensorID());
+    EXPECT_EQ((*found)->get_sensorID(), "200");
 
 }
 
 TEST(DynamicSensorFactory, Find_existing_sensor) {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     DynamicSensorFactory dsf(conf);
 
-    dsf.CreateNewSensor_obj("bob");
-    dsf.CreateNewSensor_obj("ant");
-    dsf.CreateNewSensor_obj("gar");
+    dsf.CreateNewSensor_obj("100");
+    dsf.CreateNewSensor_obj("200");
+    dsf.CreateNewSensor_obj("300");
 
-    WeatherSensor* returnValAnt = dsf.getWeatherSensor_ptr("ant");
-    WeatherSensor* returnValBob = dsf.getWeatherSensor_ptr("bob");
-    WeatherSensor* unknown = dsf.getWeatherSensor_ptr("who");
+    WeatherSensor* returnValAnt = dsf.getWeatherSensor_ptr("200");
+    WeatherSensor* returnValBob = dsf.getWeatherSensor_ptr("100");
+    WeatherSensor* unknown = dsf.getWeatherSensor_ptr("500");
 
     std::vector<WeatherSensor*>::iterator found;
     found = std::find(dsf.weatherSensors_vector.begin(), dsf.weatherSensors_vector.end(), returnValBob);
 
-    EXPECT_EQ("ant", returnValAnt->get_sensorID());
-    EXPECT_EQ("bob", returnValBob->get_sensorID());
+    EXPECT_EQ("200", returnValAnt->get_sensorID());
+    EXPECT_EQ("100", returnValBob->get_sensorID());
     EXPECT_EQ(nullptr, unknown);
-    EXPECT_EQ((*found)->get_sensorID(), "bob");
-}
-
-TEST(DynamicSensorFactory, Get_temp_weathersensor) {
-    Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
-    DynamicSensorFactory dsf(conf);
-
-    WeatherSensor* returnVal= dsf.getTempWeatherSensor_ptr();
-
-    EXPECT_EQ("tempWeatherSensor", returnVal->get_sensorID());
+    EXPECT_EQ((*found)->get_sensorID(), "100");
 }
 
 TEST(DynamicSensorFactory, get_all_weathersensors) {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     DynamicSensorFactory dsf(conf);
 
-    dsf.CreateNewSensor_obj("bob");
-    dsf.CreateNewSensor_obj("ant");
-    dsf.CreateNewSensor_obj("gar");
+    dsf.CreateNewSensor_obj("100");
+    dsf.CreateNewSensor_obj("200");
+    dsf.CreateNewSensor_obj("300");
 
     vector<WeatherSensor *> returnVals = dsf.getAllWeatherSensors_ptr();
 
@@ -71,7 +61,7 @@ TEST(DynamicSensorFactory, get_all_weathersensors) {
 TEST(DynamicSensorFactory, store_incoming_data_in_database)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
@@ -142,7 +132,7 @@ TEST(DynamicSensorFactory, store_incoming_data_in_database)
 TEST(DynamicSensorFactory, get_average_hour_for_reading)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \

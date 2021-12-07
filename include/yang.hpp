@@ -9,16 +9,18 @@
 #include <libyang/libyang.h>
 #include <cstdlib>
 #include <string>
+#include "vector"
 
 using namespace std;
 
 class YangParser
 {
 public:
-    explicit YangParser(const char *module);
+    YangParser(const char *module, const char *yangdir);
     ~YangParser();
     void parseData(const char *datafile);
     string getSpecificValue(string xpath);
+    vector<string> getPaths(string xpath);
 
 private:
     void loadYangModule(const char *module);
@@ -26,6 +28,7 @@ private:
     struct ly_ctx *context = nullptr;
     struct lyd_node *tree = nullptr;
     struct lyd_node *node = nullptr;
+    struct ly_set *set = nullptr;
 };
 
 

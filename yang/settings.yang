@@ -4,6 +4,35 @@ module settings {
 
   description "Module that defines the settings of the application such as database config";
 
+  grouping positional-information {
+    container name {
+        leaf row {
+            type uint8;
+        }
+        leaf col {
+            type uint8;
+        }
+    }
+    container val {
+        leaf row {
+            type uint8;
+        }
+        leaf col {
+            type uint8;
+        }
+    }
+  }
+
+  grouping available-lcd-positions {
+    list lcd-positions {
+        key position;
+        leaf position {
+            type string;
+        }
+        uses positional-information;
+    }
+  }
+
   container settings {
       leaf version {
         type string;
@@ -12,7 +41,7 @@ module settings {
         list wsensor {
             key id;
             leaf id {
-                type uint8;
+                type uint16;
             }
             leaf name {
                 type string;
@@ -27,7 +56,10 @@ module settings {
                     type string;
                 }
                 leaf position {
-                    type string;
+                    type leafref {
+                        path "../../../../lcd-positions/position";
+                    }
+                    default "topleft";
                 }
             }
         }
@@ -82,5 +114,6 @@ module settings {
             type string;
         }
       }
+      uses available-lcd-positions;
   }
 }
