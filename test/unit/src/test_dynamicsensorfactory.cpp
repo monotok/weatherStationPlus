@@ -73,6 +73,20 @@ TEST(DynamicSensorFactory, store_incoming_data_in_database)
     DynamicSensorFactory dsf(conf);
     dsf.establish_database_connection(weatherStationSettings);
 
+    //Clean up DB
+    pqxx::work w1(TEST_CONNECTOR);
+    w1.exec(
+            "delete from readings;"
+    );
+    w1.exec(
+            "delete from sensor_metadata;"
+    );
+    w1.commit();
+
+    pqxx::work w2(TEST_CONNECTOR);
+    pqxx::result testWorker_result = w2.exec("select * from readings;");
+    EXPECT_EQ(testWorker_result.size(), 0);
+
     WeatherSensor* mySen = dsf.getWeatherSensor_ptr("1");
 
     struct tempSensorData
@@ -114,19 +128,6 @@ TEST(DynamicSensorFactory, store_incoming_data_in_database)
     EXPECT_STREQ(r2[0][1].c_str(), "t");
 
     w.commit();
-    //Clean up DB
-    pqxx::work w1(TEST_CONNECTOR);
-    w1.exec(
-            "delete from readings;"
-    );
-    w1.exec(
-            "delete from sensor_metadata;"
-    );
-    w1.commit();
-
-    pqxx::work w2(TEST_CONNECTOR);
-    r = w2.exec("select * from readings;");
-    EXPECT_EQ(r.size(), 0);
 }
 
 TEST(DynamicSensorFactory, get_average_hour_for_reading)
@@ -143,6 +144,20 @@ TEST(DynamicSensorFactory, get_average_hour_for_reading)
 
     DynamicSensorFactory dsf(conf);
     dsf.establish_database_connection(weatherStationSettings);
+
+    //Clean up DB
+    pqxx::work w1(TEST_CONNECTOR);
+    w1.exec(
+            "delete from readings;"
+    );
+    w1.exec(
+            "delete from sensor_metadata;"
+    );
+    w1.commit();
+
+    pqxx::work w2(TEST_CONNECTOR);
+    pqxx::result testWorker_result = w2.exec("select * from readings;");
+    EXPECT_EQ(testWorker_result.size(), 0);
 
     WeatherSensor* mySen = dsf.getWeatherSensor_ptr("1");
 
@@ -169,17 +184,4 @@ TEST(DynamicSensorFactory, get_average_hour_for_reading)
     EXPECT_STREQ(avg_sen2.c_str(), "22.3");
 
     w.commit();
-    //Clean up DB
-    pqxx::work w1(TEST_CONNECTOR);
-    w1.exec(
-            "delete from readings;"
-    );
-    w1.exec(
-            "delete from sensor_metadata;"
-    );
-    w1.commit();
-
-    pqxx::work w2(TEST_CONNECTOR);
-    r = w2.exec("select * from readings;");
-    EXPECT_EQ(r.size(), 0);
 }
