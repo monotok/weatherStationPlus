@@ -25,6 +25,7 @@ RUN make install -j 6 && \
 RUN git clone https://github.com/CESNET/libyang.git && \
     cd libyang && \
     mkdir build && \
+    cd build && \
     /usr/local/bin/cmake .. && \
     make -j 6 && \
     make install
