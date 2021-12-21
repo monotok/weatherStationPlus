@@ -86,6 +86,7 @@ TEST(DynamicSensorFactory, store_incoming_data_in_database)
     pqxx::work w2(TEST_CONNECTOR);
     pqxx::result testWorker_result = w2.exec("select * from readings;");
     EXPECT_EQ(testWorker_result.size(), 0);
+    w2.commit();
 
     WeatherSensor* mySen = dsf.getWeatherSensor_ptr("1");
 
@@ -158,6 +159,7 @@ TEST(DynamicSensorFactory, get_average_hour_for_reading)
     pqxx::work w2(TEST_CONNECTOR);
     pqxx::result testWorker_result = w2.exec("select * from readings;");
     EXPECT_EQ(testWorker_result.size(), 0);
+    w2.commit();
 
     WeatherSensor* mySen = dsf.getWeatherSensor_ptr("1");
 
