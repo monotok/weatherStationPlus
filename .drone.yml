@@ -1,0 +1,170 @@
+---
+kind: pipeline
+type: docker
+name: build_files
+
+steps:
+  - name: build_tests
+    image: monotok/wsp:3.0.1
+    volumes:
+      - name: cache
+        path: /wsp
+    commands:
+      - mkdir -p build
+      - cd build
+      - cmake -DCMAKE_BUILD_TYPE=Debug ..
+      - cmake --build . --target test_all_unit -j 4
+      - cmake --build . --target weatherStationPlus -j 4
+      - cp ../test/unit/bin/test_all_unit /wsp/test_all_unit
+      - cp ../bin/debug/weatherStationPlus /wsp/weatherStationPlus
+
+  - name: copy test to test raspberry pi
+    image: appleboy/drone-scp
+    volumes:
+      - name: cache
+        path: /wsp
+    settings:
+      host: 172.16.20.105
+      username: drone_ci
+      password:
+        from_secret: test_pi_password
+      port: 22
+      target: /home/drone_ci/
+      source: /wsp/test_all_unit
+
+  - name: copy weather station to test raspberry pi
+    image: appleboy/drone-scp
+    volumes:
+      - name: cache
+        path: /wsp
+    settings:
+      host: 172.16.20.105
+      username: drone_ci
+      password:
+        from_secret: test_pi_password
+      port: 22
+      target: /home/drone_ci/
+      source: /wsp/weatherStationPlus
+
+  - name: gitea_release
+    image: plugins/gitea-release
+    settings:
+      api_key:
+        from_secret: gitea_release
+      base_url: https://vcs.monotok.org
+      files: /opt/wsp/weatherStationPlus_$ver
+      title: $ver
+    when:
+      event: tag
+
+
+trigger:
+  event:
+    - pull_request
+
+volumes:
+  - name: cache
+    temp: {}
+
+node:
+  server: build
+
+---
+kind: pipeline
+type: exec
+name: test
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+  - name: run tests
+    commands:
+      - chmod +x /home/drone_ci/wsp/test_all_unit
+      - /home/drone_ci/wsp/test_all_unit
+
+  - name: deploy test weather station
+    commands:
+      - ver=$( cat version.txt)
+      - echo $ver
+      - cp /home/drone_ci/wsp/weatherStationPlus /opt/wsp/weatherStationPlus_$ver
+      - cp /opt/wsp/weatherStationPlus_$ver /mnt/software/Artifact_Repository/WeatherStationPlus/
+      - chmod +x /opt/wsp/weatherStationPlus_$ver
+      - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak
+      - ln -s /opt/wsp/weatherStationPlus_$ver /opt/wsp/weatherStationPlus
+      - mkdir -p /opt/wsp/yang
+      - cp yang/settings.yang /opt/wsp/yang/settings.yang
+      - mkdir -p /opt/wsp/conf
+      - cp test/settings.xml /opt/wsp/conf/settings.xml
+      - cp wsp.service /etc/systemd/system/wsp.service
+      - systemctl daemon-reload
+      - systemctl start wsp.service
+
+  - name: check if weather station running
+    commands:
+      - sleep 20
+      - systemctl status wsp.service
+
+  - name: shutdown weather station
+    commands:
+      - systemctl stop wsp.service
+    when:
+      status:
+        - success
+        - failure
+
+trigger:
+  event:
+    - pull_request
+
+node:
+  server: test
+
+depends_on:
+  - build_files
+
+
+---
+kind: pipeline
+type: exec
+name: deploy
+
+platform:
+  os: linux
+  arch: arm
+
+steps:
+  - name: deploy test weather station
+    commands:
+      - ver=$( cat version.txt)
+      - cp /home/drone_ci/wsp/weatherStationPlus /opt/wsp/weatherStationPlus_$ver
+      - chmod +x /opt/wsp/weatherStationPlus_$ver
+      - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak
+      - ln -s /opt/wsp/weatherStationPlus_$ver /opt/wsp/weatherStationPlus
+      - mkdir -p /opt/wsp/yang
+      - cp yang/settings.yang /opt/wsp/yang/settings.yang
+      - cp wsp.service /etc/systemd/system/wsp.service
+      - systemctl daemon-reload
+      - systemctl start wsp.service
+
+  - name: check if weather station running
+    commands:
+      - sleep 20
+      - systemctl status wsp.service
+
+  - name: enable weather station
+    commands:
+      - systemctl enable wsp.service
+
+trigger:
+  event:
+    - promote
+  target:
+    - production
+
+node:
+  server: prod
+
+depends_on:
+  - test
