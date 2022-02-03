@@ -35,9 +35,9 @@ steps:
       target: /home/drone_ci/
       source: /wsp/test_all_unit
     when:
-      - event:
-          - exclude:
-              - pull_request
+      event:
+        exclude:
+          - tag
 
   - name: copy weather station to test raspberry pi
     image: appleboy/drone-scp
@@ -53,9 +53,9 @@ steps:
       target: /home/drone_ci/
       source: /wsp/weatherStationPlus
     when:
-      - event:
-          - exclude:
-              - pull_request
+      event:
+        exclude:
+        - tag
 
   - name: gitea_release
     image: plugins/gitea-release
