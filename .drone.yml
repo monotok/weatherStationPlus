@@ -10,6 +10,9 @@ steps:
       - name: cache
         path: /wsp
     commands:
+      - ver=$( cat version.txt)
+      - echo $ver
+      - changes=`awk -v ver=$ver '/^## Version / { if (p) { exit }; if ($3 == ver) { p=1; next } } p && NF' CHANGELOG.md`
       - mkdir -p build
       - cd build
       - cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -54,8 +57,8 @@ steps:
       base_url: https://vcs.monotok.org
       files: /opt/wsp/weatherStationPlus_$ver
       title: $ver
-    when:
-      event: tag
+      draft: true
+      note: $changes
 
 
 trigger:
