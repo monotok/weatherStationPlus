@@ -34,6 +34,10 @@ steps:
       port: 22
       target: /home/drone_ci/
       source: /wsp/test_all_unit
+    when:
+      - event:
+          - exclude:
+              - pull_request
 
   - name: copy weather station to test raspberry pi
     image: appleboy/drone-scp
@@ -48,6 +52,10 @@ steps:
       port: 22
       target: /home/drone_ci/
       source: /wsp/weatherStationPlus
+    when:
+      - event:
+          - exclude:
+              - pull_request
 
   - name: gitea_release
     image: plugins/gitea-release
@@ -55,15 +63,17 @@ steps:
       api_key:
         from_secret: gitea_release
       base_url: https://vcs.monotok.org
-      files: /opt/wsp/weatherStationPlus_$ver
+      files: /wsp/weatherStationPlus
       title: $ver
-      draft: true
       note: $changes
+    when:
+      event: tag
 
 
 trigger:
   event:
     - pull_request
+    - tag
 
 volumes:
   - name: cache
