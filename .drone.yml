@@ -64,8 +64,8 @@ steps:
         from_secret: gitea_release
       base_url: https://vcs.monotok.org
       files: /wsp/weatherStationPlus
-      title: $ver
-      note: $changes
+      title: echo $ver
+      note: echo $changes
     when:
       event: tag
 
@@ -151,7 +151,7 @@ steps:
   - name: deploy test weather station
     commands:
       - ver=$( cat version.txt)
-      - cp /home/drone_ci/wsp/weatherStationPlus /opt/wsp/weatherStationPlus_$ver
+      - cp /mnt/software/Artifact_Repository/WeatherStationPlus/weatherStationPlus_$ver /opt/wsp/weatherStationPlus_$ver
       - chmod +x /opt/wsp/weatherStationPlus_$ver
       - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak
       - ln -s /opt/wsp/weatherStationPlus_$ver /opt/wsp/weatherStationPlus
