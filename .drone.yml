@@ -104,7 +104,7 @@ steps:
       - cp /home/drone_ci/wsp/weatherStationPlus /opt/wsp/weatherStationPlus_$ver
       - cp /opt/wsp/weatherStationPlus_$ver /mnt/software/Artifact_Repository/WeatherStationPlus/
       - chmod +x /opt/wsp/weatherStationPlus_$ver
-      - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak
+      - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak || echo "Nothing to backup"
       - ln -s /opt/wsp/weatherStationPlus_$ver /opt/wsp/weatherStationPlus
       - mkdir -p /opt/wsp/yang
       - cp yang/settings.yang /opt/wsp/yang/settings.yang
@@ -153,7 +153,7 @@ steps:
       - ver=$( cat version.txt)
       - cp /mnt/software/Artifact_Repository/WeatherStationPlus/weatherStationPlus_$ver /opt/wsp/weatherStationPlus_$ver
       - chmod +x /opt/wsp/weatherStationPlus_$ver
-      - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak
+      - mv /opt/wsp/weatherStationPlus /opt/wsp/weatherStationPlus.bak || echo "Nothing to backup"
       - ln -s /opt/wsp/weatherStationPlus_$ver /opt/wsp/weatherStationPlus
       - mkdir -p /opt/wsp/yang
       - cp yang/settings.yang /opt/wsp/yang/settings.yang
