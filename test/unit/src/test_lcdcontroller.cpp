@@ -18,7 +18,7 @@
 TEST(LcdController, create_new_weather_page_struct_independant)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     WeatherSensor* ws1 = new WeatherSensor("1", "weather1");
@@ -52,7 +52,7 @@ TEST(LcdController, iterate_over_pages_onebyone)
     WeatherSensor::Data reading("1");
 
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(3);
@@ -78,7 +78,7 @@ TEST(LcdController, get_next_timeframe)
     WeatherSensor::Data reading("1");
 
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(3);
@@ -101,7 +101,7 @@ TEST(LcdController, check_for_existing_weather_sensor)
     WeatherSensor* ws1 = new WeatherSensor("1.0", "weather1");
     WeatherSensor::Data reading("1.8");
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(3);
@@ -119,7 +119,7 @@ TEST(LcdController, draw_basic_page_to_lcd)
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     WeatherSensor* ws1 = new WeatherSensor("1.0", "mysensor");
@@ -137,7 +137,7 @@ TEST(LcdController, draw_avg_weather_page_to_lcd)
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     WeatherSensor* ws1 = new WeatherSensor("1", "mysensor");
@@ -147,7 +147,7 @@ TEST(LcdController, draw_avg_weather_page_to_lcd)
     lcdc.createWeatherPage(ws1, reading);
 
     lcdc.setCurrentPage("1");
-    lcdc.setCurrentSubPage(reading->name);
+    lcdc.setCurrentSubPage(reading->readingId);
     lcdc.drawPage_Locking();
 }
 
@@ -156,7 +156,7 @@ TEST(LcdController, draw_different_avg_weather_page_to_lcd)
     I2cControl *i2c = new I2cControl(i2cbusno);
     LcdDriver lcd(lcdAdd, i2c);
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
@@ -191,14 +191,14 @@ TEST(LcdController, draw_different_avg_weather_page_to_lcd)
     lcdc.createWeatherPage(ws1, reading2);
 
     lcdc.setCurrentPage("1");
-    lcdc.setCurrentSubPage(reading->name);
+    lcdc.setCurrentSubPage(reading->readingId);
     lcdc.drawPage_Locking();
     lcdc.updatePageValues(ws1);
 
     //Sleep for 4 seconds so we can observe the display
     std::this_thread::sleep_for(std::chrono::milliseconds(4000));
 
-    lcdc.setCurrentSubPage(reading2->name);
+    lcdc.setCurrentSubPage(reading2->readingId);
     lcdc.drawPage_Locking();
     lcdc.updatePageValues(ws1);
 }
@@ -209,7 +209,7 @@ TEST(LcdController, update_values_only_on_existing_avg_page)
     LcdDriver lcd(lcdAdd, i2c);
 
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
@@ -263,7 +263,7 @@ TEST(LcdController, update_values_only_on_existing_page)
     LcdDriver lcd(lcdAdd, i2c);
 
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     WeatherSensor* ws1 = new WeatherSensor("1", conf.getSensorsName("1"));
@@ -295,7 +295,7 @@ TEST(LcdController, update_values_only_on_existing_page)
 TEST(LcdController, create_new_datetime_page_struct_independant)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(3);
@@ -318,7 +318,7 @@ TEST(LcdController, create_new_datetime_page_struct_independant)
 TEST(LcdController, update_only_changed_values_datetime)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(i2cbusno);
@@ -341,7 +341,7 @@ TEST(LcdController, update_only_changed_values_datetime)
 TEST(LcdController, draw_custom_character_battery_symbols)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(i2cbusno);
@@ -360,7 +360,7 @@ TEST(LcdController, draw_custom_character_battery_symbols)
 TEST(LcdController, draw_custom_characters)
 {
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
     I2cControl *i2c = new I2cControl(i2cbusno);

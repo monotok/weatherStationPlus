@@ -25,7 +25,7 @@ using namespace std;
 class LcdController
 {
 public:
-    LcdController(LcdDriver& lcd, const Settings& weatherStationSettings);
+    LcdController(LcdDriver& lcd, Settings& weatherStationSettings);
     void createWeatherPage(WeatherSensor* ws, WeatherSensor::Data* reading);
     void createWeatherAvgPage(WeatherSensor* ws, WeatherSensor::Data* reading);
     void drawPage_Locking();
@@ -46,7 +46,7 @@ public:
 
 private:
     LcdDriver lcd;
-    const Settings& weatherStationSettings;
+    Settings& weatherStationSettings;
 
     struct Pageitem {
         string id;

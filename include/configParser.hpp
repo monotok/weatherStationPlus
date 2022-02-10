@@ -8,8 +8,10 @@
 #include <libconfig.h++>
 #include "easylogging++.hpp"
 #include "settings.hpp"
+#include "yang.hpp"
 #include <stdlib.h>
 #include <string>
+#include "Utilities.hpp"
 
 using namespace std;
 
@@ -18,23 +20,25 @@ class ConfigParser
 private:
     libconfig::Config confsettings;
     Settings& wsettings;
-    void readSettingsFile(const char* settingsFileLocation);
+    YangParser yp_settings;
     void getVersion();
     void getDatabaseDetails(const libconfig::Setting& root);
     void getGPIODetails(const libconfig::Setting& root);
     void getLogDetails(const libconfig::Setting& root);
     void getI2cDetails(const libconfig::Setting& root);
-    void getPositionInformation(const libconfig::Setting& root);
-    Position& validatePosition(const string& position);
+    void generatePosition(const string &position, Position &namePosition, Position &valPosition);
+    void cachePositions();
 
 public:
-    ConfigParser(Settings& wsettings, const char* settingsFileLocation = "conf/settings.conf");
+    ConfigParser(Settings& wsettings, const char* yangdir = "yang",
+                 const char* datafile = "conf/settings.xml");
     void ParseConfiguration();
     string getSensorsName(string sensorID);
     string getSensorReadingName(const string &sensorId, const string &readingId);
-    Position& getSensorReadingPosition(const string& sensorId, const string& readingId);
-    Position& matchNamePositionToValuePosition(Position& position);
+    void getSensorReadingPositions(const string &sensorId, const string &readingId, Position &namePosition,
+                                   Position &valPosition);
 
+    bool checkReadingExists(const string &sensorId, const string &readingId);
 };
 
 #endif //WEATHERSTATIONPLUS_CONFIGPARSER_HPP

@@ -1,0 +1,119 @@
+module settings {
+  namespace "wsp:settings";
+  prefix settings;
+
+  description "Module that defines the settings of the application such as database config";
+
+  grouping positional-information {
+    container name {
+        leaf row {
+            type uint8;
+        }
+        leaf col {
+            type uint8;
+        }
+    }
+    container val {
+        leaf row {
+            type uint8;
+        }
+        leaf col {
+            type uint8;
+        }
+    }
+  }
+
+  grouping available-lcd-positions {
+    list lcd-positions {
+        key position;
+        leaf position {
+            type string;
+        }
+        uses positional-information;
+    }
+  }
+
+  container settings {
+      leaf version {
+        type string;
+      }
+      container sensors {
+        list wsensor {
+            key id;
+            leaf id {
+                type uint16;
+            }
+            leaf name {
+                type string;
+            }
+
+            list readings {
+                key id;
+                leaf id {
+                    type string;
+                }
+                leaf name {
+                    type string;
+                }
+                leaf position {
+                    type leafref {
+                        path "../../../../lcd-positions/position";
+                    }
+                    default "topleft";
+                }
+            }
+        }
+      }
+      container database {
+        leaf host {
+            type string;
+        }
+        leaf port {
+            type uint16;
+        }
+        leaf database-name {
+            type string;
+        }
+        leaf user {
+            type string;
+        }
+        leaf password {
+            type string;
+        }
+      }
+      container gpio {
+        leaf gpio1 {
+            type string;
+        }
+        leaf gpio2 {
+            type string;
+        }
+        leaf gpio3 {
+            type string;
+        }
+        leaf gpio4 {
+            type string;
+        }
+        leaf gpio5 {
+            type string;
+        }
+      }
+      container i2c {
+        leaf busno {
+            type uint8;
+        }
+        leaf atmega {
+            type uint8;
+        }
+        leaf lcd {
+            type uint8;
+        }
+      }
+      container logging {
+        leaf config-file {
+            type string;
+        }
+      }
+      uses available-lcd-positions;
+  }
+}

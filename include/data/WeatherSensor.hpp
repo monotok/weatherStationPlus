@@ -74,6 +74,7 @@ private:
     vector<Data *>::iterator readingsIterator;
     void addNewReadingArray(Data *newReading);
     void setLcdReadingPosition(Data& data, string sensorId, string readingId, ConfigParser* wss);
+    bool checkReadingListedSettings(string sensorId, string readingId, ConfigParser* wss);
 
     // Database stuff
     pqxx::connection* C = nullptr;

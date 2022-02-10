@@ -36,7 +36,7 @@ TEST(WeatherSensor, set_reading_values_correctly)
 {
     // Grab settings so we can get the position information
     Settings weatherStationSettings {};
-    ConfigParser conf(weatherStationSettings, "../../settings.conf");
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
     ConfigParser* conf_ptr = &conf;
 

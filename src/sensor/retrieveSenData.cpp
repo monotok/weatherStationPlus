@@ -61,7 +61,13 @@ bool RetrieveSenData::check_incoming_data(SensorData& sensor)
     if (strcmp(tempSensor.sensorID, "\0") == 0) {
         return false;
     }
-    return true;
+    string senAndReadingIDCombined = tempSensor.sensorID;
+    string senID;
+    string::size_type pos = senAndReadingIDCombined.find(".");
+    if (pos != string::npos) {
+        senID = senAndReadingIDCombined.substr(0, pos);
+    }
+    return wss->checkReadingExists(senID, senAndReadingIDCombined);
 }
 
 

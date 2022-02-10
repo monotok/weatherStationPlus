@@ -4,10 +4,31 @@ ARG debuguser=debugger
 ARG userid=1000
 ARG groupid=1000
 
-RUN apt-get update && \
-    apt-get install -y git cmake make gcc g++ openssh-server libpq-dev libpqxx-dev build-essential gdb gdbserver rsync vim libconfig++-dev \
+RUN apt update
+
+RUN  apt install -y git wget libssl-dev make gcc g++ openssh-server libpq-dev libpqxx-dev build-essential gdb gdbserver rsync vim libconfig++-dev libpcre2-dev \
      && apt-get clean \
      && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /root
+
+# cmake needs to be compiled from source due to it missing a fix in version in repo. Won't link libyang.
+# https://gitlab.kitware.com/cmake/cmake/-/issues/20568
+RUN git clone https://gitlab.kitware.com/cmake/cmake.git && \
+    cd cmake && \
+    git checkout v3.21.4 && \
+    ./bootstrap
+RUN make
+RUN make install -j 6 && \
+    ln -s /usr/local/bin/cmake /usr/bin/
+
+RUN git clone https://github.com/CESNET/libyang.git && \
+    cd libyang && \
+    mkdir build && \
+    cd build && \
+    /usr/local/bin/cmake .. && \
+    make -j 6 && \
+    make install
 
 RUN mkdir /var/run/sshd
 RUN echo 'root:root' | chpasswd

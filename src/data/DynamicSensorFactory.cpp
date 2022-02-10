@@ -76,12 +76,6 @@ WeatherSensor* DynamicSensorFactory::getWeatherSensor_ptr(string sensorID)
     return dynamic_cast<WeatherSensor*>(CreateNewSensor_obj(sensorID));
 }
 
-//TODO: Can be removed
-WeatherSensor* DynamicSensorFactory::getTempWeatherSensor_ptr()
-{
-    return getWeatherSensor_ptr("tempWeatherSensor");
-}
-
 void DynamicSensorFactory::prepare_insert_statements()
 {
     this->db_conn_ptr->prepare(

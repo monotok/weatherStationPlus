@@ -85,9 +85,7 @@ void WeatherSensor::store_weathersensormetadata_data_in_database(WeatherSensor::
 
 void WeatherSensor::setLcdReadingPosition(Data& data, string sensorId, string readingId, ConfigParser* wss)
 {
-    Position pos = wss->getSensorReadingPosition(sensorId, readingId);
-    data.posVal = pos;
-    data.posName = wss->matchNamePositionToValuePosition(pos);
+    wss->getSensorReadingPositions(sensorId, readingId, data.posName, data.posVal);
     data.name = wss->getSensorReadingName(sensorId, readingId);
 }
 
@@ -154,4 +152,10 @@ void WeatherSensor::update_MaxReadings()
             LOG(ERROR) << e.what() << std::endl;
         }
     }
+}
+
+bool WeatherSensor::checkReadingListedSettings(string sensorId, string readingId, ConfigParser *wss)
+{
+
+    return false;
 }

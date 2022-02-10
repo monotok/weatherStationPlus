@@ -32,6 +32,7 @@ add_subdirectory(test)
 
 include_directories(include)
 include_directories(SYSTEM /usr/include)
+include_directories(SYSTEM /usr/local/include)
 
 set(DYNAM_SOURCE_FILES prototype/DynamicSensors.cpp src/logging/easylogging++.cpp src/hal/GPIOControl.cpp src/hwcontrol/BtnControl.cpp src/data/WeatherSensor.cpp src/tools/Utilities.cpp)
 set(LCD_SOURCE_FILES prototype/testLCD.cpp src/logging/easylogging++.cpp src/hal/i2cControl.cpp src/hal/lcdDriver.cpp)
@@ -47,7 +48,8 @@ set(MAIN_SOURCE_FILES src/main.cpp
         src/hwcontrol/BtnControl.cpp
         src/tools/Utilities.cpp
         src/tools/configParser.cpp
-        src/data/WeatherSensor.cpp)
+        src/data/WeatherSensor.cpp
+        src/model/yang.cpp)
 
 add_executable(DynamSensors ${DYNAM_SOURCE_FILES})
 add_executable(TestLCD ${LCD_SOURCE_FILES})
@@ -60,6 +62,7 @@ target_link_libraries(weatherStationPlus
         gtest
         pqxx
         pq
+        yang
         ${LIBCONFIGPP})
 
 target_link_libraries(GPIOTest
@@ -72,6 +75,7 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
             gtest
             pqxx
             pq
+            yang
             ${LIBCONFIGPP}
             -fno-omit-frame-pointer
             -fsanitize=address)
