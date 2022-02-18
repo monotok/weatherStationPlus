@@ -4,7 +4,7 @@ ARG debuguser=debugger
 ARG userid=1000
 ARG groupid=1000
 
-RUN apt update
+RUN apt-get update
 
 RUN  apt install -y git wget libssl-dev make gcc g++ openssh-server libpq-dev libpqxx-dev build-essential gdb gdbserver rsync vim libconfig++-dev libpcre2-dev \
      && apt-get clean \
@@ -17,9 +17,9 @@ WORKDIR /root
 RUN git clone https://gitlab.kitware.com/cmake/cmake.git && \
     cd cmake && \
     git checkout v3.21.4 && \
-    ./bootstrap
-RUN make
-RUN make install -j 6 && \
+    ./bootstrap && \
+    make  && \
+    make install -j 6 && \
     ln -s /usr/local/bin/cmake /usr/bin/
 
 RUN git clone https://github.com/CESNET/libyang.git && \
