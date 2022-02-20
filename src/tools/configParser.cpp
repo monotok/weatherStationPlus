@@ -85,7 +85,7 @@ void ConfigParser::getSensorReadingPositions(const string &sensorId, const strin
     xpath_str = xpath_str + sensorId + "']/readings[id='" + readingId + "']/position";
     auto value = yp_settings.getSpecificValue(xpath_str);
     if(value.empty())
-        throw std::invalid_argument("Reading value does not exist in settings.");
+        throw std::invalid_argument("Can't find reading's position. Check readings position defined in settings.");
     generatePosition(value, namePosition, valPosition);
 }
 
@@ -122,8 +122,10 @@ bool ConfigParser::checkReadingExists(const string &sensorId, const string &read
     string xpath_str = "/settings:settings/sensors/wsensor[id='";
     xpath_str = xpath_str + sensorId + "']/readings[id='" + readingId + "']/id";
     auto value = yp_settings.getSpecificValue(xpath_str);
-    if(value.empty())
+    if(value.empty()) {
+        LOG(WARNING) << "Sensor id " << sensorId << " and reading id " << readingId << " not found in settings. Ignoring." << endl;
         return false;
+    }
     return true;
 }
 
