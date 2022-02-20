@@ -141,8 +141,9 @@ int main(int argc, char** argv)
     //Create the date time page
     lcdc.createDateTimePage();
     lcdc.setCurrentPage(LcdConstants::HOMEPAGE);
+    lcdc.setCurrentSubPage(LcdConstants::DATE);
     usleep(5000000);
-    lcdc.drawPage_Locking();
+    lcdc.drawDateTimePage();
 
     //Start a new thread getting new sensors
     std::thread gettingSensorData (getNewSensorData, &dsf, i2c, &lcdc);
