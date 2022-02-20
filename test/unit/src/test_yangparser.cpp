@@ -24,7 +24,7 @@ TEST(YangParser, find_sensor_name_from_id)
     settings_yp.parseData("test/settings.xml");
     string xpath_str1 = "/settings:settings/sensors/wsensor[id='1']/name";
     string sensorName1 = settings_yp.getSpecificValue(xpath_str1);
-    ASSERT_STREQ(sensorName1.c_str(), "Backbed");
+    ASSERT_STREQ(sensorName1.c_str(), "Local");
 
     string xpath_str2 = "/settings:settings/sensors/wsensor[id='2']/name";
     string sensorName2 = settings_yp.getSpecificValue(xpath_str2);

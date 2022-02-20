@@ -33,6 +33,10 @@
                 <name>Hum</name>
                 <position>middleright</position>
             </readings>
+            <readings>
+                <id>2.3</id>
+                <name>Non</name>
+            </readings>
         </wsensor>
         <wsensor>
             <id>100</id>

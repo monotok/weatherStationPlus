@@ -41,7 +41,7 @@ TEST(ConfigParser, get_sensor2_details)
 {
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
-    EXPECT_EQ(conf.getSensorsName("1"), "Backbed");
+    EXPECT_EQ(conf.getSensorsName("1"), "Local");
     EXPECT_EQ(conf.getSensorsName("2"), "Shed");
 }
 
@@ -94,7 +94,7 @@ TEST(ConfigParser, get_sensor_reading_position_non_existent_position_leaf)
     Position topleft_default = {2, 0};
     Position name_tl;
     Position val_tl;
-    conf.getSensorReadingPositions("2", "2.2", name_tl, val_tl);
+    conf.getSensorReadingPositions("2", "2.3", name_tl, val_tl);
     EXPECT_EQ(name_tl, topleft_default);
 }
 
