@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - [Fix display on start up](https://vcs.monotok.org/WeatherStationProject/weatherStationPlus/issues/5)
+- [Not finding sensors correctly](https://vcs.monotok.org/WeatherStationProject/weatherStationPlus/issues/8)
 
 ## Version 3.0.0
 
