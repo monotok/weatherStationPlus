@@ -3,7 +3,7 @@
     <sensors>
         <wsensor>
             <id>1</id>
-            <name>Backbed</name>
+            <name>Local</name>
             <readings>
                 <id>1.0</id>
                 <name>Temp</name>
@@ -13,6 +13,11 @@
                 <id>1.1</id>
                 <name>Hum</name>
                 <position>topright</position>
+            </readings>
+            <readings>
+                <id>1.2</id>
+                <name>Pre</name>
+                <position>middleleft</position>
             </readings>
         </wsensor>
         <wsensor>
@@ -29,8 +34,8 @@
                 <position>middleright</position>
             </readings>
             <readings>
-                <id>2.2</id>
-                <name>Hum</name>
+                <id>2.3</id>
+                <name>Non</name>
             </readings>
         </wsensor>
         <wsensor>

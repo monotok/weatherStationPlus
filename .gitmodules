@@ -1,6 +1,6 @@
 [submodule "ReceiveModule"]
 	path = ReceiveModule
-	url = https://github.com/monotok/WS_Rec_Module.git
+	url = https://vcs.monotok.org/WeatherStationProject/ReceiveModule.git
 [submodule "RemoteSensors"]
 	path = RemoteSensors
-	url = https://github.com/monotok/RemoteSensors.git
+	url = https://vcs.monotok.org/WeatherStationProject/RemoteSensors.git

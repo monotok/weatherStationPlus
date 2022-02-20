@@ -43,7 +43,7 @@ TEST(RetrieveSensorData, Get_sensor_data_from_arduino_module)
     rsd.get_WeatherSenData(&dsf);
 
     EXPECT_STREQ("1", dsf.getWeatherSensor_ptr("1")->get_sensorID().c_str());
-    EXPECT_EQ(2, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
+    EXPECT_EQ(3, dsf.getWeatherSensor_ptr("1")->getAvailableReadings().size());
 
     delete (i2c);
 }

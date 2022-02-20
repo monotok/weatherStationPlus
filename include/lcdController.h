@@ -59,7 +59,7 @@ private:
     };
 
     string currentPage = {};
-    string currentSubPage = {LcdConstants::CURRENT};
+    string currentSubPage = {};
     short currentDBTimeframe = LcdConstants::ONE_DAY;
 
     FRIEND_TEST(LcdController, create_new_weather_page_struct_independant);
