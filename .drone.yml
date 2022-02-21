@@ -64,8 +64,8 @@ steps:
         from_secret: gitea_release
       base_url: https://vcs.monotok.org
       files: /wsp/weatherStationPlus
-      title: echo $ver
-      note: echo $changes
+      title: ${DRONE_TAG##v}
+      note: ${DRONE_COMMIT_MESSAGE}
     when:
       event: tag
 
@@ -112,12 +112,12 @@ steps:
       - cp test/settings.xml /opt/wsp/conf/settings.xml
       - cp wsp.service /etc/systemd/system/wsp.service
       - systemctl daemon-reload
-      - systemctl start wsp.service
+      - systemctl restart wsp.service
 
   - name: check if weather station running
     commands:
       - sleep 20
-      - systemctl status wsp.service
+      - systemctl is-active --quiet wsp
 
   - name: shutdown weather station
     commands:
@@ -148,6 +148,11 @@ platform:
   arch: arm
 
 steps:
+  - name: disable and stop weather station
+    commands:
+      - systemctl stop wsp.service
+      - systemctl disable wsp.service
+
   - name: deploy test weather station
     commands:
       - ver=$( cat version.txt)
@@ -164,7 +169,7 @@ steps:
   - name: check if weather station running
     commands:
       - sleep 20
-      - systemctl status wsp.service
+      - systemctl is-active --quiet wsp
 
   - name: enable weather station
     commands:
