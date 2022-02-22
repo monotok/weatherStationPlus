@@ -58,6 +58,20 @@ TEST(DynamicSensorFactory, get_all_weathersensors) {
     EXPECT_EQ(returnVals.size(), 3);
 }
 
+TEST(DynamicSensorFactory, disable_db_connection_timeout)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
+    conf.ParseConfiguration();
+
+    weatherStationSettings.db.host = "172.16.20.5";
+    weatherStationSettings.db.port = 12345;
+
+    DynamicSensorFactory dsf(conf);
+
+    EXPECT_FALSE(dsf.establish_database_connection(weatherStationSettings));
+}
+
 TEST(DynamicSensorFactory, store_incoming_data_in_database)
 {
     Settings weatherStationSettings {};

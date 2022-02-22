@@ -10,7 +10,14 @@ bool DynamicSensorFactory::establish_database_connection(Settings &settings)
     string db_conn_str = "dbname = "+ settings.db.database +" user = "+ settings.db.user +" \
     password = "+ settings.db.password +" hostaddr = "+ settings.db.host
                          +" port = " + to_string(settings.db.port);
-    db_conn_ptr = new pqxx::connection(db_conn_str);
+    try {
+        db_conn_ptr = new pqxx::connection(db_conn_str);
+    }
+    catch (pqxx::broken_connection &broken_conn) {
+        LOG(ERROR) << "Failed to connect to the DB: " << broken_conn.what() << endl;
+        LOG(WARNING) << "\nDisabling DB connection." << endl;
+        return false;
+    }
     if (db_conn_ptr->is_open()) {
         LOG(INFO) << "Opened database successfully: " << db_conn_ptr->dbname() << endl;
         prepare_insert_statements();
