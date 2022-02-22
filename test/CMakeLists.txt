@@ -146,11 +146,11 @@ add_executable(test_yangparser
         )
 
 target_link_libraries(test_btncontrol gtest rt)
-target_link_libraries(test_configparser gtest ${LIBCONFIGPP} yang)
-target_link_libraries(test_yangparser gtest ${LIBCONFIGPP} yang)
-target_link_libraries(test_dynamsensorfact gtest pqxx ${LIBCONFIGPP} yang)
-target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP} yang) #Need rt for Utilites get time
-target_link_libraries(test_lcdcontroller gtest rt pqxx ${LIBCONFIGPP} yang)
+target_link_libraries(test_configparser gtest ${LIBCONFIGPP} ${LIBYANG})
+target_link_libraries(test_yangparser gtest ${LIBCONFIGPP} ${LIBYANG})
+target_link_libraries(test_dynamsensorfact gtest pqxx ${LIBCONFIGPP} ${LIBYANG})
+target_link_libraries(test_all_unit gtest rt pqxx pq ${LIBCONFIGPP} ${LIBYANG}) #Need rt for Utilites get time
+target_link_libraries(test_lcdcontroller gtest rt pqxx ${LIBCONFIGPP} ${LIBYANG})
 target_link_libraries(test_weathersensor gtest pqxx ${LIBCONFIGPP})
 target_link_libraries(test_retrievesendata gtest pqxx pq ${LIBCONFIGPP})
 

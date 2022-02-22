@@ -24,8 +24,10 @@ ADD_DEFINITIONS ( -DPQXX_HIDE_EXP_OPTIONAL )
 #Find libraries
 find_library(LIBCONFIGPP config++)
 find_library(LIBCONFIG config)
+find_library(LIBYANG yang)
 message(STATUS "FOUND LIBCONFIG ++: " ${LIBCONFIGPP})
 message(STATUS "FOUND LIBCONFIG : " ${LIBCONFIG})
+message(STATUS "FOUND LIBYANG : " ${LIBYANG})
 
 #Include the tests
 add_subdirectory(test)
