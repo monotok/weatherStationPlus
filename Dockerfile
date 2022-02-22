@@ -30,6 +30,8 @@ RUN git clone https://github.com/CESNET/libyang.git && \
     make -j 6 && \
     make install
 
+RUN ldconfig
+
 RUN mkdir /var/run/sshd
 RUN echo 'root:root' | chpasswd
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
