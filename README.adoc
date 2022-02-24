@@ -4,7 +4,7 @@ image:https://img.shields.io/lgtm/alerts/g/monotok/weatherStationPlus.svg?logo=l
 image:https://img.shields.io/lgtm/grade/cpp/g/monotok/weatherStationPlus.svg?logo=lgtm&logoWidth=18[link="https://lgtm.com/projects/g/monotok/weatherStationPlus/context:cpp"]
 image:https://api.codacy.com/project/badge/Grade/09b38ccc2efc4c15a40d0c72987ac0b3["Codacy code quality", link="https://www.codacy.com/manual/monotok/weatherStationPlus?utm_source=github.com&utm_medium=referral&utm_content=monotok/weatherStationPlus&utm_campaign=Badge_Grade"]
 image:https://www.openhub.net/p/weatherstationplus/widgets/project_thin_badge.gif["Ohloh Project Status", link="https://www.openhub.net/p/weatherStationPlus"]
-image:https://drone.monotok.org/api/badges/WeatherStationProject/weatherStationPlus/status.svg["Build Status"], link="https://drone.monotok.org/WeatherStationProject/weatherStationPlus"]
+image:https://drone.monotok.org/api/badges/WeatherStationProject/weatherStationPlus/status.svg["Build Status", link="https://drone.monotok.org/WeatherStationProject/weatherStationPlus"]
 
 == Introduction
 
