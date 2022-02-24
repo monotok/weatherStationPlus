@@ -64,8 +64,21 @@ TEST(DynamicSensorFactory, disable_db_connection_timeout)
     ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
 
+    weatherStationSettings.db.enable = true;
     weatherStationSettings.db.host = "172.16.20.5";
     weatherStationSettings.db.port = 12345;
+    weatherStationSettings.db.timeout = "1";
+
+    DynamicSensorFactory dsf(conf);
+
+    EXPECT_FALSE(dsf.establish_database_connection(weatherStationSettings));
+}
+
+TEST(DynamicSensorFactory, dont_connect_to_db_if_disabled)
+{
+    Settings weatherStationSettings {};
+    ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
+    conf.ParseConfiguration();
 
     DynamicSensorFactory dsf(conf);
 
@@ -80,7 +93,9 @@ TEST(DynamicSensorFactory, store_incoming_data_in_database)
 
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
     password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
-                         +" port = " + to_string(weatherStationSettings.db.port);
+                         +" port = " + to_string(weatherStationSettings.db.port) + " connect_timeout=1";
+
+    weatherStationSettings.db.enable = true;
 
     pqxx::connection TEST_CONNECTOR(db_conn_str);
 
@@ -153,7 +168,9 @@ TEST(DynamicSensorFactory, get_average_hour_for_reading)
 
     string db_conn_str = "dbname = "+ weatherStationSettings.db.database +" user = "+ weatherStationSettings.db.user +" \
     password = "+ weatherStationSettings.db.password +" hostaddr = "+ weatherStationSettings.db.host
-                         +" port = " + to_string(weatherStationSettings.db.port);
+                         +" port = " + to_string(weatherStationSettings.db.port) + " connect_timeout=10";
+
+    weatherStationSettings.db.enable = true;
 
     pqxx::connection TEST_CONNECTOR(db_conn_str);
 

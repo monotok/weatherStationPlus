@@ -7,13 +7,15 @@ DynamicSensorFactory::DynamicSensorFactory(ConfigParser& wss): wss(wss) {}
 
 bool DynamicSensorFactory::establish_database_connection(Settings &settings)
 {
+    if (!settings.db.enable)
+        return false;
     string db_conn_str = "dbname = "+ settings.db.database +" user = "+ settings.db.user +" \
     password = "+ settings.db.password +" hostaddr = "+ settings.db.host
-                         +" port = " + to_string(settings.db.port);
+                         +" port = " + to_string(settings.db.port) + " connect_timeout=" + settings.db.timeout;
     try {
         db_conn_ptr = new pqxx::connection(db_conn_str);
     }
-    catch (pqxx::broken_connection &broken_conn) {
+    catch (exception &broken_conn) {
         LOG(ERROR) << "Failed to connect to the DB: " << broken_conn.what() << endl;
         LOG(WARNING) << "\nDisabling DB connection." << endl;
         return false;
