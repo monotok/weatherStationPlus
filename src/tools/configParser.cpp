@@ -33,11 +33,13 @@ void ConfigParser::getVersion()
 void ConfigParser::getDatabaseDetails(const libconfig::Setting &root)
 {
     string base_xpath = "/settings:settings/database";
+    wsettings.db.enable = Utilities::String2Bool(yp_settings.getSpecificValue(base_xpath + "/enable"));
     wsettings.db.host = yp_settings.getSpecificValue(base_xpath + "/host");
     wsettings.db.port = stoi(yp_settings.getSpecificValue(base_xpath + "/port"));
     wsettings.db.database = yp_settings.getSpecificValue(base_xpath + "/database-name");
     wsettings.db.user = yp_settings.getSpecificValue(base_xpath + "/user");
     wsettings.db.password = yp_settings.getSpecificValue(base_xpath + "/password");
+    wsettings.db.timeout = yp_settings.getSpecificValue(base_xpath + "/connection-timeout");
 }
 
 void ConfigParser::getGPIODetails(const libconfig::Setting &root)

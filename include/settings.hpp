@@ -13,11 +13,13 @@
 using namespace std;
 
 struct Database {
+    bool enable;
     string host;
     int port;
     string database;
     string user;
     string password;
+    string timeout;
 };
 
 struct Gpio {

@@ -65,6 +65,10 @@ module settings {
         }
       }
       container database {
+        leaf enable {
+            type boolean;
+            default false;
+        }
         leaf host {
             type string;
         }
@@ -79,6 +83,14 @@ module settings {
         }
         leaf password {
             type string;
+        }
+        leaf connection-timeout {
+            type string {
+                pattern "\\b[1-9][0-9]\\b" {
+                    error-message "Enter a value between 10 and 99";
+                }
+            }
+            default "10";
         }
       }
       container gpio {

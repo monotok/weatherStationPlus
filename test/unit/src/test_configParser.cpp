@@ -14,6 +14,7 @@ TEST(ConfigParser, get_database_details)
     Settings weatherStationSettings {};
     ConfigParser conf(weatherStationSettings, "yang", "test/settings.xml");
     conf.ParseConfiguration();
+    EXPECT_FALSE(weatherStationSettings.db.enable);
     EXPECT_EQ(weatherStationSettings.db.host, "172.16.20.5");
     EXPECT_EQ(weatherStationSettings.db.port, 5432);
     EXPECT_EQ(weatherStationSettings.db.database, "test_weatherdb");
