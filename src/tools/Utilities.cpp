@@ -16,3 +16,11 @@ void Utilities::returnStringBetweenChars(string& original_string, string& new_st
     unsigned last = original_string.find_last_of(delimiter);
     new_string = original_string.substr(first+1, last-first-1);
 }
+
+bool Utilities::String2Bool(std::string var)
+{
+    if(var == "true" || var == "TRUE")
+        return true;
+    else if(var == "false" || var == "FALSE")
+        return false;
+}
