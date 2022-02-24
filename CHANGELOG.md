@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 3.0.3
+
+**DATE:** 24-02-2022
+
+### Added
+
+### Changed
+
+- Added ability to disable the DB within the settings file.
+
+### Fixed
+
+- [Database connection failure prevents wsp starting](https://vcs.monotok.org/WeatherStationProject/weatherStationPlus/issues/1)
+
 ## Version 3.0.2
 
 **DATE:** 21-02-2022
