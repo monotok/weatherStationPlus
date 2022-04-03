@@ -112,8 +112,8 @@ void ConfigParser::cachePositions()
         posName.row_start = stoi(yp_settings.getSpecificValue(lcd_path+"/name/row"));
         posName.col_start = stoi(yp_settings.getSpecificValue(lcd_path+"/name/col"));
         Position posVal; posVal.name = position_name+"_Val";
-        posVal.row_start = stoi(yp_settings.getSpecificValue(lcd_path+"/name/row"));
-        posVal.col_start = stoi(yp_settings.getSpecificValue(lcd_path+"/name/col"));
+        posVal.row_start = stoi(yp_settings.getSpecificValue(lcd_path+"/val/row"));
+        posVal.col_start = stoi(yp_settings.getSpecificValue(lcd_path+"/val/col"));
         wsettings.lcd_positions.emplace_back(posName);
         wsettings.lcd_positions.emplace_back(posVal);
     }
