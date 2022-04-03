@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 3.0.4
+
+**DATE:** 04-04-2022
+
+### Added
+
+### Changed
+
+- Fixed display issue where min/max/avg/now fixed values not showing on average page.
+
+### Fixed
+
+- [missing fixed items on the average pages](https://vcs.monotok.org/WeatherStationProject/weatherStationPlus/issues/18)
+
 ## Version 3.0.3
 
 **DATE:** 24-02-2022
