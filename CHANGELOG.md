@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## Version 3.0.5
+
+**DATE:** 12-04-2022
+
+### Added
+
+### Changed
+
+- Fixed a delay in retrieving items from the DB upon startup.
+
+### Fixed
+
+- [connection to db takes 5 mins to refresh on first start](https://vcs.monotok.org/WeatherStationProject/weatherStationPlus/issues/20)
+
 ## Version 3.0.4
 
 **DATE:** 04-04-2022
