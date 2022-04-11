@@ -53,7 +53,6 @@
     </sensors>
     <database>
         <host>172.16.20.5</host>
-        <enable>true</enable>
         <port>5432</port>
         <database-name>test_weatherdb</database-name>
         <user>test_weather</user>
