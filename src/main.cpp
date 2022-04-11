@@ -27,8 +27,8 @@ using namespace std;
 {
     while(true)
     {
-        usleep(300000000); // 5 mins
         dynamsensors_ptr->updateAllWeatherSensorsDatabaseValues();
+        usleep(300000000); // 5 mins
     }
 }
 
