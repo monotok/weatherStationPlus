@@ -29,6 +29,11 @@ message(STATUS "FOUND LIBCONFIG ++: " ${LIBCONFIGPP})
 message(STATUS "FOUND LIBCONFIG : " ${LIBCONFIG})
 message(STATUS "FOUND LIBYANG : " ${LIBYANG})
 
+# Add Prometheus
+add_subdirectory("prometheus-cpp-lite/core")
+add_subdirectory("prometheus-cpp-lite/3rdpatry/http-client-lite")
+add_subdirectory("prometheus-cpp-lite/simpleapi")
+
 #Include the tests
 add_subdirectory(test)
 
@@ -65,7 +70,8 @@ target_link_libraries(weatherStationPlus
         pqxx
         pq
         yang
-        ${LIBCONFIGPP})
+        ${LIBCONFIGPP}
+        prometheus-cpp-simpleapi)
 
 target_link_libraries(GPIOTest
         rt)
@@ -79,6 +85,7 @@ if (CMAKE_BUILD_TYPE MATCHES RelWithDebInfo)
             pq
             yang
             ${LIBCONFIGPP}
+            prometheus-cpp-simpleapi
             -fno-omit-frame-pointer
             -fsanitize=address)
 endif()
